@@ -1,0 +1,71 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+# Java
+*.class
+*.log
+*.ctxt
+
+# Compilados
+target/
+bin/
+build/
+
+# IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.swp
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración temporales
+*.tmp
+*.bak
+*.orig
+
+# Configuraciones de entorno
+.env
+*.local
+*.dev
+
+# Archivos sensibles y específicos del entorno
+src/main/resources/application-dev.properties
+src/main/resources/application-dev.yml
+src/main/resources/application-dev.yaml
+
