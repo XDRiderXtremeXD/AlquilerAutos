@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -19,28 +20,18 @@ public class UsuarioController {
 	private IUsuarioRepository repoUsu;
 	
 	// Muestra la lista de usuarios
-	@GetMapping("/lista")
-	public String mostrarLista(Model model) {
+	@GetMapping("/listado")
+	public String listarUsuarios(Model model) {
 		
 		model.addAttribute("lstUsuarios", repoUsu.findAll());
-		return "usuario/listaUsuario";
-	}
-	
-	// Muestra el formulario de registro
-	@GetMapping("/registrar")
-	public String abrirRegistrar(Model model) {
-		
 		model.addAttribute("usuario", new Usuario());
-		return "usuario/registrarUsuario";
+		return "usuarios";
 	}
 	
-	// Procesa los datos del formulario
+	
 	@PostMapping("/grabar")
 	public String registrarUsuario(@ModelAttribute Usuario usuario, Model model) {
-		
-			System.out.println("FECHA------- " + usuario.getFecha());
-			
-			
+
 		try {
 			repoUsu.save(usuario);
 			model.addAttribute("mensaje", "Usuario registrado exitosamente");
@@ -50,7 +41,35 @@ public class UsuarioController {
 			model.addAttribute("cssmensaje", "alert alert-danger");
 		}
 		
-		return "redirect:/usuarios/lista";
+		return "redirect:/usuarios/listado";
 
 	}
+	
+	
+    @GetMapping("/editar/{id}")
+    public String mostrarFormularioEdicion(@PathVariable int id, Model model) {
+        Usuario usuario = repoUsu.findById(id).orElse(null);
+        if (usuario != null) {
+            model.addAttribute("usuario", usuario);
+        } else {
+            model.addAttribute("mensaje", "Usuario no encontrado");
+            model.addAttribute("cssmensaje", "alert alert-danger");
+        }
+        return "usuarios";
+    }
+    
+
+    @PostMapping("/actualizar")
+    public String actualizar(@ModelAttribute Usuario usuario, Model model) {
+        try {
+            repoUsu.save(usuario);
+            model.addAttribute("mensaje", "Usuario actualizado exitosamente");
+            model.addAttribute("cssmensaje", "alert alert-success");
+        } catch (Exception e) {
+            model.addAttribute("mensaje", "Error al actualizar: ".concat(e.getMessage()));
+            model.addAttribute("cssmensaje", "alert alert-danger");
+        }
+        return "redirect:/usuarios/listado";
+    }
+	
 }

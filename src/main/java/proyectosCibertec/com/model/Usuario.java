@@ -1,5 +1,6 @@
 package proyectosCibertec.com.model;
 
+import java.sql.Date;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -18,6 +19,7 @@ public class Usuario {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
+	@Column(length = 20, nullable = false)
 	private String usuario;
 	private String nombre;
 	private String apellido;
@@ -26,8 +28,6 @@ public class Usuario {
 	private String direccion;
 	private String perfil;
 	private String clave;
-	
-	@Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
-	private LocalDateTime fecha; 
-	private int estado = 1;
+	private Date fecha; 
+	private int estado;
 }
