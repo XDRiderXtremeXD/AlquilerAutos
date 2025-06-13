@@ -1,7 +1,8 @@
 package proyectosCibertec.com.model;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,6 +26,8 @@ public class Usuario {
 	private String direccion;
 	private String perfil;
 	private String clave;
-	private Date fecha; 
+	
+	@Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+	private LocalDateTime fecha; 
 	private int estado = 1;
 }

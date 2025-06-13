@@ -12,6 +12,10 @@
 	<div class="container" layout:fragment="content">
 
 		<h1>Listado de Usuarios</h1>
+		<div th:text="${mensaje}" th:class="${cssmensaje}" role="alert" ></div>
+		<div>
+			<a href="/usuarios/registrar" >agregar</a>
+		</div>
 		<div class="table-responsive">
 		        <table class="table table-striped table-hover align-middle">
 		          <thead class="table-dark">
