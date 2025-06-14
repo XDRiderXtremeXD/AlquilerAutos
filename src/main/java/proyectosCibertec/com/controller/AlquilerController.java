@@ -18,7 +18,7 @@ public class AlquilerController {
 	@Autowired
 	private IAlquilerRepository alquilerRepository;
 
-	@GetMapping("/index")
+	@GetMapping("/listado")
 	public String alquilerVista(Model model, @RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "5") int size) {
 
@@ -27,6 +27,6 @@ public class AlquilerController {
 		model.addAttribute("paginaActual", page);
 		model.addAttribute("tamanio", size);
 
-		return "indexAlquiler";
+		return "alquiler";
 	}
 }
