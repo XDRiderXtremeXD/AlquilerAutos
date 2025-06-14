@@ -12,12 +12,12 @@ import proyectosCibertec.com.model.Documentos;
 import proyectosCibertec.com.repository.IDocumentosRepository;
 
 @Controller
-@RequestMapping("/alquiler")
+@RequestMapping("/documentos")
 public class DocumentoController {
 	@Autowired
 	private IDocumentosRepository repoDocumentos;
 	
-	@GetMapping("/documentos")
+	@GetMapping("/listado")
 	public String documentos_crud(Model model) {
 		List<Documentos> lista = repoDocumentos.findAll();
 		model.addAttribute("lstDocumentos", lista);
