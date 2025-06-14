@@ -31,7 +31,7 @@ public class UsuarioController {
 	
 	@PostMapping("/grabar")
 	public String registrarUsuario(@ModelAttribute Usuario usuario, Model model) {
-
+		
 		try {
 			repoUsu.save(usuario);
 			model.addAttribute("mensaje", "Usuario registrado exitosamente");
