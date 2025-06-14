@@ -36,7 +36,9 @@ public class UsuarioController {
 	}
 	
 	@PostMapping("/grabar")
-	public String grabar(@ModelAttribute Usuario usuario, Model model) {
+
+	public String registrarUsuario(@ModelAttribute Usuario usuario, Model model) {
+
 		
 		try {
 			repoUsu.save(usuario);
