@@ -29,15 +29,15 @@
 						  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
 						</div>
 				      <div class="modal-body">
-						<form class="row g-3">
+						<form class="row g-3" action="/documentos/registro" th:object="${documentos}" method="post">
 						  <div class="col-md-8">
 							<label class="form-label">Número de Documento</label>
-						    <input type="text" class="form-control" id="numdocumento" placeholder="Ingrese el Documento">
+						    <input type="text" th:field="*{documento}" class="form-control" id="numdocumento" placeholder="Ingrese el Documento">
 							<!-- Agregaré 8 DIGITOS APARECE IMAGEN DE DNI, 10 DIGITOS IMAGEN DE PASAPORTE Xd -->
 						  </div>
 						  <div class="col-md-4">						
 						  	<label class="form-label">Estado</label>
-						  	<select class="form-control" id="estado">
+						  	<select class="form-control" th:field="*{estado}" id="estado">
 						  	<option value="0">Seleccionar...</option>
 						  	<option value="1">ACTIVO</option>
 							<option value="2">INACTIVO</option>
@@ -57,12 +57,17 @@
 				
 				<br>
 		                
+				<div th:text="${mensaje}" th:class="${css_mensaje}" role="alert" style="margin-top: 15px;">
+					Mensaje alerta de registro
+				</div>
+				
 		        <!-- Tabla de datos de Documentos -->
 		        <div class="table-responsive">
 		        	<table class="table table-hover">
 		            	<thead class="table-light">
 		                	<tr>
 		                    	<th scope="col">ID</th>
+								<th scope="col">Referencia</th>
 		                        <th scope="col">Número de Documento</th>
 		                        <th scope="col">Estado</th>
 		                        <th scope="col">Acciones</th>
@@ -78,72 +83,40 @@
 							<!-- Listado de Documentos-->
 							<tr th:each="d : ${lstDocumentos}">
 								<td th:text="${d.id}"></td>
+								<td>
+									<img th:src="@{/img/documentos/}+${d.id}+@{.png}" style="height:30px; width: 50px;">
+								</td>
 								<td th:text="${d.documento}"></td>
 								<td>
 								  <span th:classappend="${d.estado == 1} ? 'badge bg-success' : 'badge bg-danger'"
 								        th:text="${d.estado == 1 ? 'ACTIVO' : 'INACTIVO'}">
 								  </span>
 								</td>
-								<td>
-								  <button class="btn btn-sm btn-primary me-1" title="Editar"
-								  		  data-bs-toggle="modal" data-bs-target="#modalEditarDocumento">
-								    <i class="bi bi-pencil-square"></i>
-								  </button>
-								  <button class="btn btn-sm btn-danger" title="Eliminar">
-								    <i class="bi bi-trash"></i>
-								  </button>
+								<td>	
+									<a th:href="@{/documentos/editar/}+${d.id}" class="btn btn-sm btn-primary" title="Editar">
+									   <i class="bi bi-pencil-square"></i>
+									</a>
+								  	<a th:href="@{/documentos/eliminar/}+${d.id}" class="btn btn-sm btn-danger" title="Eliminar"
+									   onclick="return confirm('¿Estás seguro de que deseas eliminar este documento?');">
+								    	<i class="bi bi-trash"></i>
+								  	</a>	
 								</td>
 							</tr>
 						</tbody>
 		           	</table>
-		        </div>		
-				
-				<!-- Ventana Editar Documento -->
-				<div class="modal fade" id="modalEditarDocumento" tabindex="-1" aria-labelledby="modalEditarDocLabel" aria-hidden="true" th:fragment="modalEditarDocumento">
-				  <div class="modal-dialog">
-				    <div class="modal-content">
-				      <form> <!-- Falta post y th:action -->
-				        <div class="modal-header bg-primary text-white">
-				          <h5 class="modal-title" id="modalEditarDocLabel">Editar Documento</h5>
-						  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-				        </div>
-
-				        <div class="modal-body">
-				          <input type="hidden" name="id" id="editarId" />
-
-				          <div class="mb-3">
-				            <label for="nombresito" class="form-label">Nombre del Documento</label>
-				            <input type="text" class="form-control" name="documento" id="nombresito" required />
-				          </div>
-
-				          <div class="mb-3">
-				            <label for="nombresito" class="form-label">Estado</label>
-				            <select class="form-select" name="estado" id="nombresito" required>
-				              <option value="1">ACTIVO</option>
-				              <option value="2">INACTIVO</option>
-				            </select>
-				          </div>
-				        </div>
-
-				        <div class="modal-footer">
-				          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-				          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-				        </div>
-				      </form>
-				    </div>
-				  </div>
-				</div>	
+		        </div>			
 			</div>
 		</div>
 		
 		<script>
-			const documento = document.getElementById('numdocumento');
+			const documento = document.getElementById('numdocumento');			
 			const btn = document.getElementById('btnregistrar');
 			const cbo = document.getElementById('estado');
 
+			// Función para habilitar o deshabilitar botones
 			function botonDisabled() {
 				if (documento.value.trim() !== '' && cbo.value !== '0') {
-					btn.removeAttribute('disabled');		
+					btn.removeAttribute('disabled');
 				} else {
 					btn.setAttribute('disabled', 'disabled');
 				}
@@ -151,7 +124,16 @@
 				
 			documento.addEventListener("input", botonDisabled);
 			cbo.addEventListener("change", botonDisabled);
+			
 			botonDisabled();
+			
+			// Limpiar formulario al cerrar Registrar
+			const modalRegistrar = document.getElementById('exampleModal');
+			modalRegistrar.addEventListener('hidden.bs.modal', function () {
+				documento.value = '';
+				cbo.value = '0';
+				botonDisabled();
+			});
 		</script>
 	</div>
 </body>
