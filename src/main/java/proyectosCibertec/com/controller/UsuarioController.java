@@ -25,12 +25,18 @@ public class UsuarioController {
 		
 		model.addAttribute("lstUsuarios", repoUsu.findAll());
 		model.addAttribute("usuario", new Usuario());
-		return "usuarios";
+		return "usuario/listadoUsuario";
 	}
 	
+	@GetMapping("/registrar")
+	public String mostrarRistrar(Model model) {
+		
+		model.addAttribute("usuario", new Usuario());
+		return "usuario/registroUsuario";
+	}
 	
 	@PostMapping("/grabar")
-	public String registrarUsuario(@ModelAttribute Usuario usuario, Model model) {
+	public String grabar(@ModelAttribute Usuario usuario, Model model) {
 		
 		try {
 			repoUsu.save(usuario);
@@ -46,18 +52,22 @@ public class UsuarioController {
 	}
 	
 	
-    @GetMapping("/editar/{id}")
-    public String mostrarFormularioEdicion(@PathVariable int id, Model model) {
-        Usuario usuario = repoUsu.findById(id).orElse(null);
-        if (usuario != null) {
-            model.addAttribute("usuario", usuario);
-        } else {
-            model.addAttribute("mensaje", "Usuario no encontrado");
-            model.addAttribute("cssmensaje", "alert alert-danger");
-        }
-        return "usuarios";
-    }
-    
+	@GetMapping("/editar/{id}")
+	public String mostrarEdicion(@PathVariable int id, Model model) {
+		
+		System.out.println("usuario --->  "+ id);
+		
+
+	    Usuario usuario = repoUsu.findById(id).orElse(null);
+		
+	    if (usuario != null) {
+	        model.addAttribute("usuario", usuario);
+	    } else {
+	        model.addAttribute("mensaje", "Usuario no encontrado");
+	        model.addAttribute("cssmensaje", "alert alert-danger");
+	    }
+	    return "usuario/editarUsuario";
+	}
 
     @PostMapping("/actualizar")
     public String actualizar(@ModelAttribute Usuario usuario, Model model) {

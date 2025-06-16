@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/main_layout.html}">
+
+<head>
+	<meta charset="utf-8">
+	<title>Gestión de Usuarios</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+	<div class="container mt-5" layout:fragment="content">
+		<div class="card shadow-sm">
+			<div class="card-body">
+				<h1 class="h4 card-title mb-4">Gestión de Usuarios</h1>
+
+				<div th:if="${mensaje}" th:class="${cssmensaje}" th:text="${mensaje}"></div>
+
+				<!-- Botón para Nuevo Usuario -->
+				<a th:href="@{/usuarios/registrar}" class="btn btn-primary mb-3" >
+					Registrar nuevo Usuario
+				</a>
+
+
+				<!-- Tabla de datos de Usuarios -->
+				<div class="table-responsive">
+					<table class="table table-hover">
+						<thead class="table-light">
+							<tr>
+								<th scope="col">ID</th>
+								<th scope="col">Usuario</th>
+								<th scope="col">Nombre Completo</th>
+								<th scope="col">Correo</th>
+								<th scope="col">Teléfono</th>
+								<th scope="col">Estado</th>
+								<th scope="col">Acciones</th>
+							</tr>
+						</thead>
+						<tbody id="usersTable">
+
+							<!-- En caso no hallan Usuarios registrados -->
+							<tr th:if="${#lists.isEmpty(lstUsuarios)}" class="text-center">
+								<td colspan="7" class="text-muted py-4">No hay usuarios registrados</td>
+							</tr>
+
+							<!-- Listado de Usuarios -->
+							<tr th:each="u : ${lstUsuarios}">
+								<td th:text="${u.id}"></td>
+								<td th:text="${u.nomUsuario}"></td>
+								<td th:text="${u.nombre + ' ' + u.apellido}"></td>
+								<td th:text="${u.correo}"></td>
+								<td th:text="${u.telefono}"></td>
+								<td>
+									<span th:classappend="${u.estado == 1} ? 'badge bg-success' : 'badge bg-danger'"
+										th:text="${u.estado == 1 ? 'ACTIVO' : 'INACTIVO'}">
+									</span>
+								</td>
+								<td>
+									<a class="btn btn-sm btn-primary me-1" title="Editar"
+										th:href="@{/usuarios/editar/} + ${u.id}" >
+										<i class="bi bi-pencil-square"></i>
+									</a>
+									<button class="btn btn-sm btn-danger" title="Eliminar">
+										<i class="bi bi-trash"></i>
+									</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+</html>
