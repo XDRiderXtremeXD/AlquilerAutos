@@ -20,7 +20,7 @@
 
 				<br>
 
-				<div th:if="${mensaje}" th:class="${cssmensaje}" th:text="${mensaje}"></div>
+				<div th:class="${cssmensaje}" th:text="${mensaje}"></div>
 
 				<!-- Ventana del Registro -->
 				<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
@@ -126,93 +126,24 @@
 								<td th:text="${u.nombre + ' ' + u.apellido}"></td>
 								<td th:text="${u.correo}"></td>
 								<td th:text="${u.telefono}"></td>
-								<td>
+								<td class="text-center">
 									<span th:classappend="${u.estado == 1} ? 'badge bg-success' : 'badge bg-danger'"
 										th:text="${u.estado == 1 ? 'ACTIVO' : 'INACTIVO'}">
 									</span>
 								</td>
 								<td>
-									<button class="btn btn-sm btn-primary me-1" title="Editar" data-bs-toggle="modal"
-										data-bs-target="#modalEditarUsuario"
-										th:data-id="${u.id}">
+									<a th:href="@{/usuarios/editar/{id}(id=${u.id})}" class="btn btn-sm btn-primary">
 										<i class="bi bi-pencil-square"></i>
-									</button>
-									<button class="btn btn-sm btn-danger" title="Eliminar">
+									</a>
+									<a th:href="@{/usuarios/eliminar/{id}(id=${u.id})}" class="btn btn-sm btn-danger"
+										title="Eliminar"
+										onclick="return confirm('¿Estás seguro de que deseas eliminar este Usuario?');">
 										<i class="bi bi-trash"></i>
-									</button>
+									</a>
 								</td>
 							</tr>
 						</tbody>
 					</table>
-				</div>
-
-				<!-- Ventana Editar Usuario -->
-				<div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-labelledby="modalEditarUserLabel"
-					aria-hidden="true" th:fragment="modalEditarUsuario">
-					<div class="modal-dialog">
-						<div class="modal-content">
-							<form th:action="@{/usuarios/actualizar}" method="post" th:object="${usuario}">
-								<div class="modal-header bg-primary text-white">
-									<h5 class="modal-title" id="modalEditarUserLabel">Editar Usuario</h5>
-									<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-										aria-label="Cerrar"></button>
-								</div>
-
-								<div class="modal-body">
-									<input type="hidden" th:field="*{id}" />
-									<div class="mb-3">
-										<label for="nombre" class="form-label">Nombre</label>
-										<input type="text" th:field="*{nombre}" class="form-control" required />
-									</div>
-
-									<div class="mb-3">
-										<label for="apellido" class="form-label">Apellido</label>
-										<input type="text" th:field="*{apellido}" class="form-control" />
-									</div>
-
-									<div class="mb-3">
-										<label for="correo" class="form-label">Correo Electrónico</label>
-										<input type="email" th:field="*{correo}" class="form-control" required />
-									</div>
-
-									<div class="mb-3">
-										<label for="telefono" class="form-label">Teléfono</label>
-										<input type="text" th:field="*{telefono}" class="form-control" />
-									</div>
-
-									<div class="mb-3">
-										<label for="direccion" class="form-label">Dirección</label>
-										<input type="text" th:field="*{direccion}" class="form-control" />
-									</div>
-
-									<div class="mb-3">
-										<label for="perfil" class="form-label">Perfil</label>
-										<input type="text" th:field="*{perfil}" class="form-control" />
-									</div>
-
-									<div class="mb-3">
-										<label for="clave" class="form-label">Contraseña</label>
-										<input type="password" th:field="*{clave}" class="form-control" required />
-									</div>
-
-									<div class="mb-3">
-										<label for="estado" class="form-label">Estado</label>
-										<select class="form-select" th:field="*{estado}" required>
-											<option value="1">ACTIVO</option>
-											<option value="2">INACTIVO</option>
-										</select>
-									</div>
-
-								</div>
-
-								<div class="modal-footer">
-									<button type="submit" class="btn btn-primary">Guardar Cambios</button>
-									<button type="button" class="btn btn-secondary"
-										data-bs-dismiss="modal">Cancelar</button>
-								</div>
-							</form>
-						</div>
-					</div>
 				</div>
 			</div>
 		</div>

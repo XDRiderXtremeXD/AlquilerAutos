@@ -12,15 +12,11 @@
 		
 		
 
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="modalEditarUserLabel">Editar Usuario</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                            aria-label="Cerrar"></button>
-                </div>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                    <h5 class="h4 card-title mb-4">Editar Usuario</h5>
                 <div class="modal-body">
-                    <form th:action="@{/usuarios/actualizar}" method="post" th:object="${usuario}">
+                    <form th:action="@{/usuarios/actualizar}" method="post" th:object="${usuario}" class="needs-validation" novalidate>
                         <input type="hidden" th:field="*{id}" />
                         <div class="row g-3">
                             <div class="col-md-6">
@@ -63,9 +59,9 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="modal-footer mt-3">
+                        <div class="mt-5">
                             <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <a th:href="@{/usuarios/listado}" class="btn btn-secondary ms-2">Cancelar</a>
                         </div>
                     </form>
                 </div>
