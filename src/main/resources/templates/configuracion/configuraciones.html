@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/main_layout.html}">
+
+<head>
+	<meta charset="utf-8">
+	<title>Modificar Confiruración</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+	<div class="container mt-5" layout:fragment="content">
+
+
+
+		<div class="card shadow-sm">
+			<div class="card-body">
+				<h5 class="h4 card-title mb-4">Modificar Confiruración</h5>
+				<div class="modal-body">
+					<div th:if="${mensaje}" th:text="${mensaje}" th:class="${cssmensaje}"></div>
+
+					<!-- Formulario -->
+					<form th:action="@{/configuracion/grabar}" method="post" th:object="${configuracion}"
+						class="needs-validation" novalidate>
+
+						<input type="hidden" th:field="*{id}" />
+
+						<div class="row g-3">
+							<div class="col-md-6">
+								<label class="form-label">RUC</label>
+								<input type="text" th:field="*{ruc}" class="form-control" required />
+								
+							</div>
+							<div class="col-md-6">
+								<label class="form-label">Nombre de Empresa</label>
+								<input type="text" th:field="*{nombre}" class="form-control" required />
+								
+							</div>
+							<div class="col-md-6">
+								<label class="form-label">Teléfono</label>
+								<input type="text" th:field="*{telefono}" class="form-control" />
+							</div>
+							<div class="col-md-6">
+								<label class="form-label">Correo Electrónico</label>
+								<input type="email" th:field="*{correo}" class="form-control" required />
+								
+							</div>
+							<div class="col-md-6">
+								<label class="form-label">Dirección</label>
+								<input type="text" th:field="*{direccion}" class="form-control" required />
+								
+							</div>
+							<div class="col-md-6">
+								<label class="form-label">Mensaje</label>
+								<input type="text" th:field="*{mensaje}" class="form-control" required />
+								
+							</div>
+							<div class="col-md-6">
+								<label class="form-label">Logo</label>
+								<input type="text" th:field="*{logo}" class="form-control" placeholder="Ej: logo.png" />
+							</div>
+							<div class="col-md-6">
+								<label class="form-label">Moneda</label>
+								<select class="form-select" th:field="*{idmoneda}" required>
+									<option value="-1" disabled selected>Selecciona una moneda</option>
+									<option th:each="m : ${lstMonedas}" th:value="${m.id}"
+										th:text="${m.nombre + ' (' + m.simbolo + ')'}"
+										th:selected="${m.id == configuracion.idmoneda}">
+									</option>
+								</select>
+							</div>
+							<div class="col-md-6">
+								<label class="form-label">Impuesto (%)</label>
+								<input type="number" step="any" th:field="*{impuesto}" class="form-control" required />
+								
+							</div>
+							<div class="col-md-6">
+								<label class="form-label">Cantidad Máxima de Facturas</label>
+								<input type="number" th:field="*{cantidadFactura}" class="form-control" required />
+								
+							</div>
+							<div class="col-md-6">
+								<label class="form-label">Penalidad por Día (S/.)</label>
+								<input type="number" step="any" th:field="*{penalidadPorDia}" class="form-control"
+									required />
+								
+							</div>
+						</div>
+
+						<div class="mt-4">
+							<button type="submit" class="btn btn-primary">Actualizar Configuración</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</body>
+
+</html>
