@@ -35,7 +35,7 @@
 				</div>
 
 				<!-- Filtro de tamaño -->
-				<form class="mb-3" method="get" th:action="@{/usuarios/listado}">
+				<form class="mb-3" method="get" th:action="@{/monedas/listado}">
 					<label class="form-label">Mostrar:
 						<select class="form-select d-inline w-auto" name="size" onchange="this.form.submit()">
 							<option th:value="5" th:selected="${tamanio == 5}">5</option>
@@ -52,52 +52,22 @@
 					<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
 						<div class="modal-content">
 							<div class="modal-header bg-primary text-white">
-								<h5 class="modal-title" id="exampleModalLabel">Registrar nuevo Usuario</h5>
+								<h5 class="modal-title" id="exampleModalLabel">Registrar nueva Moneda</h5>
 								<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
 									aria-label="Cerrar"></button>
 							</div>
 							<div class="modal-body">
-								<form th:action="@{/usuarios/grabar}" method="post" th:object="${usuario}"
+								<form th:action="@{/monedas/grabar}" method="post" th:object="${moneda}"
 									class="row g-3">
 									<div class="col-md-6">
-										<label class="form-label">Usuario</label>
-										<input type="text" th:field="*{nomUsuario}" class="form-control"
-											placeholder="Ingrese el nombre de usuario" required />
+										<label class="form-label">Simbolo</label>
+										<input type="text" th:field="*{simbolo}" class="form-control"
+											placeholder="Ingrese el simbolo de la moneda" required />
 									</div>
 									<div class="col-md-6">
 										<label class="form-label">Nombre</label>
 										<input type="text" th:field="*{nombre}" class="form-control"
 											placeholder="Ingrese el nombre" required />
-									</div>
-									<div class="col-md-6">
-										<label class="form-label">Apellido</label>
-										<input type="text" th:field="*{apellido}" class="form-control"
-											placeholder="Ingrese el apellido" />
-									</div>
-									<div class="col-md-6">
-										<label class="form-label">Correo Electrónico</label>
-										<input type="email" th:field="*{correo}" class="form-control"
-											placeholder="Ingrese el correo electrónico" required />
-									</div>
-									<div class="col-md-6">
-										<label class="form-label">Teléfono</label>
-										<input type="text" th:field="*{telefono}" class="form-control"
-											placeholder="Ingrese el teléfono" />
-									</div>
-									<div class="col-md-6">
-										<label class="form-label">Dirección</label>
-										<input type="text" th:field="*{direccion}" class="form-control"
-											placeholder="Ingrese la dirección" />
-									</div>
-									<div class="col-md-6">
-										<label class="form-label">Perfil</label>
-										<input type="text" th:field="*{perfil}" class="form-control"
-											placeholder="Ingrese el perfil (opcional)" />
-									</div>
-									<div class="col-md-6">
-										<label class="form-label">Contraseña</label>
-										<input type="password" th:field="*{clave}" class="form-control"
-											placeholder="Ingrese la contraseña" required />
 									</div>
 
 									<div class="col-md-6">
@@ -109,7 +79,7 @@
 									</div>
 
 									<div class="modal-footer">
-										<button type="submit" class="btn btn-primary">Registrar Usuario</button>
+										<button type="submit" class="btn btn-primary">Registrar Moneda</button>
 										<button type="button" class="btn btn-secondary"
 											data-bs-dismiss="modal">Cancelar</button>
 									</div>
@@ -128,40 +98,36 @@
 						<thead class="table-light">
 							<tr>
 								<th scope="col">ID</th>
-								<th scope="col">Usuario</th>
-								<th scope="col">Nombre Completo</th>
-								<th scope="col">Correo</th>
-								<th scope="col">Teléfono</th>
+								<th scope="col">Simbolo</th>
+								<th scope="col">Nombre</th>
 								<th scope="col">Estado</th>
 								<th scope="col">Acciones</th>
 							</tr>
 						</thead>
-						<tbody id="usersTable">
+						<tbody id="moneyTable">
 
 							<!-- En caso no hallan Usuarios registrados -->
-							<tr th:if="${#lists.isEmpty(lstUsuarios)}" class="text-center">
-								<td colspan="7" class="text-muted py-4">No hay usuarios registrados</td>
+							<tr th:if="${#lists.isEmpty(lstMonedas)}" class="text-center">
+								<td colspan="7" class="text-muted py-4">No hay Monedas registrados</td>
 							</tr>
 
 							<!-- Listado de Usuarios -->
-							<tr th:each="u : ${lstUsuarios}">
-								<td th:text="${u.id}"></td>
-								<td th:text="${u.nomUsuario}"></td>
-								<td th:text="${u.nombre + ' ' + u.apellido}"></td>
-								<td th:text="${u.correo}"></td>
-								<td th:text="${u.telefono}"></td>
+							<tr th:each="m : ${lstMonedas}">
+								<td th:text="${m.id}"></td>
+								<td th:text="${m.simbolo}"></td>
+								<td th:text="${m.nombre}"></td>
 								<td class="text-center">
-									<span th:classappend="${u.estado == 1} ? 'badge bg-success' : 'badge bg-danger'"
-										th:text="${u.estado == 1 ? 'ACTIVO' : 'INACTIVO'}">
+									<span th:classappend="${m.estado == 1} ? 'badge bg-success' : 'badge bg-danger'"
+										th:text="${m.estado == 1 ? 'ACTIVO' : 'INACTIVO'}">
 									</span>
 								</td>
 								<td>
-									<a th:href="@{/usuarios/editar/{id}(id=${u.id})}" class="btn btn-sm btn-primary">
+									<a th:href="@{/monedas/editar/{id}(id=${m.id})}" class="btn btn-sm btn-primary">
 										<i class="bi bi-pencil-square"></i>
 									</a>
-									<a th:href="@{/usuarios/eliminar/{id}(id=${u.id})}" class="btn btn-sm btn-danger"
+									<a th:href="@{/monedas/eliminar/{id}(id=${m.id})}" class="btn btn-sm btn-danger"
 										title="Eliminar"
-										onclick="return confirm('¿Estás seguro de que deseas eliminar este Usuario?');">
+										onclick="return confirm('¿Estás seguro de que deseas eliminar esta moneda?');">
 										<i class="bi bi-trash"></i>
 									</a>
 								</td>
@@ -173,19 +139,19 @@
 				<!-- Paginación -->
 				<nav>
 					<ul class="pagination justify-content-center">
-						<li class="page-item" th:classappend="${lstUsuarios.first}? 'disabled'">
+						<li class="page-item" th:classappend="${lstMonedas.first}? 'disabled'">
 							<a class="page-link"
-							   th:href="@{/usuarios/listado(page=${lstUsuarios.number - 1}, size=${tamanio})}">Anterior</a>
+							   th:href="@{/monedas/listado(page=${lstMonedas.number - 1}, size=${tamanio})}">Anterior</a>
 						</li>
-						<li class="page-item" th:each="i : ${#numbers.sequence(0, lstUsuarios.totalPages - 1)}"
-							th:classappend="${lstUsuarios.number == i}? 'active'">
+						<li class="page-item" th:each="i : ${#numbers.sequence(0, lstMonedas.totalPages - 1)}"
+							th:classappend="${lstMonedas.number == i}? 'active'">
 							<a class="page-link"
-							           th:href="@{/usuarios/listado(page=${i}, size=${tamanio})}"
+							           th:href="@{/monedas/listado(page=${i}, size=${tamanio})}"
 							           th:text="${i + 1}"></a>
 						</li>
-						<li class="page-item" th:classappend="${lstUsuarios.last}? 'disabled'">
+						<li class="page-item" th:classappend="${lstMonedas.last}? 'disabled'">
 							<a class="page-link"
-							   th:href="@{/usuarios/listado(page=${lstUsuarios.number + 1}, size=${tamanio})}">Siguiente</a>
+							   th:href="@{/monedas/listado(page=${lstMonedas.number + 1}, size=${tamanio})}">Siguiente</a>
 						</li>
 					</ul>
 				</nav>
@@ -196,7 +162,7 @@
 	<!-- Scripts Bootstrap y validación -->
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 		<script>
-
+		
 			// Funciones de exportación simuladas
 			function exportarPDF() {
 				alert("Exportando a PDF...");

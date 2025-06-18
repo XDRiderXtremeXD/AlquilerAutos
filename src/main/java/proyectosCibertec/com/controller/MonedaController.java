@@ -12,71 +12,72 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import proyectosCibertec.com.model.Usuario;
-import proyectosCibertec.com.repository.IUsuarioRepository;
+import proyectosCibertec.com.model.Moneda;
+import proyectosCibertec.com.repository.IMonedaRepository;
 
 @Controller
-@RequestMapping("/usuarios")
-public class UsuarioController {
-
+@RequestMapping("/monedas")
+public class MonedaController {
+	
 	@Autowired
-	private IUsuarioRepository repoUsu;
-
+	private IMonedaRepository repoMoneda;
+	
 	@GetMapping("/listado")
-	public String usuarioCrud(Model model,  @RequestParam(defaultValue = "0") int page,
+	public String monedaCrud(Model model,  @RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "5") int size) {
-
-		Page<Usuario> lstUsuarios = repoUsu.findAll(PageRequest.of(page, size));
-		model.addAttribute("lstUsuarios",lstUsuarios);
+		
+		Page<Moneda> lstMonedas = repoMoneda.findAll(PageRequest.of(page, size));
+		model.addAttribute("lstMonedas", lstMonedas);
 		model.addAttribute("paginaActual", page);
 		model.addAttribute("tamanio", size);
-		model.addAttribute("usuario", new Usuario());
-		return "usuario/usuarios";
+		model.addAttribute("moneda", new Moneda());
+		
+		return "moneda/monedas";
 	}
-
+	
+	
 	@PostMapping("/grabar")
-	public String registrarUsuario(@ModelAttribute Usuario usuario, Model model) {
+	public String registrarMoneda(@ModelAttribute Moneda moneda, Model model) {
 
 		try {
-			repoUsu.save(usuario);
-			model.addAttribute("mensaje", "Usuario registrado exitosamente");
+			repoMoneda.save(moneda);
+			model.addAttribute("mensaje", "Moneda registrado exitosamente");
 			model.addAttribute("cssmensaje", "alert alert-success");
 		} catch (Exception e) {
 			model.addAttribute("mensaje", "Error al registrar" + e.getMessage());
 			model.addAttribute("cssmensaje", "alert alert-danger");
 		}
-
-		return "redirect:/usuarios/listado";
+		return "redirect:/monedas/listado";
 
 	}
 
 	@GetMapping("/editar/{id}")
 	public String mostrarEdicion(@PathVariable int id, Model model) {
 
-		Usuario usuario = repoUsu.findById(id).get();
-		model.addAttribute("usuario", usuario);
+		Moneda moneda = repoMoneda.findById(id).get();
+		model.addAttribute("moneda", moneda);
 
-		return "usuario/editarUsuario";
+		return "moneda/editarMoneda";
 	}
-
+	
 	@PostMapping("/actualizar")
-	public String actualizar(@ModelAttribute Usuario usuario, Model model) {
+	public String actualizar(@ModelAttribute Moneda moneda, Model model) {
 		try {
-			repoUsu.save(usuario);
-			model.addAttribute("mensaje", "Usuario actualizado exitosamente");
+			repoMoneda.save(moneda);
+			model.addAttribute("mensaje", "Moneda actualizado exitosamente");
 			model.addAttribute("cssmensaje", "alert alert-success");
 		} catch (Exception e) {
 			model.addAttribute("mensaje", "Error al actualizar: ".concat(e.getMessage()));
 			model.addAttribute("cssmensaje", "alert alert-danger");
 		}
-		return "redirect:/usuarios/listado";
+		return "redirect:/monedas/listado";
 	}
-
+	
 	@GetMapping("/eliminar/{id}")
-	public String eliminarUsuario(@PathVariable Integer id) {
+	public String eliminarMonedas(@PathVariable Integer id) {
 
-		repoUsu.deleteById(id);
-		return "redirect:/usuarios/listado";
+		repoMoneda.deleteById(id);
+		return "redirect:/monedas/listado";
 	}
-
+	
 }
