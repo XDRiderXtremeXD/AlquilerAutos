@@ -9,12 +9,12 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "tipos")
-public class Tipos {
+@Table(name = "marcas")
+public class Marcas {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private String tipo;
+    private String marca;
     private int estado;
 }
