@@ -80,10 +80,28 @@
 										th:text="${a.estado == 1 ? 'Activo' : 'Inactivo'}">
 									</span>
 								</td>
-								<td>
-									<button class="btn btn-sm btn-primary me-1" title="Editar">
-										<i class="bi bi-pencil-square"></i>
-									</button>
+								<td>										
+									<button 
+									class="btn btn-sm btn-primary me-1" 
+									title="Editar" 
+									data-bs-toggle="modal" 
+									data-bs-target="#modalEditarAlquiler"
+									th:attr="
+											data-id=${a.id},
+											data-cliente=${a.idCliente},
+											data-vehiculo=${a.idVehiculo},
+											data-dias=${a.numDias},
+											data-precio=${a.precioDia},
+											data-abono=${a.abono},
+											data-fechaPrestamo=${a.fechaPrestamo},
+											data-hora=${a.hora},
+											data-fechaDevolucion=${a.fechaDevolucion},
+											data-observacion=${a.observacion},
+											data-estado=${a.estado}"
+										onclick="llenarModalEditar(this)"											>
+												<i class="bi bi-pencil-square"></i>
+											</button>
+									
 									<button class="btn btn-sm btn-danger" title="Eliminar"
 										onclick="confirmarEliminacion([[${a.id}]])">
 										<i class="bi bi-trash"></i>
@@ -220,16 +238,19 @@
 						<h5 class="modal-title" id="modalEditarAlquilerLabel">Editar Alquiler</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
 					</div>
-
+   
+					
+				
+					
 					<div class="modal-body">
 						<!-- Campo oculto para el ID -->
-						<input type="hidden" name="id" id="editarId">
+						<input type="hidden" name="id" id="editarId" value="0">
 
 						<div class="row">
 							<!-- Cliente -->
 							<div class="mb-3 col-md-6">
 								<label class="form-label">Cliente</label>
-								<select class="form-select" name="idCliente" id="editarIdCliente" required>
+								<select class="form-select" name="idCliente" id="editarCliente" required>
 									<option value="">Seleccione un cliente</option>
 									<option value="1">Juan Pérez</option>
 									<option value="2">María Gómez</option>
@@ -239,7 +260,7 @@
 							<!-- Vehículo -->
 							<div class="mb-3 col-md-6">
 								<label class="form-label">Vehículo</label>
-								<select class="form-select" name="idVehiculo" id="editarIdVehiculo" required>
+								<select class="form-select" name="idVehiculo" id="editarVehiculo" required>
 									<option value="">Seleccione un vehículo</option>
 									<option value="101">Toyota Corolla</option>
 									<option value="102">Hyundai Tucson</option>
@@ -249,13 +270,13 @@
 							<!-- Número de días -->
 							<div class="mb-3 col-md-6">
 								<label class="form-label">Número de Días</label>
-								<input type="number" class="form-control" name="numDias" id="editarNumDias" required min="1">
+								<input type="number" class="form-control" name="numDias" id="editarDias" required min="1">
 							</div>
 
 							<!-- Precio por día -->
 							<div class="mb-3 col-md-6">
 								<label class="form-label">Precio por Día (S/)</label>
-								<input type="number" class="form-control" name="precioDia" id="editarPrecioDia" required step="0.01" min="0">
+								<input type="number" class="form-control" name="precioDia" id="editarPrecio" required step="0.01" min="0">
 							</div>
 
 							<!-- Abono -->
@@ -316,6 +337,9 @@
    
 	<!-- Scripts Bootstrap y validación -->
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	
+
+	
 	<script>
 		// Validación del formulario
 		document.getElementById('formAlquiler').addEventListener('submit', function (event) {
