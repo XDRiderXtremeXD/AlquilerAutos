@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,12 +27,13 @@ public class Alquiler {
     private BigDecimal abono;
     private LocalDate fechaPrestamo;
     private LocalTime hora;
-    private LocalDate fechaDevolucion;
+    private LocalDate fechaEstimadaDevolucion;
+    private LocalDate fechaRealDevolucion;
     private Integer idDoc;
     private String observacion;
+    private Integer estado;
     private BigDecimal penalidad;
     private BigDecimal penalidad_por_dia;
-    private Integer estado;
 
     // Getters y setters
 }
