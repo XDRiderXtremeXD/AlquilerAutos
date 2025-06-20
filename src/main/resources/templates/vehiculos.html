@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/main_layout.html}">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Gestión de Vehículos</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body class="bg-light">
+	<div class="container mt-5" layout:fragment="content">
+		<div class="card shadow-sm">
+			<div class="card-body">
+				<h1 class="h4 card-title mb-4">Gestión de Vehículos</h1>
+
+				<!-- Botón para nuevo vehículo -->
+				<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRegistro">
+					Registrar nuevo Vehículo
+				</button>
+
+				<br><br>
+
+				<!-- Ventana del Registro -->
+				<div class="modal fade" id="modalRegistro" tabindex="-1" role="dialog"
+					aria-labelledby="modalVehiculoLabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header bg-primary text-white">
+								<h5 class="modal-title" id="modalVehiculoLabel">Registrar nuevo Vehículo</h5>
+								<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+									aria-label="Cerrar"></button>
+							</div>
+							<div class="modal-body">
+								<form class="row g-3" action="/vehiculos/registro" th:object="${vehiculos}"
+									method="post">
+									<div class="col-md-6">
+										<label class="form-label">Placa</label>
+										<input type="text" class="form-control" th:field="*{placa}" id="placa"
+											placeholder="ABC-123">
+									</div>
+									<div class="col-md-6">
+										<label class="form-label">Modelo</label>
+										<input type="text" class="form-control" th:field="*{modelo}" id="modelo"
+											placeholder="Modelo del vehículo">
+									</div>
+									<div class="col-md-6">
+										<label class="form-label">Marca</label>
+										<select class="form-control" th:field="*{id_marca}" id="marca">
+											<option value="0">Seleccionar...</option>
+											<option th:each="m : ${lstMarcas}" th:value="${m.id}" th:text="${m.marca}">
+											</option>
+										</select>
+									</div>
+									<div class="col-md-6">
+										<label class="form-label">Tipo</label>
+										<select class="form-control" th:field="*{id_tipo}" id="tipo">
+											<option value="0">Seleccionar...</option>
+											<option th:each="t : ${lstTipos}" th:value="${t.id}" th:text="${t.tipo}">
+											</option>
+										</select>
+									</div>
+									<div class="col-md-6">
+										<label class="form-label">Foto (nombre del archivo)</label>
+										<input type="text" class="form-control" th:field="*{foto}" id="foto"
+											placeholder="vehiculo1.jpg">
+									</div>
+									<div class="col-md-6">
+										<label class="form-label">Estado</label>
+										<select class="form-control" th:field="*{estado}" id="estado">
+											<option value="0">Seleccionar...</option>
+											<option value="1">ACTIVO</option>
+											<option value="2">INACTIVO</option>
+										</select>
+									</div>
+									<div class="modal-footer">
+										<button type="submit" class="btn btn-primary" id="btnRegistrar"
+											disabled>Registrar Vehículo</button>
+										<button type="button" class="btn btn-secondary"
+											data-bs-dismiss="modal">Cancelar</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Mensaje de Alerta de Registro -->
+				<div th:text="${mensaje}" th:class="${css_mensaje}" role="alert" style="margin-top: 15px;"></div>
+				
+				<!-- Tabla de datos de Vehículos -->
+				<div class="table-responsive mt-4">
+					<table class="table table-hover">
+						<thead class="table-light">
+							<tr>
+								<th>ID</th>
+								<th>Placa</th>
+								<th>Modelo</th>
+								<th>Marca</th>
+								<th>Tipo</th>
+								<th>Estado</th>
+								<th>Acciones</th>
+							</tr>
+						</thead>
+						<tbody>
+
+							<!-- En caso no hallan Vehiculos registrados -->
+							<tr th:if="${#lists.isEmpty(lstVehiculos)}">
+								<td colspan="7" class="text-center text-muted py-3">No hay vehículos registrados</td>
+							</tr>
+
+							<!-- Listado de Vehiculos-->
+							<tr th:each="v : ${lstVehiculos}">
+								<td th:text="${v.id}"></td>
+								<td th:text="${v.placa}"></td>
+								<td th:text="${v.modelo}"></td>
+								<td th:text="${v.objMarca.marca}"></td>
+								<td th:text="${v.objTipo.tipo}"></td>
+								<td>
+									<span th:classappend="${v.estado == 1} ? 'badge bg-success' : 'badge bg-danger'"
+										th:text="${v.estado == 1 ? 'ACTIVO' : 'INACTIVO'}"></span>
+								</td>
+								<td>
+									<a th:href="@{/vehiculos/editar/}+${v.id}" class="btn btn-sm btn-primary" title="Editar"><i
+											class="bi bi-pencil-square"></i></a>
+									<a th:href="@{/vehiculos/eliminar/}+${v.id}" class="btn btn-sm btn-danger" title="Eliminar"
+										onclick="return confirm('¿Estás seguro de eliminar este vehículo?')">
+										<i class="bi bi-trash"></i></a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			const placa = document.getElementById('placa');
+			const modelo = document.getElementById('modelo');
+			const id_marca = document.getElementById('marca');
+			const id_tipo = document.getElementById('tipo');
+			const foto = document.getElementById('foto');
+			const estado = document.getElementById('estado');
+			const btn = document.getElementById('btnRegistrar');
+
+			// Función para habilitar o deshabilitar botones
+			function validar() {
+				if (placa.value && modelo.value && foto.value &&
+					id_marca.value !== '0' && id_tipo.value !== '0' && estado.value !== '0') {
+					btn.removeAttribute('disabled');
+				} else {
+					btn.setAttribute('disabled', 'disabled');
+				}
+			}
+
+			placa.addEventListener('input', validar);
+			modelo.addEventListener('input', validar);
+			foto.addEventListener('input', validar);
+			id_marca.addEventListener('change', validar);
+			id_tipo.addEventListener('change', validar);
+			estado.addEventListener('change', validar);
+
+			validar();
+
+			// Limpiar formulario al cerrar Registrar
+			const modalRegistrar = document.getElementById('modalRegistro');
+			modalRegistrar.addEventListener('hidden.bs.modal', function () {
+				placa.value = '';
+				modelo.value = '';
+				foto.value = '';
+				estado.value = '0';
+				id_marca.value = '0';
+				id_tipo.value = '0';
+
+				validar();
+			});
+		</script>
+	</div>
+</body>
+
+</html>

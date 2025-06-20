@@ -1,85 +1,89 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-  layout:decorate="~{layouts/main_layout.html}">
+<html lang="es" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/main_layout.html}">
+
 <head>
-  <meta charset="utf-8">
-  <title>Gestión de Documentos</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="utf-8">
+	<title>Gestión de Documentos</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body class="bg-light">
 	<div class="container mt-5" layout:fragment="content">
 		<div class="card shadow-sm">
 			<div class="card-body">
-		    	<h1 class="h4 card-title mb-4">Gestión de Documentos</h1>
-		                
-		        <!-- Botón para Nuevo Documento -->
-				<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-				  Registrar nuevo Documento
+				<h1 class="h4 card-title mb-4">Gestión de Documentos</h1>
+
+				<!-- Botón para Nuevo Documento -->
+				<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRegistro">
+					Registrar nuevo Documento
 				</button>
-				
+
 				<br>
-				
+
 				<!-- Ventana del Registro-->
-				<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-				  <div class="modal-dialog" role="document">
-				    <div class="modal-content">
-						<div class="modal-header bg-primary text-white">
-						  <h5 class="modal-title" id="exampleModalLabel">Registrar nuevo Documento</h5>
-						  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+				<div class="modal fade" id="modalRegistro" tabindex="-1" role="dialog"
+					aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header bg-primary text-white">
+								<h5 class="modal-title" id="exampleModalLabel">Registrar nuevo Documento</h5>
+								<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+									aria-label="Cerrar"></button>
+							</div>
+							<div class="modal-body">
+								<form class="row g-3" action="/documentos/registro" th:object="${documentos}"
+									method="post">
+									<div class="col-md-8">
+										<label class="form-label">Número de Documento</label>
+										<input type="text" th:field="*{documento}" class="form-control"
+											id="numdocumento" placeholder="Ingrese el Documento">
+										<!-- Agregaré 8 DIGITOS APARECE IMAGEN DE DNI, 10 DIGITOS IMAGEN DE PASAPORTE Xd -->
+									</div>
+									<div class="col-md-4">
+										<label class="form-label">Estado</label>
+										<select class="form-control" th:field="*{estado}" id="estado">
+											<option value="0">Seleccionar...</option>
+											<option value="1">ACTIVO</option>
+											<option value="2">INACTIVO</option>
+										</select>
+									</div>
+									<div class="modal-footer">
+										<button type="submit" class="btn btn-primary" id="btnregistrar"
+											disabled>Registrar Documento</button>
+										<button type="button" class="btn btn-secondary"
+											data-bs-dismiss="modal">Cancelar</button>
+									</div>
+								</form>
+							</div>
+
 						</div>
-				      <div class="modal-body">
-						<form class="row g-3" action="/documentos/registro" th:object="${documentos}" method="post">
-						  <div class="col-md-8">
-							<label class="form-label">Número de Documento</label>
-						    <input type="text" th:field="*{documento}" class="form-control" id="numdocumento" placeholder="Ingrese el Documento">
-							<!-- Agregaré 8 DIGITOS APARECE IMAGEN DE DNI, 10 DIGITOS IMAGEN DE PASAPORTE Xd -->
-						  </div>
-						  <div class="col-md-4">						
-						  	<label class="form-label">Estado</label>
-						  	<select class="form-control" th:field="*{estado}" id="estado">
-						  	<option value="0">Seleccionar...</option>
-						  	<option value="1">ACTIVO</option>
-							<option value="2">INACTIVO</option>
-							<!-- Se tendría que crear una nueva tabla de Estado para usar el th:each, th:text y th:value -->	
-						  	</select>
-						  </div>
-						  <div class="modal-footer">
-							<button type="submit" class="btn btn-primary" id="btnregistrar" disabled>Registrar Documento</button>
-						  	<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-						  </div>
-						</form>
-				      </div>
-				      
-				    </div>
-				  </div>
+					</div>
 				</div>
-				
+
 				<br>
-		                
-				<div th:text="${mensaje}" th:class="${css_mensaje}" role="alert" style="margin-top: 15px;">
-					Mensaje alerta de registro
-				</div>
-				
-		        <!-- Tabla de datos de Documentos -->
-		        <div class="table-responsive">
-		        	<table class="table table-hover">
-		            	<thead class="table-light">
-		                	<tr>
-		                    	<th scope="col">ID</th>
+
+				<!-- Mensaje de Alerta de Registro -->
+				<div th:text="${mensaje}" th:class="${css_mensaje}" role="alert" style="margin-top: 15px;"></div>
+
+				<!-- Tabla de datos de Documentos -->
+				<div class="table-responsive">
+					<table class="table table-hover">
+						<thead class="table-light">
+							<tr>
+								<th scope="col">ID</th>
 								<th scope="col">Referencia</th>
-		                        <th scope="col">Número de Documento</th>
-		                        <th scope="col">Estado</th>
-		                        <th scope="col">Acciones</th>
-		                    </tr>
-		               	</thead>
+								<th scope="col">Número de Documento</th>
+								<th scope="col">Estado</th>
+								<th scope="col">Acciones</th>
+							</tr>
+						</thead>
 						<tbody id="documentsTable">
-							
+
 							<!-- En caso no hallan Documentos registrados -->
 							<tr th:if="${#lists.isEmpty(lstDocumentos)}" class="text-center">
-							    <td colspan="4" class="text-muted py-4">No hay documentos registrados</td>
+								<td colspan="4" class="text-muted py-4">No hay documentos registrados</td>
 							</tr>
-							
+
 							<!-- Listado de Documentos-->
 							<tr th:each="d : ${lstDocumentos}">
 								<td th:text="${d.id}"></td>
@@ -88,53 +92,57 @@
 								</td>
 								<td th:text="${d.documento}"></td>
 								<td>
-								  <span th:classappend="${d.estado == 1} ? 'badge bg-success' : 'badge bg-danger'"
-								        th:text="${d.estado == 1 ? 'ACTIVO' : 'INACTIVO'}">
-								  </span>
+									<span th:classappend="${d.estado == 1} ? 'badge bg-success' : 'badge bg-danger'"
+										th:text="${d.estado == 1 ? 'ACTIVO' : 'INACTIVO'}">
+									</span>
 								</td>
-								<td>	
-									<a th:href="@{/documentos/editar/}+${d.id}" class="btn btn-sm btn-primary" title="Editar">
-									   <i class="bi bi-pencil-square"></i>
+								<td>
+									<a th:href="@{/documentos/editar/}+${d.id}" class="btn btn-sm btn-primary"
+										title="Editar">
+										<i class="bi bi-pencil-square"></i>
 									</a>
-								  	<a th:href="@{/documentos/eliminar/}+${d.id}" class="btn btn-sm btn-danger" title="Eliminar"
-									   onclick="return confirm('¿Estás seguro de que deseas eliminar este documento?');">
-								    	<i class="bi bi-trash"></i>
-								  	</a>	
+									<a th:href="@{/documentos/eliminar/}+${d.id}" class="btn btn-sm btn-danger"
+										title="Eliminar"
+										onclick="return confirm('¿Estás seguro de que deseas eliminar este documento?');">
+										<i class="bi bi-trash"></i>
+									</a>
 								</td>
 							</tr>
 						</tbody>
-		           	</table>
-		        </div>			
+					</table>
+				</div>
 			</div>
 		</div>
 		
 		<script>
-			const documento = document.getElementById('numdocumento');			
+			const documento = document.getElementById('numdocumento');
 			const btn = document.getElementById('btnregistrar');
 			const cbo = document.getElementById('estado');
 
 			// Función para habilitar o deshabilitar botones
-			function botonDisabled() {
+			function validar() {
 				if (documento.value.trim() !== '' && cbo.value !== '0') {
 					btn.removeAttribute('disabled');
 				} else {
 					btn.setAttribute('disabled', 'disabled');
 				}
 			}
-				
-			documento.addEventListener("input", botonDisabled);
-			cbo.addEventListener("change", botonDisabled);
-			
-			botonDisabled();
-			
+
+			documento.addEventListener("input", validar);
+			cbo.addEventListener("change", validar);
+
+			validar();
+
 			// Limpiar formulario al cerrar Registrar
-			const modalRegistrar = document.getElementById('exampleModal');
+			const modalRegistrar = document.getElementById('modalRegistro');
 			modalRegistrar.addEventListener('hidden.bs.modal', function () {
 				documento.value = '';
 				cbo.value = '0';
-				botonDisabled();
+
+				validar();
 			});
 		</script>
 	</div>
 </body>
+
 </html>
