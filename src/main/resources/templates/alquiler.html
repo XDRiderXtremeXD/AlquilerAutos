@@ -58,6 +58,8 @@
 								<th>Devolución</th>
 								<th>Documento</th>
 								<th>Observación</th>
+								<th>Penalidad Impuesta</th>
+								<th>Penalidad por dia</th>
 								<th>Estado</th>
 								<th>Acciones</th>
 							</tr>
@@ -75,6 +77,8 @@
 								<td th:text="${a.fechaDevolucion}"></td>
 								<td th:text="${a.idDoc}"></td>
 								<td th:text="${a.observacion}"></td>
+								<td th:text="${a.penalidad}"></td>
+								<td th:text="${a.penalidad_por_dia}"></td>
 								<td>
 									<span th:classappend="${a.estado == 1} ? 'badge bg-success' : 'badge bg-danger'"
 										th:text="${a.estado == 1 ? 'Activo' : 'Inactivo'}">
@@ -93,12 +97,14 @@
 											data-dias=${a.numDias},
 											data-precio=${a.precioDia},
 											data-abono=${a.abono},
-											data-fechaPrestamo=${a.fechaPrestamo},
+											data-fechaprestamo=${a.fechaPrestamo},
 											data-hora=${a.hora},
-											data-fechaDevolucion=${a.fechaDevolucion},
+											data-fechadevolucion=${a.fechaDevolucion},
 											data-observacion=${a.observacion},
+											data-penalidad=${a.penalidad},
+											data-penalidadXdia=${a.penalidad_por_dia},
 											data-estado=${a.estado}"
-										onclick="llenarModalEditar(this)"											>
+											    onclick="llenarModalEditar(this)"											>
 												<i class="bi bi-pencil-square"></i>
 											</button>
 									
@@ -288,7 +294,7 @@
 							<!-- Fecha de préstamo -->
 							<div class="mb-3 col-md-6">
 								<label class="form-label">Fecha de Préstamo</label>
-								<input type="date" class="form-control" name="fechaPrestamo" id="editarFechaPrestamo" required>
+								<input type="date" class="form-control" name="fechaPrestamo" id="editarFechaprestamo" required>
 							</div>
 
 							<!-- Hora -->
@@ -300,7 +306,7 @@
 							<!-- Fecha de devolución -->
 							<div class="mb-3 col-md-6">
 								<label class="form-label">Fecha de Devolución</label>
-								<input type="date" class="form-control" name="fechaDevolucion" id="editarFechaDevolucion" required>
+								<input type="date" class="form-control" name="fechaDevolucion" id="editarFechadevolucion" required>
 							</div>
 
 							<!-- Observación -->

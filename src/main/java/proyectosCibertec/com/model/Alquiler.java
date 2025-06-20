@@ -29,6 +29,8 @@ public class Alquiler {
     private LocalDate fechaDevolucion;
     private Integer idDoc;
     private String observacion;
+    private BigDecimal penalidad;
+    private BigDecimal penalidad_por_dia;
     private Integer estado;
 
     // Getters y setters
