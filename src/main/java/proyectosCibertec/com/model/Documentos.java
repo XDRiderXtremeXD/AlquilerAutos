@@ -16,5 +16,6 @@ public class Documentos {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	private String documento;
+	private String foto;
 	private int estado; // ACTIVO - INACTIVO
 }
