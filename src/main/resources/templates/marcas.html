@@ -21,8 +21,8 @@
 				<br><br>
 
 				<!-- Ventana del Registro -->
-				<div class="modal fade" id="modalRegistro" tabindex="-1" role="dialog"
-					aria-labelledby="modalMarcaLabel" aria-hidden="true">
+				<div class="modal fade" id="modalRegistro" tabindex="-1" role="dialog" aria-labelledby="modalMarcaLabel"
+					aria-hidden="true">
 					<div class="modal-dialog" role="document">
 						<div class="modal-content">
 							<div class="modal-header bg-primary text-white">
@@ -31,15 +31,14 @@
 									aria-label="Cerrar"></button>
 							</div>
 							<div class="modal-body">
-								<form class="row g-3" action="/marcas/registro" th:object="${marcas}"
-									method="post">
-									
+								<form class="row g-3" action="/marcas/registro" th:object="${marcas}" method="post">
+
 									<div class="col-md-6">
 										<label class="form-label">Marca</label>
 										<input type="text" class="form-control" th:field="*{marca}" id="marca"
 											placeholder="Marca del Vehículo">
 									</div>
-									
+
 									<div class="col-md-6">
 										<label class="form-label">Estado</label>
 										<select class="form-control" th:field="*{estado}" id="estado">
@@ -62,7 +61,7 @@
 
 				<!-- Mensaje de Alerta de Registro -->
 				<div th:text="${mensaje}" th:class="${css_mensaje}" role="alert" style="margin-top: 15px;"></div>
-				
+
 				<!-- Tabla de datos de Marcas -->
 				<div class="table-responsive mt-4">
 					<table class="table table-hover">
@@ -90,10 +89,12 @@
 										th:text="${m.estado == 1 ? 'ACTIVO' : 'INACTIVO'}"></span>
 								</td>
 								<td>
-									<a th:href="@{/marcas/editar/}+${m.id}" class="btn btn-sm btn-primary" title="Editar">
+									<a th:href="@{/marcas/editar/}+${m.id}" class="btn btn-sm btn-primary"
+										title="Editar">
 										<i class="bi bi-pencil-square"></i>
 									</a>
-									<a th:href="@{/marcas/eliminar/}+${m.id}" class="btn btn-sm btn-danger" title="Eliminar"
+									<a th:href="@{/marcas/eliminar/}+${m.id}" class="btn btn-sm btn-danger"
+										title="Eliminar"
 										onclick="return confirm('¿Estás seguro de eliminar esta marca?')">
 										<i class="bi bi-trash"></i>
 									</a>

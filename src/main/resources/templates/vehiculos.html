@@ -31,8 +31,8 @@
 									aria-label="Cerrar"></button>
 							</div>
 							<div class="modal-body">
-								<form class="row g-3" action="/vehiculos/registro" th:object="${vehiculos}"
-									method="post">
+								<form class="row g-3" action="/vehiculos/registro" th:object="${vehiculos}" 
+									enctype="multipart/form-data" method="post">
 									<div class="col-md-6">
 										<label class="form-label">Placa</label>
 										<input type="text" class="form-control" th:field="*{placa}" id="placa"
@@ -60,9 +60,22 @@
 										</select>
 									</div>
 									<div class="col-md-6">
-										<label class="form-label">Foto (nombre del archivo)</label>
-										<input type="text" class="form-control" th:field="*{foto}" id="foto"
-											placeholder="vehiculo1.jpg">
+										<label class="form-label">Foto</label>
+										<input type="file" class="form-control" accept="image/*" name="fileFoto"
+											id="fileFoto" required>
+										<div id="alertaFoto" class="alert alert-warning mt-2 d-none" role="alert">
+											La imagen no puede superar 1MB
+										</div>
+										
+										<!-- Vista previa de imagen -->
+										<div id="contFoto" class="mt-2 position-relative"
+											style="display: none;">
+											
+											<!-- Botón para eliminar la imagen -->
+											<button type="button" class="btn-close position-absolute top-0 start-0 m-1 bg-light rounded-circle"
+													aria-label="Cerrar" onclick="borrarImagen()"></button>
+											<img id="minFoto" class="img-fluid border rounded" style="max-height: 200px;">
+										</div>
 									</div>
 									<div class="col-md-6">
 										<label class="form-label">Estado</label>
@@ -86,13 +99,14 @@
 
 				<!-- Mensaje de Alerta de Registro -->
 				<div th:text="${mensaje}" th:class="${css_mensaje}" role="alert" style="margin-top: 15px;"></div>
-				
+
 				<!-- Tabla de datos de Vehículos -->
 				<div class="table-responsive mt-4">
 					<table class="table table-hover">
 						<thead class="table-light">
 							<tr>
 								<th>ID</th>
+								<th>Referencia</th>
 								<th>Placa</th>
 								<th>Modelo</th>
 								<th>Marca</th>
@@ -111,6 +125,10 @@
 							<!-- Listado de Vehiculos-->
 							<tr th:each="v : ${lstVehiculos}">
 								<td th:text="${v.id}"></td>
+								<td>
+									<img th:src="@{/img/vehiculos/}+${v.id}+@{.jpg}" style="height:30px; width: 50px;">
+								</td>
+								</td>
 								<td th:text="${v.placa}"></td>
 								<td th:text="${v.modelo}"></td>
 								<td th:text="${v.objMarca.marca}"></td>
@@ -120,9 +138,10 @@
 										th:text="${v.estado == 1 ? 'ACTIVO' : 'INACTIVO'}"></span>
 								</td>
 								<td>
-									<a th:href="@{/vehiculos/editar/}+${v.id}" class="btn btn-sm btn-primary" title="Editar"><i
-											class="bi bi-pencil-square"></i></a>
-									<a th:href="@{/vehiculos/eliminar/}+${v.id}" class="btn btn-sm btn-danger" title="Eliminar"
+									<a th:href="@{/vehiculos/editar/}+${v.id}" class="btn btn-sm btn-primary"
+										title="Editar"><i class="bi bi-pencil-square"></i></a>
+									<a th:href="@{/vehiculos/eliminar/}+${v.id}" class="btn btn-sm btn-danger"
+										title="Eliminar"
 										onclick="return confirm('¿Estás seguro de eliminar este vehículo?')">
 										<i class="bi bi-trash"></i></a>
 								</td>
@@ -138,13 +157,13 @@
 			const modelo = document.getElementById('modelo');
 			const id_marca = document.getElementById('marca');
 			const id_tipo = document.getElementById('tipo');
-			const foto = document.getElementById('foto');
+			const foto = document.getElementById('fileFoto');
 			const estado = document.getElementById('estado');
 			const btn = document.getElementById('btnRegistrar');
 
 			// Función para habilitar o deshabilitar botones
 			function validar() {
-				if (placa.value && modelo.value && foto.value &&
+				if (placa.value && modelo.value && fileFoto.value &&
 					id_marca.value !== '0' && id_tipo.value !== '0' && estado.value !== '0') {
 					btn.removeAttribute('disabled');
 				} else {
@@ -154,7 +173,7 @@
 
 			placa.addEventListener('input', validar);
 			modelo.addEventListener('input', validar);
-			foto.addEventListener('input', validar);
+			fileFoto.addEventListener('input', validar);
 			id_marca.addEventListener('change', validar);
 			id_tipo.addEventListener('change', validar);
 			estado.addEventListener('change', validar);
@@ -173,6 +192,60 @@
 
 				validar();
 			});
+			
+			// Funcionalidad vista previa de imagen en registro
+			// Funcion borrarImagen
+			
+			const inputFoto = document.getElementById('fileFoto');
+			const contFoto = document.getElementById('contFoto');
+			const minFoto = document.getElementById('minFoto');
+
+			inputFoto.addEventListener('change', function () {
+				const file = this.files[0];
+				if (file) {
+
+					const alertaErrorFoto = document.getElementById('alertaFoto');
+					const extension = file.name.split('.').pop().toLowerCase();
+					const formatosPermitidos = ['jpg', 'jpeg'];
+
+					// Validar la extensión que sea ".JPG o .JPEG"
+					if (!formatosPermitidos.includes(extension)) {
+						alertaErrorFoto.textContent = 'Solo se permiten imágenes .jpg o .jpeg y/o menor a 1MB';
+						alertaErrorFoto.classList.remove('d-none');
+						this.value = '';
+						minFoto.src = '';
+						contFoto.style.display = 'none';
+						return;
+					}
+
+					// Validar tamaño máximo (1MB)
+					if (file.size > 1048576) {
+						alertaErrorFoto.textContent = 'La imagen no puede superar 1MB';
+						alertaErrorFoto.classList.remove('d-none');
+						this.value = '';
+						minFoto.src = '';
+						contFoto.style.display = 'none';
+						return;
+					}
+
+					// Ocultar alerta si todo está bien
+					alertaFoto.classList.add('d-none');
+
+					// Mostrar vista previa
+					const reader = new FileReader();
+					reader.onload = function (e) {
+						minFoto.src = e.target.result;
+						contFoto.style.display = 'block';
+					}
+					reader.readAsDataURL(file);
+				}
+			});
+
+			function borrarImagen() {
+				inputFoto.value = '';
+				minFoto.src = '';
+				contFoto.style.display = 'none';
+			}
 		</script>
 	</div>
 </body>
