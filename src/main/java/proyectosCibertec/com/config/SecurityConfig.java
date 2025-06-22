@@ -21,7 +21,7 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/usuarios/login")
                 .loginProcessingUrl("/usuarios/login")
-                .defaultSuccessUrl("/", true)
+                .defaultSuccessUrl("/alquiler/listado", true)
                 .permitAll()
             )
             .logout(logout -> logout
