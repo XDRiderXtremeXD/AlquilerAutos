@@ -3,6 +3,7 @@ package proyectosCibertec.com.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,9 +19,17 @@ import proyectosCibertec.com.repository.IUsuarioRepository;
 @Controller
 @RequestMapping("/usuarios")
 public class UsuarioController {
+	
+	//@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@Autowired
 	private IUsuarioRepository repoUsu;
+	
+	@GetMapping("/login")
+    public String loginPage() {
+        return "login";
+    }
 
 	@GetMapping("/listado")
 	public String usuarioCrud(Model model,  @RequestParam(defaultValue = "0") int page,
@@ -38,6 +47,7 @@ public class UsuarioController {
 	public String registrarUsuario(@ModelAttribute Usuario usuario, Model model) {
 
 		try {
+			usuario.setClave(passwordEncoder.encode(usuario.getClave()));
 			repoUsu.save(usuario);
 			model.addAttribute("mensaje", "Usuario registrado exitosamente");
 			model.addAttribute("cssmensaje", "alert alert-success");
@@ -52,7 +62,6 @@ public class UsuarioController {
 
 	@GetMapping("/editar/{id}")
 	public String mostrarEdicion(@PathVariable int id, Model model) {
-
 		Usuario usuario = repoUsu.findById(id).get();
 		model.addAttribute("usuario", usuario);
 
@@ -62,6 +71,7 @@ public class UsuarioController {
 	@PostMapping("/actualizar")
 	public String actualizar(@ModelAttribute Usuario usuario, Model model) {
 		try {
+			usuario.setClave(passwordEncoder.encode(usuario.getClave())); 
 			repoUsu.save(usuario);
 			model.addAttribute("mensaje", "Usuario actualizado exitosamente");
 			model.addAttribute("cssmensaje", "alert alert-success");
