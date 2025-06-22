@@ -25,6 +25,11 @@ public class UsuarioController {
 
 	@Autowired
 	private IUsuarioRepository repoUsu;
+	
+	@GetMapping("/login")
+    public String loginPage() {
+        return "login";
+    }
 
 	@GetMapping("/listado")
 	public String usuarioCrud(Model model,  @RequestParam(defaultValue = "0") int page,

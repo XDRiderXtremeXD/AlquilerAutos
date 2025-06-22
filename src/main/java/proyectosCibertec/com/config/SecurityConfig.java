@@ -15,17 +15,17 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, UsuarioDetailsServiceImpl userDetailsService) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/css/**").permitAll()
+                .requestMatchers("/usuarios/login", "/css/**").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
-                .loginPage("/login")
+                .loginPage("/usuarios/login")
+                .loginProcessingUrl("/usuarios/login")
                 .defaultSuccessUrl("/", true)
                 .permitAll()
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
             );
