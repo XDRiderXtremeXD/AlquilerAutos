@@ -40,7 +40,7 @@ public class UsuarioController {
 		model.addAttribute("paginaActual", page);
 		model.addAttribute("tamanio", size);
 		model.addAttribute("usuario", new Usuario());
-		return "usuario/usuarios";
+		return "usuarios";
 	}
 
 	@PostMapping("/grabar")
@@ -60,27 +60,6 @@ public class UsuarioController {
 
 	}
 
-	@GetMapping("/editar/{id}")
-	public String mostrarEdicion(@PathVariable int id, Model model) {
-		Usuario usuario = repoUsu.findById(id).get();
-		model.addAttribute("usuario", usuario);
-
-		return "usuario/editarUsuario";
-	}
-
-	@PostMapping("/actualizar")
-	public String actualizar(@ModelAttribute Usuario usuario, Model model) {
-		try {
-			usuario.setClave(passwordEncoder.encode(usuario.getClave())); 
-			repoUsu.save(usuario);
-			model.addAttribute("mensaje", "Usuario actualizado exitosamente");
-			model.addAttribute("cssmensaje", "alert alert-success");
-		} catch (Exception e) {
-			model.addAttribute("mensaje", "Error al actualizar: ".concat(e.getMessage()));
-			model.addAttribute("cssmensaje", "alert alert-danger");
-		}
-		return "redirect:/usuarios/listado";
-	}
 
 	@GetMapping("/eliminar/{id}")
 	public String eliminarUsuario(@PathVariable Integer id) {

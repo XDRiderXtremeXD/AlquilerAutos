@@ -32,7 +32,7 @@ public class MonedaController {
 		model.addAttribute("tamanio", size);
 		model.addAttribute("moneda", new Moneda());
 		
-		return "moneda/monedas";
+		return "monedas";
 	}
 	
 	
@@ -51,27 +51,6 @@ public class MonedaController {
 
 	}
 
-	@GetMapping("/editar/{id}")
-	public String mostrarEdicion(@PathVariable int id, Model model) {
-
-		Moneda moneda = repoMoneda.findById(id).get();
-		model.addAttribute("moneda", moneda);
-
-		return "moneda/editarMoneda";
-	}
-	
-	@PostMapping("/actualizar")
-	public String actualizar(@ModelAttribute Moneda moneda, Model model) {
-		try {
-			repoMoneda.save(moneda);
-			model.addAttribute("mensaje", "Moneda actualizado exitosamente");
-			model.addAttribute("cssmensaje", "alert alert-success");
-		} catch (Exception e) {
-			model.addAttribute("mensaje", "Error al actualizar: ".concat(e.getMessage()));
-			model.addAttribute("cssmensaje", "alert alert-danger");
-		}
-		return "redirect:/monedas/listado";
-	}
 	
 	@GetMapping("/eliminar/{id}")
 	public String eliminarMonedas(@PathVariable Integer id) {
