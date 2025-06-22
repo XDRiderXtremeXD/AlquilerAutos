@@ -31,7 +31,7 @@
 									aria-label="Cerrar"></button>
 							</div>
 							<div class="modal-body">
-								<form class="row g-3" action="/vehiculos/registro" th:object="${vehiculos}" 
+								<form class="row g-3" action="/vehiculos/registro" th:object="${vehiculos}"
 									enctype="multipart/form-data" method="post">
 									<div class="col-md-6">
 										<label class="form-label">Placa</label>
@@ -66,15 +66,16 @@
 										<div id="alertaFoto" class="alert alert-warning mt-2 d-none" role="alert">
 											La imagen no puede superar 1MB
 										</div>
-										
+
 										<!-- Vista previa de imagen -->
-										<div id="contFoto" class="mt-2 position-relative"
-											style="display: none;">
-											
+										<div id="contFoto" class="mt-2 position-relative" style="display: none;">
+
 											<!-- Botón para eliminar la imagen -->
-											<button type="button" class="btn-close position-absolute top-0 start-0 m-1 bg-light rounded-circle"
-													aria-label="Cerrar" onclick="borrarImagen()"></button>
-											<img id="minFoto" class="img-fluid border rounded" style="max-height: 200px;">
+											<button type="button"
+												class="btn-close position-absolute top-0 start-0 m-1 bg-light rounded-circle"
+												aria-label="Cerrar" onclick="borrarImagen()"></button>
+											<img id="minFoto" class="img-fluid border rounded"
+												style="max-height: 200px;">
 										</div>
 									</div>
 									<div class="col-md-6">
@@ -88,6 +89,85 @@
 									<div class="modal-footer">
 										<button type="submit" class="btn btn-primary" id="btnRegistrar"
 											disabled>Registrar Vehículo</button>
+										<button type="button" class="btn btn-secondary"
+											data-bs-dismiss="modal">Cancelar</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Ventana Editar Vehiculo -->
+				<div class="modal fade" id="modalEditar" tabindex="-1" role="dialog" aria-labelledby="modalEditarLabel"
+					aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header bg-warning text-dark">
+								<h5 class="modal-title" id="modalEditarLabel">Editar Vehículo</h5>
+								<button type="button" class="btn-close" data-bs-dismiss="modal"
+									aria-label="Cerrar"></button>
+							</div>
+							<div class="modal-body">
+								<form class="row g-3" action="/vehiculos/editar" method="post"
+									enctype="multipart/form-data">
+									<input type="hidden" name="id" id="editId">
+									<input type="hidden" name="fotoActual" id="editFotoActual">
+									<div class="col-md-6">
+										<label class="form-label">Placa</label>
+										<input type="text" class="form-control" name="placa" id="editPlaca">
+									</div>
+
+									<div class="col-md-6">
+										<label class="form-label">Modelo</label>
+										<input type="text" class="form-control" name="modelo" id="editModelo">
+									</div>
+
+									<div class="col-md-6">
+										<label class="form-label">Marca</label>
+										<select class="form-control" name="id_marca" id="editMarca">
+											<option value="0">Seleccionar...</option>
+											<option th:each="m : ${lstMarcas}" th:value="${m.id}" th:text="${m.marca}">
+											</option>
+										</select>
+									</div>
+
+									<div class="col-md-6">
+										<label class="form-label">Tipo</label>
+										<select class="form-control" name="id_tipo" id="editTipo">
+											<option value="0">Seleccionar...</option>
+											<option th:each="t : ${lstTipos}" th:value="${t.id}" th:text="${t.tipo}">
+											</option>
+										</select>
+									</div>
+
+									<div class="col-md-6">
+										<label class="form-label">Foto</label>
+										<input type="file" class="form-control" accept="image/*" name="fileFotoEdit"
+											id="fileFotoEdit">
+										<div id="alertaFotoEdit" class="alert alert-warning mt-2 d-none" role="alert">
+											La imagen no puede superar 1MB
+										</div>
+
+										<div id="contFotoEdit" class="mt-2 position-relative" style="display: none;">
+											<button type="button"
+												class="btn-close position-absolute top-0 start-0 m-1 bg-light rounded-circle"
+												aria-label="Cerrar" onclick="borrarImagenEdit()"></button>
+											<img id="minFotoEdit" class="img-fluid border rounded"
+												style="max-height: 200px;">
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<label class="form-label">Estado</label>
+										<select class="form-control" name="estado" id="editEstado">
+											<option value="1">ACTIVO</option>
+											<option value="2">INACTIVO</option>
+										</select>
+									</div>
+
+									<div class="modal-footer">
+										<button type="submit" class="btn btn-warning">Guardar Cambios</button>
 										<button type="button" class="btn btn-secondary"
 											data-bs-dismiss="modal">Cancelar</button>
 									</div>
@@ -126,8 +206,7 @@
 							<tr th:each="v : ${lstVehiculos}">
 								<td th:text="${v.id}"></td>
 								<td>
-									<img th:src="@{/img/vehiculos/}+${v.id}+@{.jpg}" style="height:30px; width: 50px;">
-								</td>
+									<img th:src="@{/img/vehiculos/}+${v.foto}" style="height:30px; width: 50px;">
 								</td>
 								<td th:text="${v.placa}"></td>
 								<td th:text="${v.modelo}"></td>
@@ -138,8 +217,17 @@
 										th:text="${v.estado == 1 ? 'ACTIVO' : 'INACTIVO'}"></span>
 								</td>
 								<td>
-									<a th:href="@{/vehiculos/editar/}+${v.id}" class="btn btn-sm btn-primary"
-										title="Editar"><i class="bi bi-pencil-square"></i></a>
+									<button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+										data-bs-target="#modalEditar" th:attr="
+									    data-id=${v.id},
+									    data-placa=${v.placa},
+									    data-modelo=${v.modelo},
+									    data-id_marca=${v.objMarca != null ? v.objMarca.id : 0},
+									    data-id_tipo=${v.objTipo != null ? v.objTipo.id : 0},     
+									    data-estado=${v.estado},
+									    data-foto=${v.foto != null ? v.foto : ''}">
+										<i class="bi bi-pencil-square"></i>
+									</button>
 									<a th:href="@{/vehiculos/eliminar/}+${v.id}" class="btn btn-sm btn-danger"
 										title="Eliminar"
 										onclick="return confirm('¿Estás seguro de eliminar este vehículo?')">
@@ -153,99 +241,238 @@
 		</div>
 
 		<script>
-			const placa = document.getElementById('placa');
-			const modelo = document.getElementById('modelo');
-			const id_marca = document.getElementById('marca');
-			const id_tipo = document.getElementById('tipo');
-			const foto = document.getElementById('fileFoto');
-			const estado = document.getElementById('estado');
-			const btn = document.getElementById('btnRegistrar');
+			document.addEventListener("DOMContentLoaded", function () {
+				document.querySelectorAll('button[data-bs-target="#modalEditar"]').forEach(btn => {
+					btn.addEventListener('click', function () {
+						const datos = this.dataset;
+						console.log("LLENANDO MODAL...");
+						console.log("Datos:", datos);
 
-			// Función para habilitar o deshabilitar botones
-			function validar() {
-				if (placa.value && modelo.value && fileFoto.value &&
-					id_marca.value !== '0' && id_tipo.value !== '0' && estado.value !== '0') {
-					btn.removeAttribute('disabled');
-				} else {
-					btn.setAttribute('disabled', 'disabled');
+						const campo = document.getElementById("editPlaca");
+						console.log("Campo editPlaca:", campo);
+
+						if (campo) {
+							campo.value = datos.placa;
+							document.getElementById("editId").value = datos.id;
+							document.getElementById("editModelo").value = datos.modelo;
+							document.getElementById("editMarca").value = datos.id_marca;
+							document.getElementById("editTipo").value = datos.id_tipo;
+							document.getElementById("editEstado").value = datos.estado;
+							document.getElementById("editFotoActual").value = datos.foto;
+
+							const minFoto = document.getElementById("minFotoEdit");
+							const contFoto = document.getElementById("contFotoEdit");
+
+							if (datos.foto && datos.foto !== 'null') {
+								minFoto.src = '/img/vehiculos/' + datos.foto;
+								contFoto.style.display = 'block';
+							} else {
+								minFoto.src = '';
+								contFoto.style.display = 'none';
+							}
+						} else {
+							console.warn("❌ El input editPlaca no se encontró");
+						}
+					});
+				});
+				
+				// Para el botón de Editar
+				function llenarModalEditar(btn) {
+					const datos = btn.dataset;
+					console.log("LLENANDO MODAL...");
+					console.log("Datos:", datos);
+
+					const campo = document.getElementById("editPlaca");
+					console.log("Campo editPlaca:", campo);
+
+					if (campo) {
+						campo.value = datos.placa;
+						document.getElementById("editId").value = datos.id;
+						document.getElementById("editModelo").value = datos.modelo;
+						document.getElementById("editMarca").value = datos.id_marca;
+						document.getElementById("editTipo").value = datos.id_tipo;
+						document.getElementById("editEstado").value = datos.estado;
+						document.getElementById("editFotoActual").value = datos.foto;
+
+						const minFoto = document.getElementById("minFotoEdit");
+						const contFoto = document.getElementById("contFotoEdit");
+
+						if (datos.foto && datos.foto !== 'null') {
+							minFoto.src = '/img/vehiculos/' + datos.foto;
+							contFoto.style.display = 'block';
+						} else {
+							minFoto.src = '';
+							contFoto.style.display = 'none';
+						}
+
+					} else {
+						console.warn("❌ El input editPlaca no se encontró");
+					}
 				}
-			}
 
-			placa.addEventListener('input', validar);
-			modelo.addEventListener('input', validar);
-			fileFoto.addEventListener('input', validar);
-			id_marca.addEventListener('change', validar);
-			id_tipo.addEventListener('change', validar);
-			estado.addEventListener('change', validar);
+				const placa = document.getElementById('placa');
+				const modelo = document.getElementById('modelo');
+				const id_marca = document.getElementById('marca');
+				const id_tipo = document.getElementById('tipo');
+				const foto = document.getElementById('fileFoto');
+				const estado = document.getElementById('estado');
+				const btn = document.getElementById('btnRegistrar');
 
-			validar();
+				// Función para habilitar o deshabilitar botones
+				function validar() {
+					if (placa.value && modelo.value && id_marca.value !== '0' && id_tipo.value !== '0' && estado.value !== '0' && fileFoto.value) {
+						btn.removeAttribute('disabled');
+					} else {
+						btn.setAttribute('disabled', 'disabled');
+					}
+				}
 
-			// Limpiar formulario al cerrar Registrar
-			const modalRegistrar = document.getElementById('modalRegistro');
-			modalRegistrar.addEventListener('hidden.bs.modal', function () {
-				placa.value = '';
-				modelo.value = '';
-				foto.value = '';
-				estado.value = '0';
-				id_marca.value = '0';
-				id_tipo.value = '0';
+				placa.addEventListener('input', validar);
+				modelo.addEventListener('input', validar);
+				fileFoto.addEventListener('input', validar);
+				id_marca.addEventListener('change', validar);
+				id_tipo.addEventListener('change', validar);
+				estado.addEventListener('change', validar);
 
 				validar();
-			});
-			
-			// Funcionalidad vista previa de imagen en registro
-			// Funcion borrarImagen
-			
-			const inputFoto = document.getElementById('fileFoto');
-			const contFoto = document.getElementById('contFoto');
-			const minFoto = document.getElementById('minFoto');
 
-			inputFoto.addEventListener('change', function () {
-				const file = this.files[0];
-				if (file) {
+				// Limpiar formulario al cerrar Registrar
+				const modalRegistrar = document.getElementById('modalRegistro');
+				modalRegistrar.addEventListener('hidden.bs.modal', function () {
+					placa.value = '';
+					modelo.value = '';
+					foto.value = '';
+					estado.value = '0';
+					id_marca.value = '0';
+					id_tipo.value = '0';
 
-					const alertaErrorFoto = document.getElementById('alertaFoto');
-					const extension = file.name.split('.').pop().toLowerCase();
-					const formatosPermitidos = ['jpg', 'jpeg'];
+					validar();
+				});
 
-					// Validar la extensión que sea ".JPG o .JPEG"
-					if (!formatosPermitidos.includes(extension)) {
-						alertaErrorFoto.textContent = 'Solo se permiten imágenes .jpg o .jpeg y/o menor a 1MB';
-						alertaErrorFoto.classList.remove('d-none');
-						this.value = '';
-						minFoto.src = '';
-						contFoto.style.display = 'none';
-						return;
+				// Funcionalidad vista previa de imagen en registro
+				// Funcion borrarImagen
+
+				const inputFoto = document.getElementById('fileFoto');
+				const contFoto = document.getElementById('contFoto');
+				const minFoto = document.getElementById('minFoto');
+
+				inputFoto.addEventListener('change', function () {
+					const file = this.files[0];
+					if (file) {
+
+						const alertaErrorFoto = document.getElementById('alertaFoto');
+						const extension = file.name.split('.').pop().toLowerCase();
+						const formatosPermitidos = ['jpg', 'jpeg'];
+
+						// Validar la extensión que sea ".JPG o .JPEG"
+						if (!formatosPermitidos.includes(extension)) {
+							alertaErrorFoto.textContent = 'Solo se permiten imágenes .jpg o .jpeg y/o menor a 1MB';
+							alertaErrorFoto.classList.remove('d-none');
+							this.value = '';
+							minFoto.src = '';
+							contFoto.style.display = 'none';
+							return;
+						}
+
+						// Validar tamaño máximo (1MB)
+						if (file.size > 1048576) {
+							alertaErrorFoto.textContent = 'La imagen no puede superar 1MB';
+							alertaErrorFoto.classList.remove('d-none');
+							this.value = '';
+							minFoto.src = '';
+							contFoto.style.display = 'none';
+							return;
+						}
+
+						// Ocultar alerta si todo está bien
+						alertaFoto.classList.add('d-none');
+
+						// Mostrar vista previa
+						const reader = new FileReader();
+						reader.onload = function (e) {
+							minFoto.src = e.target.result;
+							contFoto.style.display = 'block';
+						}
+						reader.readAsDataURL(file);
+					}
+				});
+
+				// Funcionalidad vista previa de imagen en Editar
+				// Funcion borrarImagenEdit
+				const inputFotoEdit = document.getElementById('fileFotoEdit');
+				const contFotoEdit = document.getElementById('contFotoEdit');
+				const minFotoEdit = document.getElementById('minFotoEdit');
+
+				inputFotoEdit.addEventListener('change', function () {
+					const file = this.files[0];
+					if (file) {
+
+						const alertaErrorFotoEdit = document.getElementById('alertaFotoEdit');
+						const extension = file.name.split('.').pop().toLowerCase();
+						const formatosPermitidos = ['jpg', 'jpeg'];
+
+						// Validar la extensión que sea ".JPG o .JPEG"
+						if (!formatosPermitidos.includes(extension)) {
+							alertaErrorFotoEdit.textContent = 'Solo se permiten imágenes .jpg o .jpeg y/o menor a 1MB';
+							alertaErrorFotoEdit.classList.remove('d-none');
+							this.value = '';
+							minFotoEdit.src = '';
+							contFotoEdit.style.display = 'none';
+							return;
+						}
+
+						// Validar tamaño máximo (1MB)
+						if (file.size > 1048576) {
+							alertaErrorFotoEdit.textContent = 'La imagen no puede superar 1MB';
+							alertaErrorFotoEdit.classList.remove('d-none');
+							this.value = '';
+							minFotoEdit.src = '';
+							contFotoEdit.style.display = 'none';
+							return;
+						}
+
+						// Ocultar alerta si todo está bien
+						alertaErrorFotoEdit.classList.add('d-none');
+
+						// Mostrar vista previa
+						const reader = new FileReader();
+						reader.onload = function (e) {
+							minFotoEdit.src = e.target.result;
+							contFotoEdit.style.display = 'block';
+						}
+						reader.readAsDataURL(file);
+					} else {
+						// Si se cancela la selección de archivo, restaurar foto actual
+						const fotoActual = document.getElementById("editFotoActual").value;
+						if (fotoActual && fotoActual !== 'null' && fotoActual !== '') {
+							minFotoEdit.src = '/img/vehiculos/' + fotoActual;
+							contFotoEdit.style.display = 'block';
+							alertaErrorFotoEdit.classList.add('d-none');
+						} else {
+							minFotoEdit.src = '';
+							contFotoEdit.style.display = 'none';
+						}
 					}
 
-					// Validar tamaño máximo (1MB)
-					if (file.size > 1048576) {
-						alertaErrorFoto.textContent = 'La imagen no puede superar 1MB';
-						alertaErrorFoto.classList.remove('d-none');
-						this.value = '';
-						minFoto.src = '';
-						contFoto.style.display = 'none';
-						return;
-					}
+				});
 
-					// Ocultar alerta si todo está bien
-					alertaFoto.classList.add('d-none');
-
-					// Mostrar vista previa
-					const reader = new FileReader();
-					reader.onload = function (e) {
-						minFoto.src = e.target.result;
-						contFoto.style.display = 'block';
-					}
-					reader.readAsDataURL(file);
+				function borrarImagenEdit() {
+					inputFotoEdit.value = '';
+					minFotoEdit.src = '';
+					contFotoEdit.style.display = 'none';
+					document.getElementById('alertaFotoEdit').classList.add('d-none');
 				}
-			});
 
-			function borrarImagen() {
-				inputFoto.value = '';
-				minFoto.src = '';
-				contFoto.style.display = 'none';
-			}
+				// Limpiar formulario al cerrar Editar
+				const modalEditar = document.getElementById('modalEditar');
+				modalEditar.addEventListener('hidden.bs.modal', function () {
+					document.getElementById('fileFotoEdit').value = '';
+					document.getElementById('minFotoEdit').src = '';
+					document.getElementById('contFotoEdit').style.display = 'none';
+					document.getElementById('alertaFotoEdit').classList.add('d-none');
+					document.getElementById('editFotoActual').value = '';
+				});
+			});
 		</script>
 	</div>
 </body>
