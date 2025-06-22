@@ -20,7 +20,7 @@ import proyectosCibertec.com.repository.IUsuarioRepository;
 @RequestMapping("/usuarios")
 public class UsuarioController {
 	
-	//@Autowired
+	@Autowired
 	private PasswordEncoder passwordEncoder;
 
 	@Autowired
