@@ -35,4 +35,5 @@ public class Usuario {
 	@Column(nullable = false)
 	private LocalDateTime fecha = LocalDateTime.now();
 	private Integer estado = 1;
+	private String rol = "WORKER";
 }
