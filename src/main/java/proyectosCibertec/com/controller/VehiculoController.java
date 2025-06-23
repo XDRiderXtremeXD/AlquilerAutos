@@ -1,8 +1,5 @@
 package proyectosCibertec.com.controller;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +20,7 @@ import proyectosCibertec.com.model.Vehiculos;
 import proyectosCibertec.com.repository.IMarcasRepository;
 import proyectosCibertec.com.repository.ITiposRepository;
 import proyectosCibertec.com.repository.IVehiculosRepository;
+import proyectosCibertec.com.service.CloudinaryService;
 
 @Controller
 @RequestMapping("/vehiculos")
@@ -35,6 +33,10 @@ public class VehiculoController {
 
 	@Autowired
 	private ITiposRepository repoTipo;
+
+	// Cloudinary
+	@Autowired
+	private CloudinaryService cloudinaryService;
 
 	@GetMapping("/listado")
 	public String vehiculos_crud(Model model) {
@@ -49,6 +51,36 @@ public class VehiculoController {
 		model.addAttribute("vehiculos", new Vehiculos());
 
 		return "vehiculos";
+	}
+
+	// Extraer el public ID de la URL de Cloudinary
+	private String extractPublicId(String url) {
+		if (url == null || url.isEmpty()) {
+			return null;
+		}
+		try {
+			int uploadIndex = url.indexOf("/upload/");
+			if (uploadIndex == -1) {
+				return null; // No es una URL de Cloudinary o no tiene el formato esperado
+			}
+
+			String pathAfterUpload = url.substring(uploadIndex + "/upload/".length());
+
+			if (pathAfterUpload.matches("^v\\d+/.*")) {
+				pathAfterUpload = pathAfterUpload.substring(pathAfterUpload.indexOf("/") + 1);
+			}
+
+			// Elimina la extensión del archivo.
+			int lastDotIndex = pathAfterUpload.lastIndexOf(".");
+			if (lastDotIndex != -1) {
+				return pathAfterUpload.substring(0, lastDotIndex);
+			} else {
+				return pathAfterUpload;
+			}
+		} catch (Exception e) {
+			System.err.println("Error al extraer public ID de la URL: " + url + " - " + e.getMessage());
+			return null;
+		}
 	}
 
 	@PostMapping("/editar")
@@ -69,9 +101,9 @@ public class VehiculoController {
 					extension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
 				}
 
-				// Validar que sea JPG o JPEG
-				if (!extension.equals("jpg") && !extension.equals("jpeg")) {
-					redirAtributos.addFlashAttribute("mensaje", "La imagen debe estar en formato JPG o JPEG");
+				// Validar que sea JPG, JPEG o PNG
+				if (!extension.equals("jpg") && !extension.equals("jpeg") && !extension.equals("png")) {
+					redirAtributos.addFlashAttribute("mensaje", "La imagen debe estar en formato JPG, JPEG o PNG");
 					redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
 					return "redirect:/vehiculos/listado";
 				}
@@ -85,19 +117,15 @@ public class VehiculoController {
 
 				// Eliminar la foto anterior si se va a reemplazar
 				if (fotoActual != null && !fotoActual.isBlank()) {
-					Path rutaFotoAnterior = Paths.get("uploads/img/vehiculos/", vehiculo.getId() + ".jpg");
-					Files.deleteIfExists(rutaFotoAnterior);
+					String publicIdToDelete = extractPublicId(fotoActual); // Extrae el public ID de la URL actual
+					if (publicIdToDelete != null) {
+						cloudinaryService.eliminarImagen(publicIdToDelete);
+					}
 				}
 
-				// Guardar la nueva imagen
-				String rutaCarpeta = "uploads/img/vehiculos/";
-				Files.createDirectories(Paths.get(rutaCarpeta)); // En caso no exista
+				String secureUrl = cloudinaryService.subirImagen(file, "vehiculos");
+				vehiculo.setFoto(secureUrl); // Guardar URL de Cloudinary
 
-				String nombreArchivoNuevo = vehiculo.getId() + ".jpg";
-				Path rutaCompletaNueva = Paths.get(rutaCarpeta + nombreArchivoNuevo);
-				Files.write(rutaCompletaNueva, file.getBytes());
-
-				vehiculo.setFoto(nombreArchivoNuevo);
 			} else {
 				// Si no se sube una nueva foto, mantener foto existente
 				vehiculo.setFoto(fotoActual);
@@ -121,13 +149,14 @@ public class VehiculoController {
 		try {
 			Vehiculos vehiculo = repoVehiculo.findById(id).orElse(null);
 
-			// Borrar imagen de la carpeta
+			// Borrar imagen de Cloudinary
 			if (vehiculo != null) {
-				String nombreFoto = vehiculo.getFoto();
-
-				if (nombreFoto != null && !nombreFoto.isBlank()) {
-					Path rutaFoto = Paths.get("uploads/img/vehiculos/", nombreFoto);
-					Files.deleteIfExists(rutaFoto);
+				String urlFoto = vehiculo.getFoto();
+				if (urlFoto != null && !urlFoto.isBlank()) {
+					String publicId = extractPublicId(urlFoto);
+					if (publicId != null) {
+						cloudinaryService.eliminarImagen(publicId);
+					}
 				}
 			}
 
@@ -147,42 +176,38 @@ public class VehiculoController {
 			RedirectAttributes redirAtributos) {
 		try {
 			// Validación de archivo vacío
-			if (!file.isEmpty()) {
-
-				// Validar que sea JPG o JPEG
-				String extension = file.getOriginalFilename().toLowerCase();
-				if (!extension.endsWith(".jpg") && !extension.endsWith(".jpeg")) {
-					redirAtributos.addFlashAttribute("mensaje", "La imagen debe estar en formato JPG o JPEG");
-					redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
-					return "redirect:/vehiculos/listado";
-				}
-
-				// Validación de tamaño máximo 1MB
-				if (file.getSize() > 1048576) {
-					redirAtributos.addFlashAttribute("mensaje", "La imagen no puede superar 1MB");
-					redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
-					return "redirect:/vehiculos/listado";
-				}
+			if (file.isEmpty()) {
+				redirAtributos.addFlashAttribute("mensaje", "Debe seleccionar una imagen para el vehículo.");
+				redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+				return "redirect:/vehiculos/listado";
 			}
 
-			// Guardar Vehiculo para obtener el ID
-			Vehiculos vehiculoGuardado = repoVehiculo.save(vehiculos);
-			int idGenerado = vehiculoGuardado.getId();
+			// Validar que sea JPG o JPEG
+			String originalFilename = file.getOriginalFilename();
+			String extension = "";
+			if (originalFilename != null && originalFilename.lastIndexOf(".") != -1) {
+				extension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
+			}
+			if (!extension.equals("jpg") && !extension.equals("jpeg") && !extension.equals("png")) {
+				redirAtributos.addFlashAttribute("mensaje", "La imagen debe estar en formato JPG, JPEG o PNG");
+				redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
 
-			// Carpeta de imágenes
-			String rutaCarpeta = "uploads/img/vehiculos/";
-			Files.createDirectories(Paths.get(rutaCarpeta)); // Se crea en caso no exista
+				return "redirect:/vehiculos/listado";
+			}
 
-			// Guardar imagen con nombre ID.jpg
-			String nombreArchivo = idGenerado + ".jpg";
-			Path rutaCompleta = Paths.get(rutaCarpeta + nombreArchivo);
-			Files.createDirectories(rutaCompleta.getParent()); // Crear carpeta si no existe
-			Files.write(rutaCompleta, file.getBytes());
+			// Validación de tamaño máximo 1MB
+			if (file.getSize() > 1048576) {
+				redirAtributos.addFlashAttribute("mensaje", "La imagen no puede superar 1MB");
+				redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+				return "redirect:/vehiculos/listado";
+			}
+
+			// Subir la imagen a Cloudinary
+			String secureUrl = cloudinaryService.subirImagen(file, "vehiculos");
+			vehiculos.setFoto(secureUrl);
 
 			// Guardar en la BD
-			vehiculoGuardado.setFoto(nombreArchivo);
-			repoVehiculo.save(vehiculoGuardado);
-
+			repoVehiculo.save(vehiculos);
 			redirAtributos.addFlashAttribute("mensaje", "Vehículo registrado correctamente");
 			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
 		} catch (Exception e) {
