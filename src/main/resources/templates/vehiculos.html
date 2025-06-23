@@ -46,7 +46,7 @@
 									</div>
 									<div class="col-md-6">
 										<label class="form-label">Marca</label>
-										<select class="form-control" th:field="*{id_marca}" id="marca">
+										<select class="form-control" th:field="*{idMarca}" id="marca">
 											<option value="0">Seleccionar...</option>
 											<option th:each="m : ${lstMarcas}" th:value="${m.id}" th:text="${m.marca}">
 											</option>
@@ -54,7 +54,7 @@
 									</div>
 									<div class="col-md-6">
 										<label class="form-label">Tipo</label>
-										<select class="form-control" th:field="*{id_tipo}" id="tipo">
+										<select class="form-control" th:field="*{idTipo}" id="tipo">
 											<option value="0">Seleccionar...</option>
 											<option th:each="t : ${lstTipos}" th:value="${t.id}" th:text="${t.tipo}">
 											</option>
@@ -122,7 +122,7 @@
 
 									<div class="col-md-6">
 										<label class="form-label">Marca</label>
-										<select class="form-control" name="id_marca" id="editMarca">
+										<select class="form-control" name="idMarca" id="editMarca">
 											<option value="0">Seleccionar...</option>
 											<option th:each="m : ${lstMarcas}" th:value="${m.id}" th:text="${m.marca}">
 											</option>
@@ -131,7 +131,7 @@
 
 									<div class="col-md-6">
 										<label class="form-label">Tipo</label>
-										<select class="form-control" name="id_tipo" id="editTipo">
+										<select class="form-control" name="idTipo" id="editTipo">
 											<option value="0">Seleccionar...</option>
 											<option th:each="t : ${lstTipos}" th:value="${t.id}" th:text="${t.tipo}">
 											</option>
