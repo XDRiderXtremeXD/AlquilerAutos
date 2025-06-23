@@ -33,6 +33,7 @@
 							<div class="modal-body">
 								<form class="row g-3" action="/vehiculos/registro" th:object="${vehiculos}"
 									enctype="multipart/form-data" method="post">
+									<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 									<div class="col-md-6">
 										<label class="form-label">Placa</label>
 										<input type="text" class="form-control" th:field="*{placa}" id="placa"
@@ -69,11 +70,6 @@
 
 										<!-- Vista previa de imagen -->
 										<div id="contFoto" class="mt-2 position-relative" style="display: none;">
-
-											<!-- Botón para eliminar la imagen -->
-											<button type="button"
-												class="btn-close position-absolute top-0 start-0 m-1 bg-light rounded-circle"
-												aria-label="Cerrar" onclick="borrarImagen()"></button>
 											<img id="minFoto" class="img-fluid border rounded"
 												style="max-height: 200px;">
 										</div>
@@ -111,6 +107,7 @@
 							<div class="modal-body">
 								<form class="row g-3" action="/vehiculos/editar" method="post"
 									enctype="multipart/form-data">
+									<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 									<input type="hidden" name="id" id="editId">
 									<input type="hidden" name="fotoActual" id="editFotoActual">
 									<div class="col-md-6">
@@ -150,9 +147,6 @@
 										</div>
 
 										<div id="contFotoEdit" class="mt-2 position-relative" style="display: none;">
-											<button type="button"
-												class="btn-close position-absolute top-0 start-0 m-1 bg-light rounded-circle"
-												aria-label="Cerrar" onclick="borrarImagenEdit()"></button>
 											<img id="minFotoEdit" class="img-fluid border rounded"
 												style="max-height: 200px;">
 										</div>
@@ -206,7 +200,7 @@
 							<tr th:each="v : ${lstVehiculos}">
 								<td th:text="${v.id}"></td>
 								<td>
-									<img th:src="@{/img/vehiculos/}+${v.foto}" style="height:30px; width: 50px;">
+									<img th:src="${v.foto}" style="height:30px; width: 50px;">
 								</td>
 								<td th:text="${v.placa}"></td>
 								<td th:text="${v.modelo}"></td>
@@ -264,7 +258,7 @@
 							const contFoto = document.getElementById("contFotoEdit");
 
 							if (datos.foto && datos.foto !== 'null') {
-								minFoto.src = '/img/vehiculos/' + datos.foto;
+								minFoto.src = datos.foto;
 								contFoto.style.display = 'block';
 							} else {
 								minFoto.src = '';
@@ -275,7 +269,7 @@
 						}
 					});
 				});
-				
+
 				// Para el botón de Editar
 				function llenarModalEditar(btn) {
 					const datos = btn.dataset;
@@ -298,7 +292,7 @@
 						const contFoto = document.getElementById("contFotoEdit");
 
 						if (datos.foto && datos.foto !== 'null') {
-							minFoto.src = '/img/vehiculos/' + datos.foto;
+							minFoto.src = datos.foto;
 							contFoto.style.display = 'block';
 						} else {
 							minFoto.src = '';
@@ -350,8 +344,6 @@
 				});
 
 				// Funcionalidad vista previa de imagen en registro
-				// Funcion borrarImagen
-
 				const inputFoto = document.getElementById('fileFoto');
 				const contFoto = document.getElementById('contFoto');
 				const minFoto = document.getElementById('minFoto');
@@ -398,7 +390,6 @@
 				});
 
 				// Funcionalidad vista previa de imagen en Editar
-				// Funcion borrarImagenEdit
 				const inputFotoEdit = document.getElementById('fileFotoEdit');
 				const contFotoEdit = document.getElementById('contFotoEdit');
 				const minFotoEdit = document.getElementById('minFotoEdit');
@@ -445,7 +436,7 @@
 						// Si se cancela la selección de archivo, restaurar foto actual
 						const fotoActual = document.getElementById("editFotoActual").value;
 						if (fotoActual && fotoActual !== 'null' && fotoActual !== '') {
-							minFotoEdit.src = '/img/vehiculos/' + fotoActual;
+							minFotoEdit.src = fotoActual;
 							contFotoEdit.style.display = 'block';
 							alertaErrorFotoEdit.classList.add('d-none');
 						} else {
@@ -455,13 +446,6 @@
 					}
 
 				});
-
-				function borrarImagenEdit() {
-					inputFotoEdit.value = '';
-					minFotoEdit.src = '';
-					contFotoEdit.style.display = 'none';
-					document.getElementById('alertaFotoEdit').classList.add('d-none');
-				}
 
 				// Limpiar formulario al cerrar Editar
 				const modalEditar = document.getElementById('modalEditar');
