@@ -1,3 +1,27 @@
+# 🚗 Alquiler de Vehículos
+
+##📘 Descripción del Proyecto
+
+Este proyecto consiste en un sistema de alquiler de autos desarrollado con Spring Boot. Su objetivo principal es permitir a trabajadores y administradores gestionar de manera eficiente:
+
+El registro de clientes.
+
+El registro y administración de vehículos disponibles para alquilar.
+
+La creación y seguimiento de alquileres, incluyendo fechas, pagos, penalidades y observaciones.
+
+El sistema utiliza:
+
+Spring Boot con Spring Security, JPA, y Lombok.
+
+Cloudinary para el almacenamiento de imágenes de los vehículos.
+
+Bootstrap para el diseño visual.
+
+MySQL como base de datos relacional.
+
+Cada vez que un cliente acude a la tienda, los trabajadores registran la operación de alquiler con todos los detalles requeridos (fechas, duración, documento, abono, penalidad si corresponde, etc.). Solo los usuarios con rol ADMIN o WORKER pueden acceder al sistema.
+
 # ⚙️ Archivo: application-dev.properties
 
 Este archivo contiene la configuración del entorno de desarrollo para una aplicación Spring Boot. Debe ubicarse en el directorio `src/main/resources/` dentro del proyecto.
