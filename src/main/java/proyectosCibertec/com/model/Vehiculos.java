@@ -1,5 +1,6 @@
 package proyectosCibertec.com.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,12 +17,16 @@ public class Vehiculos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private int id_marca;
-    private int id_tipo;
+    @Column(name = "id_marca")
+    private int idMarca;
+    @Column(name = "id_tipo")
+    private int idTipo;
     private String placa;
     private String modelo;
     private String foto;
     private int estado;
+    @Column(name = "precio_por_dia")
+    private double precioXDia;
 
     @ManyToOne
     @JoinColumn(name = "id_marca", insertable = false, updatable = false)

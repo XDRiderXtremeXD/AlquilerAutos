@@ -58,8 +58,8 @@ public class VehiculoController {
 
 		try {
 
-			vehiculo.setObjMarca(repoMarca.findById(vehiculo.getId_marca()).orElse(null));
-			vehiculo.setObjTipo(repoTipo.findById(vehiculo.getId_tipo()).orElse(null));
+			vehiculo.setObjMarca(repoMarca.findById(vehiculo.getIdMarca()).orElse(null));
+			vehiculo.setObjTipo(repoTipo.findById(vehiculo.getIdTipo()).orElse(null));
 
 			// Validar si hay nueva foto subida
 			if (file != null && !file.isEmpty()) {

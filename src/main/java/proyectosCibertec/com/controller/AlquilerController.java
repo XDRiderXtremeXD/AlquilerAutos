@@ -17,7 +17,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import proyectosCibertec.com.model.Alquiler;
+import proyectosCibertec.com.model.Configuracion;
+import proyectosCibertec.com.model.Vehiculos;
 import proyectosCibertec.com.repository.IAlquilerRepository;
+import proyectosCibertec.com.repository.IClienteRepository;
+import proyectosCibertec.com.repository.IConfiguracionRepository;
+import proyectosCibertec.com.repository.IDocumentosRepository;
+import proyectosCibertec.com.repository.IMarcasRepository;
+import proyectosCibertec.com.repository.IVehiculosRepository;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -29,14 +36,23 @@ import org.apache.poi.ss.usermodel.Row;
 @RequestMapping("/alquiler")
 public class AlquilerController {
 
-    private final DocumentoController documentoController;
-
     @Autowired
     private IAlquilerRepository alquilerRepository;
-
-    public AlquilerController(DocumentoController documentoController) {
-        this.documentoController = documentoController;
-    }
+    
+    @Autowired
+    private IDocumentosRepository documentosRepository;
+    
+    @Autowired
+    private IClienteRepository clientesRepository;
+    
+    @Autowired
+    private IVehiculosRepository vehiculosRepository;
+    
+    @Autowired
+    private IConfiguracionRepository configuracionRepository;
+    
+    @Autowired
+    private IMarcasRepository marcasRepository;
 
     @GetMapping("/listado")
     public String alquilerVista(Model model, @RequestParam(defaultValue = "0") int page,
@@ -46,10 +62,62 @@ public class AlquilerController {
         model.addAttribute("pagina", pagina);
         model.addAttribute("paginaActual", page);
         model.addAttribute("tamanio", size);
+       
+        model.addAttribute("alquiler", new Alquiler());
+        
+        return "alquiler/listadoAlquiler";
+    }
+    
+    @GetMapping("/crear")
+    public String mostrarFormularioRegistro(Model model) {
+        model.addAttribute("alquiler", new Alquiler());
+        model.addAttribute("lstClientes", clientesRepository.findAll());
+        model.addAttribute("lstVehiculos", vehiculosRepository.findAll());
+        model.addAttribute("lstMarcas", marcasRepository.findAll());
+        model.addAttribute("lstDocumentos", documentosRepository.findAll());
 
-        return "alquiler";
+        Configuracion configuracion = configuracionRepository.findById(1).orElse(new Configuracion());
+        model.addAttribute("penalidadXdia", configuracion.getPenalidadPorDia());
+        model.addAttribute("moneda", configuracion.getMoneda());
+
+        return "alquiler/crearAlquiler"; 
+    }
+    
+    @PostMapping("/registrar")
+    public String registrarAlquiler(@ModelAttribute("alquiler") Alquiler alquiler) {
+        alquiler.setEstado(1); 
+        Configuracion configuracion = configuracionRepository.findById(1).orElse(new Configuracion());
+        alquiler.setPenalidadPorDia(configuracion.getPenalidadPorDia());
+        alquiler.setIdMoneda(configuracion.getMoneda().getId());
+        
+        alquilerRepository.save(alquiler);
+        return "redirect:/alquiler/listado";
     }
 
+
+    
+    @GetMapping("/editar/{id}")
+    public String editarVista(@PathVariable int id, Model model) {
+        Alquiler alquiler = alquilerRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("ID inválido"));
+        model.addAttribute("alquiler", alquiler);
+        model.addAttribute("lstClientes", clientesRepository.findAll());
+        model.addAttribute("lstVehiculos", vehiculosRepository.findAll());
+        model.addAttribute("lstDocumentos", documentosRepository.findAll());
+        model.addAttribute("lstMarcas", marcasRepository.findAll());
+        
+        Configuracion configuracion = configuracionRepository.findById(1).get();
+        model.addAttribute("penalidadXdia",configuracion.getPenalidadPorDia());
+        model.addAttribute("moneda",configuracion.getMoneda());
+        
+        return "alquiler/editarAlquiler"; // Tu nueva vista para editar
+    }
+    
+    @GetMapping("/vehiculosPorMarca")
+    @ResponseBody
+    public List<Vehiculos> obtenerVehiculosPorMarca(@RequestParam("idMarca") int idMarca) {
+        return vehiculosRepository.findByIdMarcaAndEstado(idMarca, 1);
+    }
+    
     @GetMapping("/exportarPDF")
     public void exportarPDF(HttpServletResponse response) throws IOException, DocumentException {
         response.setContentType("application/pdf");
@@ -139,7 +207,7 @@ public class AlquilerController {
                 row.createCell(10).setCellValue(a.getIdDoc());
                 row.createCell(11).setCellValue(a.getObservacion() != null ? a.getObservacion() : "");
                 row.createCell(12).setCellValue(a.getPenalidad() != null ? a.getPenalidad().doubleValue() : 0);
-                row.createCell(13).setCellValue(a.getPenalidad_por_dia() != null ? a.getPenalidad_por_dia().doubleValue() : 0);
+                row.createCell(13).setCellValue(a.getPenalidadPorDia() != 0 ? a.getPenalidadPorDia() : 0);
                 row.createCell(14).setCellValue(a.getEstado() == 1 ? "Activo" : "Inactivo");
             }
 

@@ -9,6 +9,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -22,6 +24,7 @@ public class Alquiler {
 
     private Integer idCliente;
     private Integer idVehiculo;
+    private Integer idMoneda;
     private Integer numDias;
     private BigDecimal precioDia;
     private BigDecimal abono;
@@ -33,7 +36,23 @@ public class Alquiler {
     private String observacion;
     private Integer estado;
     private BigDecimal penalidad;
-    private BigDecimal penalidad_por_dia;
+    @Column(name = "penalidad_por_dia")
+    private double penalidadPorDia;
 
+    @ManyToOne
+	@JoinColumn(name = "idCliente", insertable = false, updatable = false)
+	private Clientes cliente;
+    
+    @ManyToOne
+	@JoinColumn(name = "idVehiculo", insertable = false, updatable = false)
+	private Vehiculos vehiculo;
+    
+    @ManyToOne
+	@JoinColumn(name = "idDoc", insertable = false, updatable = false)
+	private Documentos documento;
+    
+    @ManyToOne
+	@JoinColumn(name = "idMoneda", insertable = false, updatable = false)
+	private Moneda moneda;
     // Getters y setters
 }
