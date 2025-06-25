@@ -62,9 +62,20 @@ public class UsuarioController {
 
 
 	@GetMapping("/eliminar/{id}")
-	public String eliminarUsuario(@PathVariable Integer id) {
+	public String eliminarUsuario(@PathVariable Integer id, Model model) {
+		
+		Usuario usuario = repoUsu.findById(id).get();
+		
+		try {
+			usuario.setEstado(0);
+			repoUsu.save(usuario);
+			model.addAttribute("mensaje", "Usuario eliminado exitosamente");
+			model.addAttribute("cssmensaje", "alert alert-success");
+		} catch (Exception e) {
+			model.addAttribute("mensaje", "Error al registrar" + e.getMessage());
+			model.addAttribute("cssmensaje", "alert alert-danger");
+		}
 
-		repoUsu.deleteById(id);
 		return "redirect:/usuarios/listado";
 	}
 
