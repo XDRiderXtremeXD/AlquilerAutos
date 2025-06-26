@@ -15,8 +15,18 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, UsuarioDetailsServiceImpl userDetailsService) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/usuarios/login", "/css/**").permitAll()
-                .anyRequest().authenticated()
+            		.requestMatchers(
+            			    "/usuarios/login",
+            			    "/css/**",
+            			    "/js/**",
+            			    "/images/**",
+            			    "/",
+            			    "/home",
+            			    "/catalogo",
+            			    "/quienessomos",
+            			    "/contactos"
+            			).permitAll()
+            			    .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/usuarios/login")

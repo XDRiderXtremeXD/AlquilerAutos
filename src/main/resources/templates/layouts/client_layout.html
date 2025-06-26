@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+	<meta charset="UTF-8">
+	<title>MoviXpress</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- Bootstrap y estilos -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+	<style>
+		html,
+		body {
+			height: 100%;
+		}
+	</style>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+	<!-- Navbar superior -->
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<div class="container">
+			<a class="navbar-brand" href="/">MoviXpress</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+				aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<div class="collapse navbar-collapse" id="navbarNav">
+				<ul class="navbar-nav ms-auto">
+					<li class="nav-item">
+						<a class="nav-link" href="/home">Home</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="/catalogo">Catálogo</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="/quienessomos">Quiénes Somos</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="/contactos">Contactos</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<!-- Contenido principal -->
+	<div class="container my-4" layout:fragment="content">
+		<!-- Aquí va el contenido de cada página -->
+		<h1 class="text-center">Bienvenido a MoviXpress</h1>
+	</div>
+
+	<!-- Footer pegado abajo -->
+	<footer class="bg-dark text-white text-center py-3 mt-auto">
+		<div class="container">
+			<small>&copy; 2025 MoviXpress. Todos los derechos reservados.</small>
+		</div>
+	</footer>
+
+	<!-- Scripts -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+
+	<!-- O usa <script src="/js/scripts.js" defer></script> si lo separas -->
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			const currentPath = window.location.pathname;
+			const navLinks = document.querySelectorAll(".navbar-nav .nav-link");
+
+			navLinks.forEach(link => {
+				link.classList.remove("active");
+				if (currentPath.startsWith(link.getAttribute("href"))) {
+					link.classList.add("active");
+				}
+			});
+		});
+	</script>
+	
+</body>
+
+</html>
