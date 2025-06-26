@@ -176,11 +176,21 @@
 								<input type="text" th:field="*{direccion}" class="form-control"
 									placeholder="Ingrese la dirección" />
 							</div>
+							<!--
 							<div class="col-md-6">
 								<label class="form-label">Perfil</label>
 								<input type="text" th:field="*{perfil}" class="form-control"
 									placeholder="Ingrese el perfil (opcional)" />
 							</div>
+							 -->
+							<div class="col-md-6">
+								<label class="form-label">Foto</label>
+								<input type="file" class="form-control" th:field="*{perfil}" required>
+								<div id="alertaFoto" class="alert alert-warning mt-2 d-none" role="alert">
+									La imagen no puede superar 1MB
+								</div>
+							</div>
+							
 							<div class="col-md-6">
 								<label class="form-label">Contraseña</label>
 								<input type="password" th:field="*{clave}" class="form-control"

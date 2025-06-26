@@ -45,7 +45,7 @@ public class UsuarioController {
 
 	@PostMapping("/grabar")
 	public String registrarUsuario(@ModelAttribute Usuario usuario, Model model) {
-
+		
 		try {
 			usuario.setClave(passwordEncoder.encode(usuario.getClave()));
 			repoUsu.save(usuario);
