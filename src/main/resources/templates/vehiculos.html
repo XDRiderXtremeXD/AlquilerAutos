@@ -11,13 +11,22 @@
 	<div class="container mt-5" layout:fragment="content">
 		<div class="card shadow-sm">
 			<div class="card-body">
-				<h1 class="h4 card-title mb-4">Gestión de Vehículos</h1>
-
+				<h1 th:text="${vista == 'activos'} ? 'Gestión de Vehículos' : 'Gestión de Vehículos Cancelados'" class="h4 card-title mb-4"></h1>
+				
 				<!-- Botón para nuevo vehículo -->
-				<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRegistro">
+				<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRegistro"
+						th:attr="disabled=${vista == 'cancelados'} ? 'disabled' : null">
 					Registrar nuevo Vehículo
 				</button>
 
+				<a th:if="${vista == 'activos'}" th:href="@{/vehiculos/cancelados}" class="btn btn-outline-secondary">
+					Ver Vehiculos Cancelados
+				</a>
+
+				<a th:if="${vista == 'cancelados'}" th:href="@{/vehiculos/listado}" class="btn btn-outline-secondary">
+					Volver al Listado
+				</a>
+				
 				<br><br>
 
 				<!-- Ventana del Registro -->
@@ -60,7 +69,23 @@
 											</option>
 										</select>
 									</div>
+
 									<div class="col-md-6">
+										<label class="form-label">Disponibilidad</label>
+										<select class="form-control" th:field="*{actividad}" id="actividad">
+											<option value="0">Seleccionar...</option>
+											<option value="LIBRE">LIBRE</option>
+											<option value="PRESTADO">PRESTADO</option>
+										</select>
+									</div>
+
+									<div class="col-md-6">
+										<label class="form-label">Precio por día</label>
+										<input type="number" step="0.01" min="0.01" class="form-control"
+											th:field="*{precioXDia}" id="precioXDia" required>
+									</div>
+
+									<div class="col-md-12">
 										<label class="form-label">Foto</label>
 										<input type="file" class="form-control" accept="image/*" name="fileFoto"
 											id="fileFoto" required>
@@ -74,14 +99,7 @@
 												style="max-height: 200px;">
 										</div>
 									</div>
-									<div class="col-md-6">
-										<label class="form-label">Estado</label>
-										<select class="form-control" th:field="*{estado}" id="estado">
-											<option value="0">Seleccionar...</option>
-											<option value="1">ACTIVO</option>
-											<option value="2">INACTIVO</option>
-										</select>
-									</div>
+									
 									<div class="modal-footer">
 										<button type="submit" class="btn btn-primary" id="btnRegistrar"
 											disabled>Registrar Vehículo</button>
@@ -139,6 +157,20 @@
 									</div>
 
 									<div class="col-md-6">
+										<label class="form-label">Actividad</label>
+										<select class="form-control" name="actividad" id="editActividad">
+											<option value="LIBRE">LIBRE</option>
+											<option value="PRESTADO">PRESTADO</option>
+										</select>
+									</div>
+
+									<div class="col-md-6">
+										<label class="form-label">Precio por día</label>
+										<input type="number" step="0.01" min="0.01" class="form-control"
+											name="precioXDia" id="editPrecio">
+									</div>
+
+									<div class="col-md-12">
 										<label class="form-label">Foto</label>
 										<input type="file" class="form-control" accept="image/*" name="fileFotoEdit"
 											id="fileFotoEdit">
@@ -150,15 +182,7 @@
 											<img id="minFotoEdit" class="img-fluid border rounded"
 												style="max-height: 200px;">
 										</div>
-									</div>
-
-									<div class="col-md-6">
-										<label class="form-label">Estado</label>
-										<select class="form-control" name="estado" id="editEstado">
-											<option value="1">ACTIVO</option>
-											<option value="2">INACTIVO</option>
-										</select>
-									</div>
+									</div>	
 
 									<div class="modal-footer">
 										<button type="submit" class="btn btn-warning">Guardar Cambios</button>
@@ -185,47 +209,59 @@
 								<th>Modelo</th>
 								<th>Marca</th>
 								<th>Tipo</th>
-								<th>Estado</th>
+								<th>Precio por día</th>
+								<th>Disponibilidad</th>
 								<th>Acciones</th>
 							</tr>
 						</thead>
 						<tbody>
 
-							<!-- En caso no hallan Vehiculos registrados -->
+							<!-- En caso no hallan Vehiculos Registrados o Cancelados -->
 							<tr th:if="${#lists.isEmpty(lstVehiculos)}">
-								<td colspan="7" class="text-center text-muted py-3">No hay vehículos registrados</td>
+								<td colspan="9" class="text-center text-muted py-3"
+								th:text="${vista == 'activas'} ? 'No hay vehículos registrados' : 'No hay vehículos cancelados'"></td>
 							</tr>
 
 							<!-- Listado de Vehiculos-->
 							<tr th:each="v : ${lstVehiculos}">
 								<td th:text="${v.id}"></td>
 								<td>
-									<img th:src="${v.foto}" style="height:30px; width: 50px;">
+									<img th:src="${v.foto}" style="height:30px; width:50px;">
 								</td>
 								<td th:text="${v.placa}"></td>
 								<td th:text="${v.modelo}"></td>
 								<td th:text="${v.objMarca.marca}"></td>
 								<td th:text="${v.objTipo.tipo}"></td>
+								<td th:text="${v.precioXDia}"></td>
 								<td>
-									<span th:classappend="${v.estado == 1} ? 'badge bg-success' : 'badge bg-danger'"
-										th:text="${v.estado == 1 ? 'ACTIVO' : 'INACTIVO'}"></span>
+									<span th:classappend="${v.actividad == 'LIBRE'} ? 'badge bg-dark' : 'badge bg-info'"
+										th:text="${v.actividad}"></span>
 								</td>
 								<td>
-									<button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+									<button th:if="${vista == 'activos'}" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
 										data-bs-target="#modalEditar" th:attr="
 									    data-id=${v.id},
 									    data-placa=${v.placa},
 									    data-modelo=${v.modelo},
 									    data-id_marca=${v.objMarca != null ? v.objMarca.id : 0},
-									    data-id_tipo=${v.objTipo != null ? v.objTipo.id : 0},     
-									    data-estado=${v.estado},
-									    data-foto=${v.foto != null ? v.foto : ''}">
+									    data-id_tipo=${v.objTipo != null ? v.objTipo.id : 0},
+									    data-foto=${v.foto != null ? v.foto : ''},								
+										data-actividad=${v.actividad},
+										data-precio=${v.precioXDia}">
+
 										<i class="bi bi-pencil-square"></i>
 									</button>
-									<a th:href="@{/vehiculos/eliminar/}+${v.id}" class="btn btn-sm btn-danger"
-										title="Eliminar"
-										onclick="return confirm('¿Estás seguro de eliminar este vehículo?')">
-										<i class="bi bi-trash"></i></a>
+									<a th:if="${vista == 'activos'}" th:href="@{/vehiculos/eliminar/}+${v.id}" class="btn btn-sm btn-danger"
+									    title="Eliminar"
+									    onclick="return confirm('¿Estás seguro de eliminar este vehículo?')">
+									    <i class="bi bi-trash"></i>
+									</a>
+
+									<a th:if="${vista == 'cancelados'}" th:href="@{/vehiculos/restaurar/}+${v.id}" class="btn btn-sm btn-success"
+									    title="Restaurar"
+									    onclick="return confirm('¿Estás seguro de restaurar este vehículo?')">
+									    <i class="bi bi-arrow-clockwise"></i>
+									</a>
 								</td>
 							</tr>
 						</tbody>
@@ -236,57 +272,20 @@
 
 		<script>
 			document.addEventListener("DOMContentLoaded", function () {
+
+				// Boton Editar recoge los datos para la ventana Editar 
 				document.querySelectorAll('button[data-bs-target="#modalEditar"]').forEach(btn => {
 					btn.addEventListener('click', function () {
 						const datos = this.dataset;
-						console.log("LLENANDO MODAL...");
-						console.log("Datos:", datos);
 
-						const campo = document.getElementById("editPlaca");
-						console.log("Campo editPlaca:", campo);
-
-						if (campo) {
-							campo.value = datos.placa;
-							document.getElementById("editId").value = datos.id;
-							document.getElementById("editModelo").value = datos.modelo;
-							document.getElementById("editMarca").value = datos.id_marca;
-							document.getElementById("editTipo").value = datos.id_tipo;
-							document.getElementById("editEstado").value = datos.estado;
-							document.getElementById("editFotoActual").value = datos.foto;
-
-							const minFoto = document.getElementById("minFotoEdit");
-							const contFoto = document.getElementById("contFotoEdit");
-
-							if (datos.foto && datos.foto !== 'null') {
-								minFoto.src = datos.foto;
-								contFoto.style.display = 'block';
-							} else {
-								minFoto.src = '';
-								contFoto.style.display = 'none';
-							}
-						} else {
-							console.warn("❌ El input editPlaca no se encontró");
-						}
-					});
-				});
-
-				// Para el botón de Editar
-				function llenarModalEditar(btn) {
-					const datos = btn.dataset;
-					console.log("LLENANDO MODAL...");
-					console.log("Datos:", datos);
-
-					const campo = document.getElementById("editPlaca");
-					console.log("Campo editPlaca:", campo);
-
-					if (campo) {
-						campo.value = datos.placa;
 						document.getElementById("editId").value = datos.id;
+						document.getElementById("editPlaca").value = datos.placa;
 						document.getElementById("editModelo").value = datos.modelo;
 						document.getElementById("editMarca").value = datos.id_marca;
 						document.getElementById("editTipo").value = datos.id_tipo;
-						document.getElementById("editEstado").value = datos.estado;
 						document.getElementById("editFotoActual").value = datos.foto;
+						document.getElementById("editActividad").value = datos.actividad;
+						document.getElementById("editPrecio").value = datos.precio;
 
 						const minFoto = document.getElementById("minFotoEdit");
 						const contFoto = document.getElementById("contFotoEdit");
@@ -298,23 +297,23 @@
 							minFoto.src = '';
 							contFoto.style.display = 'none';
 						}
-
-					} else {
-						console.warn("❌ El input editPlaca no se encontró");
-					}
-				}
+					});
+				});
 
 				const placa = document.getElementById('placa');
 				const modelo = document.getElementById('modelo');
 				const id_marca = document.getElementById('marca');
 				const id_tipo = document.getElementById('tipo');
 				const foto = document.getElementById('fileFoto');
-				const estado = document.getElementById('estado');
+				const actividad = document.getElementById('actividad');
+				const precioXDia = document.getElementById('precioXDia');
 				const btn = document.getElementById('btnRegistrar');
 
 				// Función para habilitar o deshabilitar botones
 				function validar() {
-					if (placa.value && modelo.value && id_marca.value !== '0' && id_tipo.value !== '0' && estado.value !== '0' && fileFoto.value) {
+					if (placa.value && modelo.value && id_marca.value !== '0' &&
+						id_tipo.value !== '0' && fileFoto.value &&
+						actividad.value !== '0' && parseFloat(precioXDia.value) > 0) {
 						btn.removeAttribute('disabled');
 					} else {
 						btn.setAttribute('disabled', 'disabled');
@@ -324,24 +323,12 @@
 				placa.addEventListener('input', validar);
 				modelo.addEventListener('input', validar);
 				fileFoto.addEventListener('input', validar);
+				precioXDia.addEventListener('input', validar);
 				id_marca.addEventListener('change', validar);
 				id_tipo.addEventListener('change', validar);
-				estado.addEventListener('change', validar);
+				actividad.addEventListener('change', validar);
 
 				validar();
-
-				// Limpiar formulario al cerrar Registrar
-				const modalRegistrar = document.getElementById('modalRegistro');
-				modalRegistrar.addEventListener('hidden.bs.modal', function () {
-					placa.value = '';
-					modelo.value = '';
-					foto.value = '';
-					estado.value = '0';
-					id_marca.value = '0';
-					id_tipo.value = '0';
-
-					validar();
-				});
 
 				// Funcionalidad vista previa de imagen en registro
 				const inputFoto = document.getElementById('fileFoto');
@@ -445,6 +432,26 @@
 						}
 					}
 
+				});
+
+
+				// Limpiar formulario al cerrar Registrar
+				const modalRegistrar = document.getElementById('modalRegistro');
+				modalRegistrar.addEventListener('hidden.bs.modal', function () {
+					placa.value = '';
+					modelo.value = '';
+					foto.value = '';
+					id_marca.value = '0';
+					id_tipo.value = '0';
+					actividad.value = '0';
+					precioXDia.value = '0.01';
+
+					// Limpiar miniatura de la foto
+					minFoto.src = '';
+					contFoto.style.display = 'none';
+					document.getElementById('alertaFoto').classList.add('d-none');
+
+					validar();
 				});
 
 				// Limpiar formulario al cerrar Editar

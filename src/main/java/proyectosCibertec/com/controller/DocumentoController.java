@@ -18,8 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import proyectosCibertec.com.model.Documentos;
-import proyectosCibertec.com.model.Vehiculos;
 import proyectosCibertec.com.repository.IDocumentosRepository;
+import proyectosCibertec.com.service.CloudinaryService;
 
 @Controller
 @RequestMapping("/documentos")
@@ -27,123 +27,188 @@ public class DocumentoController {
 	@Autowired
 	private IDocumentosRepository repoDocumentos;
 
+	@Autowired
+	private CloudinaryService cloudinaryService;
+
 	@GetMapping("/listado")
 	public String documentos_crud(Model model) {
-		List<Documentos> lista = repoDocumentos.findAll();
+		List<Documentos> lista = repoDocumentos.findByEstado(1);
 		model.addAttribute("lstDocumentos", lista);
-
 		model.addAttribute("documentos", new Documentos());
 
+		// Para el listado de Documentos activos
+		model.addAttribute("vista", "activos");
 		return "documentos";
 	}
 
-	@GetMapping("/editar/{id}")
-	public String editarDocumento(Model model, @PathVariable int id) {
+	// Extraer el public ID de la URL de Cloudinary
+	private String extractPublicId(String url) {
+		if (url == null || url.isEmpty()) {
+			return null;
+		}
+		try {
+			int uploadIndex = url.indexOf("/upload/");
+			if (uploadIndex == -1) {
+				return null;
+			}
 
-		List<Documentos> lista = repoDocumentos.findAll();
-		Documentos d = repoDocumentos.findById(id).get();
+			String pathAfterUpload = url.substring(uploadIndex + "/upload/".length());
 
-		model.addAttribute("documentos", d);
-		model.addAttribute("lstDocumentos", lista);
+			if (pathAfterUpload.matches("^v\\d+/.*")) {
+				pathAfterUpload = pathAfterUpload.substring(pathAfterUpload.indexOf("/") + 1);
+			}
 
-		return "documentosEditar";
+			int lastDotIndex = pathAfterUpload.lastIndexOf(".");
+			if (lastDotIndex != -1) {
+				return pathAfterUpload.substring(0, lastDotIndex);
+			} else {
+				return pathAfterUpload;
+			}
+		} catch (Exception e) {
+			System.err.println("Error al extraer public ID de la URL: " + url + " - " + e.getMessage());
+			return null;
+		}
 	}
 
 	@GetMapping("/eliminar/{id}")
 	public String eliminarDocumento(@PathVariable int id, RedirectAttributes redirAtributos) {
 		try {
 			Documentos documento = repoDocumentos.findById(id).orElse(null);
-			
-			// Borrar imagen de la carpeta
-	        if (documento != null) {
-	            String nombreFoto = documento.getFoto();
-	            
-	            if (nombreFoto != null && !nombreFoto.isBlank()) {
-	                Path rutaFoto = Paths.get("uploads/img/documentos/", nombreFoto);
-	                Files.deleteIfExists(rutaFoto);
-	            }
-	        }
-	        
-			repoDocumentos.deleteById(id);
-			redirAtributos.addFlashAttribute("mensaje", "Documento eliminado correctamente");
-            redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
-        } catch (Exception e) {
-        	redirAtributos.addFlashAttribute("mensaje", "Error al eliminar documento: " + e.getMessage());
-        	redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
-        }
-		
+
+			if (documento != null) {
+				documento.setEstado(2);
+				repoDocumentos.save(documento);
+				redirAtributos.addFlashAttribute("mensaje", "Documento cancelado correctamente");
+				redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
+			}
+		} catch (Exception e) {
+			redirAtributos.addFlashAttribute("mensaje", "Error al cancelar documento: " + e.getMessage());
+			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+		}
 		return "redirect:/documentos/listado";
 	}
 
 	@PostMapping("/editar")
-	public String documentoEditado(@ModelAttribute Documentos documentos, 
-			Model model) {
+	public String editarDocumento(@ModelAttribute Documentos documentos,
+			@RequestParam(value = "fileFotoEdit", required = false) MultipartFile file,
+			@RequestParam("fotoActual") String fotoActual, RedirectAttributes redirAtributos) {
 		try {
+
+			if (file != null && !file.isEmpty()) {
+				String originalFilename = file.getOriginalFilename();
+				String extension = "";
+				if (originalFilename != null && originalFilename.lastIndexOf(".") != -1) {
+					extension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
+				}
+
+				if (!extension.equals("jpg") && !extension.equals("jpeg") && !extension.equals("png")) {
+					redirAtributos.addFlashAttribute("mensaje", "La imagen debe estar en formato JPG, JPEG o PNG");
+					redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+					return "redirect:/documentos/listado";
+				}
+
+				if (file.getSize() > 1048576) {
+					redirAtributos.addFlashAttribute("mensaje", "La imagen no puede superar 1MB");
+					redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+					return "redirect:/documentos/listado";
+				}
+
+				if (fotoActual != null && !fotoActual.isBlank()) {
+					String publicIdToDelete = extractPublicId(fotoActual);
+					if (publicIdToDelete != null) {
+						cloudinaryService.eliminarImagen(publicIdToDelete);
+					}
+				}
+
+				String secureUrl = cloudinaryService.subirImagen(file, "documentos");
+				documentos.setFoto(secureUrl);
+
+			} else {
+				documentos.setFoto(fotoActual);
+			}
+
 			repoDocumentos.save(documentos);
-			model.addAttribute("mensaje", "Documento actualizado correctamente");
-			model.addAttribute("css_mensaje", "alert alert-success");
+
+			redirAtributos.addFlashAttribute("mensaje", "Documento actualizado correctamente");
+			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
+
 		} catch (Exception e) {
-			model.addAttribute("mensaje", "Error al actualizar documento: " + e.getMessage());
-			model.addAttribute("css_mensaje", "alert alert-danger");
+			redirAtributos.addFlashAttribute("mensaje", "Error al actualizar documento: " + e.getMessage());
+			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+			e.printStackTrace();
 		}
 
-		// Cargar lista actualizada
-		List<Documentos> lista = repoDocumentos.findAll();
-		model.addAttribute("lstDocumentos", lista);
-		model.addAttribute("documentos", new Documentos());
-
-		return "documentos";
+		return "redirect:/documentos/listado";
 	}
 
 	@PostMapping("/registro")
-	public String registrarDocumento(@ModelAttribute Documentos documentos, 
-			@RequestParam("fileFoto") MultipartFile file,
-			RedirectAttributes redirAtributos) {
+	public String registrarDocumento(@ModelAttribute Documentos documentos,
+			@RequestParam("fileFoto") MultipartFile file, RedirectAttributes redirAtributos) {
 		try {
-	        // Validación de archivo vacío
-	        if (!file.isEmpty()) {
-	        		
-	            // Validar que sea JPG o JPEG
-	            String extension = file.getOriginalFilename().toLowerCase();
-	            if (!extension.endsWith(".jpg") && !extension.endsWith(".jpeg")) {
-	                redirAtributos.addFlashAttribute("mensaje", "La imagen debe estar en formato JPG o JPEG");
-	                redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
-	                return "redirect:/documentos/listado";
-	            }
+			if (file.isEmpty()) {
+				redirAtributos.addFlashAttribute("mensaje", "Debe seleccionar una imagen para el documento.");
+				redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+				return "redirect:/documentos/listado";
+			}
 
-	            // Validación de tamaño máximo 1MB
-	            if (file.getSize() > 1048576) {
-	                redirAtributos.addFlashAttribute("mensaje", "La imagen no puede superar 1MB");
-	                redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
-	                return "redirect:/documentos/listado";
-	            }
-	        }
-	        
-			// Guardar Documento para obtener el ID
-			Documentos docGuardado = repoDocumentos.save(documentos);
-			int idGenerado = docGuardado.getId();
-			
-	        // Carpeta de imágenes
-	        String rutaCarpeta = "uploads/img/documentos/";
-            Files.createDirectories(Paths.get(rutaCarpeta)); // Se crea en caso no exista
-     
-            // Guardar imagen con nombre ID.jpg
-            String nombreArchivo = idGenerado + ".jpg";
-            Path rutaCompleta = Paths.get(rutaCarpeta + nombreArchivo);
-            Files.createDirectories(rutaCompleta.getParent()); // Crear carpeta si no existe
-            Files.write(rutaCompleta, file.getBytes());
-            
-	        // Guardar en la BD
-            docGuardado.setFoto(nombreArchivo);
-			repoDocumentos.save(docGuardado);
-			
+			String originalFilename = file.getOriginalFilename();
+			String extension = "";
+			if (originalFilename != null && originalFilename.lastIndexOf(".") != -1) {
+				extension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
+			}
+
+			if (!extension.equals("jpg") && !extension.equals("jpeg") && !extension.equals("png")) {
+				redirAtributos.addFlashAttribute("mensaje", "La imagen debe estar en formato JPG, JPEG o PNG");
+				redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+				return "redirect:/documentos/listado";
+			}
+
+			if (file.getSize() > 1048576) {
+				redirAtributos.addFlashAttribute("mensaje", "La imagen no puede superar 1MB");
+				redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+				return "redirect:/documentos/listado";
+			}
+
+			String secureUrl = cloudinaryService.subirImagen(file, "documentos");
+			documentos.setFoto(secureUrl);
+
+			repoDocumentos.save(documentos);
+
 			redirAtributos.addFlashAttribute("mensaje", "Documento registrado correctamente");
-            redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
-        } catch (Exception e) {
-        	redirAtributos.addFlashAttribute("mensaje", "Error al registrar documento: " + e.getMessage());
-        	redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
-        }
-		
+			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
+
+		} catch (Exception e) {
+			redirAtributos.addFlashAttribute("mensaje", "Error al registrar documento: " + e.getMessage());
+			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+		}
+
 		return "redirect:/documentos/listado";
+	}
+
+	@GetMapping("/cancelados")
+	public String documentosCancelados(Model model) {
+		List<Documentos> lista = repoDocumentos.findByEstado(2);
+		model.addAttribute("lstDocumentos", lista);
+		model.addAttribute("documentos", new Documentos());
+
+		model.addAttribute("vista", "cancelados");
+		return "documentos";
+	}
+
+	@GetMapping("/restaurar/{id}")
+	public String restaurarDocumento(@PathVariable int id, RedirectAttributes redirAtributos) {
+		try {
+			Documentos documento = repoDocumentos.findById(id).orElse(null);
+			if (documento != null) {
+				documento.setEstado(1);
+				repoDocumentos.save(documento);
+				redirAtributos.addFlashAttribute("mensaje", "Documento restaurado correctamente");
+				redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
+			}
+		} catch (Exception e) {
+			redirAtributos.addFlashAttribute("mensaje", "Error al restaurar documento: " + e.getMessage());
+			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+		}
+		return "redirect:/documentos/cancelados";
 	}
 }

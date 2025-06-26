@@ -16,5 +16,5 @@ public class Tipos {
     private int id;
 
     private String tipo;
-    private int estado;
+    private int estado = 1;
 }

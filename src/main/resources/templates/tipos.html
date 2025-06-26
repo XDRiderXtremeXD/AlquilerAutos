@@ -11,18 +11,27 @@
 	<div class="container mt-5" layout:fragment="content">
 		<div class="card shadow-sm">
 			<div class="card-body">
-				<h1 class="h4 card-title mb-4">Gestión de Tipos</h1>
-
+				<h1 th:text="${vista == 'activos'} ? 'Gestión de Tipos' : 'Gestión de Tipos Cancelados'" class="h4 card-title mb-4"></h1>
+				
 				<!-- Botón para nuevo Tipo -->
-				<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRegistro">
+				<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRegistro"
+						th:attr="disabled=${vista == 'cancelados'} ? 'disabled' : null">
 					Registrar nuevo Tipo
 				</button>
 
+				<a th:if="${vista == 'activos'}" th:href="@{/tipos/cancelados}" class="btn btn-outline-secondary">
+					Ver Tipos Cancelados
+				</a>
+
+				<a th:if="${vista == 'cancelados'}" th:href="@{/tipos/listado}" class="btn btn-outline-secondary">
+					Volver al Listado
+				</a>
+				
 				<br><br>
 
 				<!-- Ventana del Registro -->
-				<div class="modal fade" id="modalRegistro" tabindex="-1" role="dialog"
-					aria-labelledby="modalTipoLabel" aria-hidden="true">
+				<div class="modal fade" id="modalRegistro" tabindex="-1" role="dialog" aria-labelledby="modalTipoLabel"
+					aria-hidden="true">
 					<div class="modal-dialog" role="document">
 						<div class="modal-content">
 							<div class="modal-header bg-primary text-white">
@@ -31,23 +40,14 @@
 									aria-label="Cerrar"></button>
 							</div>
 							<div class="modal-body">
-								<form class="row g-3" action="/tipos/registro" th:object="${tipos}"
-									method="post">
-									
-									<div class="col-md-6">
+								<form class="row g-3" action="/tipos/registro" th:object="${tipos}" method="post">
+									<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+									<div class="col-md-12">
 										<label class="form-label">Tipo</label>
 										<input type="text" class="form-control" th:field="*{tipo}" id="tipo"
 											placeholder="Tipo">
 									</div>
-									
-									<div class="col-md-6">
-										<label class="form-label">Estado</label>
-										<select class="form-control" th:field="*{estado}" id="estado">
-											<option value="0">Seleccionar...</option>
-											<option value="1">ACTIVO</option>
-											<option value="2">INACTIVO</option>
-										</select>
-									</div>
+
 									<div class="modal-footer">
 										<button type="submit" class="btn btn-primary" id="btnRegistrar"
 											disabled>Registrar Tipo</button>
@@ -60,9 +60,39 @@
 					</div>
 				</div>
 
+				<!-- Ventana Editar Tipo -->
+				<div class="modal fade" id="modalEditar" tabindex="-1" role="dialog" aria-labelledby="modalEditarLabel"
+					aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header bg-warning text-dark">
+								<h5 class="modal-title" id="modalEditarLabel">Editar Tipo</h5>
+								<button type="button" class="btn-close" data-bs-dismiss="modal"
+									aria-label="Cerrar"></button>
+							</div>
+							<div class="modal-body">
+								<form class="row g-3" action="/tipos/editar" method="post">
+									<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+									<input type="hidden" name="id" id="editId">
+									<div class="col-md-12">
+										<label class="form-label">Tipo</label>
+										<input type="text" class="form-control" name="tipo" id="editTipo">
+									</div>
+
+									<div class="modal-footer">
+										<button type="submit" class="btn btn-warning">Guardar Cambios</button>
+										<button type="button" class="btn btn-secondary"
+											data-bs-dismiss="modal">Cancelar</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+
 				<!-- Mensaje de Alerta de Registro -->
 				<div th:text="${mensaje}" th:class="${css_mensaje}" role="alert" style="margin-top: 15px;"></div>
-				
+
 				<!-- Tabla de datos de Tipos -->
 				<div class="table-responsive mt-4">
 					<table class="table table-hover">
@@ -70,32 +100,39 @@
 							<tr>
 								<th>ID</th>
 								<th>Tipo</th>
-								<th>Estado</th>
 								<th>Acciones</th>
 							</tr>
 						</thead>
 						<tbody>
 
-							<!-- En caso no hallan Tipos registrados -->
+							<!-- En caso no hallan Tipos Registrados o Cancelados -->
 							<tr th:if="${#lists.isEmpty(lstTipos)}">
-								<td colspan="7" class="text-center text-muted py-3">No hay tipos registrados</td>
+								<td colspan="7" class="text-center text-muted py-3"
+								th:text="${vista == 'activos'} ? 'No hay tipos registrados' : 'No hay tipos cancelados'"></td>
 							</tr>
 
-							<!-- Listado de Marcas-->
+							<!-- Listado de Tipos-->
 							<tr th:each="t : ${lstTipos}">
 								<td th:text="${t.id}"></td>
 								<td th:text="${t.tipo}"></td>
 								<td>
-									<span th:classappend="${t.estado == 1} ? 'badge bg-success' : 'badge bg-danger'"
-										th:text="${t.estado == 1 ? 'ACTIVO' : 'INACTIVO'}"></span>
-								</td>
-								<td>
-									<a th:href="@{/tipos/editar/}+${t.id}" class="btn btn-sm btn-primary" title="Editar">
+									<button th:if="${vista == 'activos'}" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+										data-bs-target="#modalEditar" th:attr="data-id=${t.id}, data-tipo=${t.tipo}">
 										<i class="bi bi-pencil-square"></i>
+									</button>
+									
+									<!-- Botón Eliminar -->
+									<a th:if="${vista == 'activos'}" th:href="@{/tipos/eliminar/}+${t.id}" class="btn btn-sm btn-danger"
+									    title="Eliminar"
+									    onclick="return confirm('¿Estás seguro de eliminar este tipo?')">
+									    <i class="bi bi-trash"></i>
 									</a>
-									<a th:href="@{/tipos/eliminar/}+${t.id}" class="btn btn-sm btn-danger" title="Eliminar"
-										onclick="return confirm('¿Estás seguro de eliminar este tipo?')">
-										<i class="bi bi-trash"></i>
+
+									<!-- Botón Restaurar -->
+									<a th:if="${vista == 'cancelados'}" th:href="@{/tipos/restaurar/}+${t.id}" class="btn btn-sm btn-success"
+									    title="Restaurar"
+									    onclick="return confirm('¿Estás seguro de restaurar este tipo?')">
+									    <i class="bi bi-arrow-counterclockwise"></i>
 									</a>
 								</td>
 							</tr>
@@ -107,12 +144,11 @@
 
 		<script>
 			const tipo = document.getElementById('tipo');
-			const estado = document.getElementById('estado');
 			const btn = document.getElementById('btnRegistrar');
 
 			// Función para habilitar o deshabilitar botones
 			function validar() {
-				if (tipo.value && estado.value !== '0') {
+				if (tipo.value) {
 					btn.removeAttribute('disabled');
 				} else {
 					btn.setAttribute('disabled', 'disabled');
@@ -120,7 +156,6 @@
 			}
 
 			tipo.addEventListener('input', validar);
-			estado.addEventListener('change', validar);
 
 			validar();
 
@@ -128,9 +163,24 @@
 			const modalRegistrar = document.getElementById('modalRegistro');
 			modalRegistrar.addEventListener('hidden.bs.modal', function () {
 				tipo.value = '';
-				estado.value = '0';
 
 				validar();
+			});
+
+			// Cargar datos a la ventana Editar
+			document.querySelectorAll('button[data-bs-target="#modalEditar"]').forEach(btn => {
+				btn.addEventListener('click', function () {
+					const datos = this.dataset;
+					document.getElementById('editId').value = datos.id;
+					document.getElementById('editTipo').value = datos.tipo;
+				});
+			});
+
+			// Limpiar formulario al cerrar Editar
+			const modalEditar = document.getElementById('modalEditar');
+			modalEditar.addEventListener('hidden.bs.modal', function () {
+				document.getElementById('editId').value = '';
+				document.getElementById('editTipo').value = '';
 			});
 		</script>
 	</div>

@@ -24,6 +24,7 @@ public class CloudinaryService {
             Map<?, ?> result = cloudinary.uploader().upload(file.getBytes(), uploadOptions);
             
             return result.get("secure_url").toString();
+            
         } catch (IOException e) {
             throw new RuntimeException("Error al subir imagen a Cloudinary", e);
         }

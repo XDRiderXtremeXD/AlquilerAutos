@@ -17,5 +17,5 @@ public class Documentos {
 	private int id;
 	private String documento;
 	private String foto;
-	private int estado; // ACTIVO - INACTIVO
+	private int estado = 1; // ACTIVO - INACTIVO
 }

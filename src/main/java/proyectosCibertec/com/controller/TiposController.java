@@ -20,55 +20,87 @@ import proyectosCibertec.com.repository.ITiposRepository;
 public class TiposController {
 	@Autowired
 	private ITiposRepository repoTipo;
-	
+
 	@GetMapping("/listado")
-    public String tipos_crud(Model model) {
-        List<Tipos> listaTipos = repoTipo.findAll();
-        model.addAttribute("lstTipos", listaTipos);
+	public String tipos_crud(Model model) {
+		List<Tipos> listaTipos = repoTipo.findByEstado(1); // Solo activos
+		model.addAttribute("lstTipos", listaTipos);
+		model.addAttribute("tipos", new Tipos());
 
-        model.addAttribute("tipos", new Tipos());
-      
-        return "tipos";
-    }
-	
-	@GetMapping("/editar/{id}")
-	public String editarTipo(Model model, @PathVariable int id) {
+		// Para el listado de activos
+		model.addAttribute("vista", "activos");
 
-		List<Tipos> lista = repoTipo.findAll();
-		Tipos t = repoTipo.findById(id).get();
+		return "tipos";
+	}
 
-		model.addAttribute("tipos", t);
-		model.addAttribute("lstTipos", lista);
-
+	@PostMapping("/editar")
+	public String editarTipo(@ModelAttribute Tipos tipo, RedirectAttributes redirAtributos) {
+		try {
+			repoTipo.save(tipo);
+			redirAtributos.addFlashAttribute("mensaje", "Tipo actualizado correctamente");
+			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
+		} catch (Exception e) {
+			redirAtributos.addFlashAttribute("mensaje", "Error al actualizar tipo: " + e.getMessage());
+			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+		}
 		return "redirect:/tipos/listado";
 	}
-	
+
 	@GetMapping("/eliminar/{id}")
 	public String eliminarTipo(@PathVariable int id, RedirectAttributes redirAtributos) {
 		try {
-			repoTipo.deleteById(id);
+			Tipos tipo = repoTipo.findById(id).get();
+			tipo.setEstado(2);
+
+			repoTipo.save(tipo);
 			redirAtributos.addFlashAttribute("mensaje", "Tipo eliminado correctamente");
-            redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
-        } catch (Exception e) {
-        	redirAtributos.addFlashAttribute("mensaje", "Error al eliminar tipo: " + e.getMessage());
-        	redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
-        }
+			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
+		} catch (Exception e) {
+			redirAtributos.addFlashAttribute("mensaje", "Error al eliminar tipo: " + e.getMessage());
+			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+		}
 
 		return "redirect:/tipos/listado";
 	}
+
+	@PostMapping("/registro")
+	public String registrarMarca(@ModelAttribute Tipos tipo, RedirectAttributes redirAtributos) {
+		try {
+			repoTipo.save(tipo);
+			redirAtributos.addFlashAttribute("mensaje", "Tipo registrado correctamente");
+			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
+		} catch (Exception e) {
+			redirAtributos.addFlashAttribute("mensaje", "Error al registrar tipo: " + e.getMessage());
+			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+		}
+
+		return "redirect:/tipos/listado";
+	}
+
+	// Listado de marcas canceladas
+	@GetMapping("/cancelados")
+	public String tiposCancelados(Model model) {
+		List<Tipos> listaCancelados = repoTipo.findByEstado(2);
+		model.addAttribute("lstTipos", listaCancelados);
+		model.addAttribute("tipos", new Tipos());
+		model.addAttribute("vista", "cancelados");
+		return "tipos";
+	}
 	
-    @PostMapping("/registro")
-    public String registrarMarca(@ModelAttribute Tipos tipo, 
-    		RedirectAttributes redirAtributos) {
-        try {
-        	repoTipo.save(tipo);
-            redirAtributos.addFlashAttribute("mensaje", "Tipo registrado correctamente");
-            redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
-        } catch (Exception e) {
-        	redirAtributos.addFlashAttribute("mensaje", "Error al registrar tipo: " + e.getMessage());
-        	redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
-        }
-        
-        return "redirect:/tipos/listado";
-    }
+	@GetMapping("/restaurar/{id}")
+	public String restaurarTipo(@PathVariable int id, RedirectAttributes redirAtributos) {
+	    try {
+	        Tipos tipo = repoTipo.findById(id).orElse(null);
+	        if (tipo != null) {
+	            tipo.setEstado(1);
+	            repoTipo.save(tipo);
+	            redirAtributos.addFlashAttribute("mensaje", "Tipo restaurado correctamente");
+	            redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
+	        }
+	    } catch (Exception e) {
+	        redirAtributos.addFlashAttribute("mensaje", "Error al restaurar tipo: " + e.getMessage());
+	        redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+	    }
+	    return "redirect:/tipos/cancelados";
+	}
 }
