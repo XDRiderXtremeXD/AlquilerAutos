@@ -16,7 +16,7 @@ import lombok.Data;
 public class Vehiculos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private int id;	
     @Column(name = "id_marca")
     private int idMarca;
     @Column(name = "id_tipo")
@@ -24,7 +24,8 @@ public class Vehiculos {
     private String placa;
     private String modelo;
     private String foto;
-    private int estado;
+    private String actividad;
+    private int estado = 1;
     @Column(name = "precio_por_dia")
     private double precioXDia;
 

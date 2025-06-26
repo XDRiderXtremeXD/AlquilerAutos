@@ -40,15 +40,18 @@ public class VehiculoController {
 
 	@GetMapping("/listado")
 	public String vehiculos_crud(Model model) {
-		List<Vehiculos> listaVehiculos = repoVehiculo.findAll();
-		List<Marcas> listaMarcas = repoMarca.findAll();
-		List<Tipos> listaTipos = repoTipo.findAll();
+		List<Vehiculos> listaVehiculos = repoVehiculo.findByEstado(1);
+		List<Marcas> listaMarcas = repoMarca.findByEstado(1);
+		List<Tipos> listaTipos = repoTipo.findByEstado(1);
 
 		model.addAttribute("lstVehiculos", listaVehiculos);
 		model.addAttribute("lstMarcas", listaMarcas);
 		model.addAttribute("lstTipos", listaTipos);
 
 		model.addAttribute("vehiculos", new Vehiculos());
+		
+	    // Para el listado de vehiculos activos
+	    model.addAttribute("vista", "activos");
 
 		return "vehiculos";
 	}
@@ -149,20 +152,23 @@ public class VehiculoController {
 		try {
 			Vehiculos vehiculo = repoVehiculo.findById(id).orElse(null);
 
-			// Borrar imagen de Cloudinary
+			
 			if (vehiculo != null) {
-				String urlFoto = vehiculo.getFoto();
-				if (urlFoto != null && !urlFoto.isBlank()) {
-					String publicId = extractPublicId(urlFoto);
-					if (publicId != null) {
-						cloudinaryService.eliminarImagen(publicId);
-					}
-				}
-			}
+//				// Borrar imagen de Cloudinary
+//				String urlFoto = vehiculo.getFoto();
+//				if (urlFoto != null && !urlFoto.isBlank()) {
+//					String publicId = extractPublicId(urlFoto);
+//					if (publicId != null) {
+//						cloudinaryService.eliminarImagen(publicId);
+//					}
+//				}		
+				
+				vehiculo.setEstado(2);
+	            repoVehiculo.save(vehiculo);
 
-			repoVehiculo.deleteById(id);
-			redirAtributos.addFlashAttribute("mensaje", "Vehículo eliminado correctamente");
-			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
+	            redirAtributos.addFlashAttribute("mensaje", "Vehículo cancelado correctamente");
+	            redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
+			}
 		} catch (Exception e) {
 			redirAtributos.addFlashAttribute("mensaje", "Error al eliminar vehículo: " + e.getMessage());
 			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
@@ -216,5 +222,37 @@ public class VehiculoController {
 		}
 
 		return "redirect:/vehiculos/listado";
+	}
+	
+	// Listado de vehiculos cancelados
+	@GetMapping("/cancelados")
+	public String vehiculosCancelados(Model model) {
+	    List<Vehiculos> listaCancelados = repoVehiculo.findByEstado(2);
+	    List<Marcas> listaMarcas = repoMarca.findByEstado(1);
+	    List<Tipos> listaTipos = repoTipo.findByEstado(1); 
+	    
+	    model.addAttribute("lstVehiculos", listaCancelados);
+	    model.addAttribute("lstMarcas", listaMarcas);
+	    model.addAttribute("lstTipos", listaTipos);
+	    model.addAttribute("vehiculos", new Vehiculos());
+	    model.addAttribute("vista", "cancelados");
+	    return "vehiculos";
+	}
+	
+	@GetMapping("/restaurar/{id}")
+	public String restaurarVehiculo(@PathVariable int id, RedirectAttributes redirAtributos) {
+	    try {
+	        Vehiculos vehiculo = repoVehiculo.findById(id).orElse(null);
+	        if (vehiculo != null) {
+	            vehiculo.setEstado(1);
+	            repoVehiculo.save(vehiculo);
+	            redirAtributos.addFlashAttribute("mensaje", "Vehículo restaurado correctamente");
+	            redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
+	        }
+	    } catch (Exception e) {
+	        redirAtributos.addFlashAttribute("mensaje", "Error al restaurar vehículo: " + e.getMessage());
+	        redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+	    }
+	    return "redirect:/vehiculos/cancelados";
 	}
 }

@@ -16,5 +16,5 @@ public class Marcas {
     private int id;
 
     private String marca;
-    private int estado;
+    private int estado = 1;
 }
