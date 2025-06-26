@@ -20,7 +20,7 @@ import proyectosCibertec.com.repository.IUsuarioRepository;
 @RequestMapping("/usuarios")
 public class UsuarioController {
 	
-	//@Autowired
+	@Autowired
 	private PasswordEncoder passwordEncoder;
 
 	@Autowired
@@ -40,12 +40,12 @@ public class UsuarioController {
 		model.addAttribute("paginaActual", page);
 		model.addAttribute("tamanio", size);
 		model.addAttribute("usuario", new Usuario());
-		return "usuario/usuarios";
+		return "usuarios";
 	}
 
 	@PostMapping("/grabar")
 	public String registrarUsuario(@ModelAttribute Usuario usuario, Model model) {
-
+		
 		try {
 			usuario.setClave(passwordEncoder.encode(usuario.getClave()));
 			repoUsu.save(usuario);
@@ -60,32 +60,22 @@ public class UsuarioController {
 
 	}
 
-	@GetMapping("/editar/{id}")
-	public String mostrarEdicion(@PathVariable int id, Model model) {
-		Usuario usuario = repoUsu.findById(id).get();
-		model.addAttribute("usuario", usuario);
-
-		return "usuario/editarUsuario";
-	}
-
-	@PostMapping("/actualizar")
-	public String actualizar(@ModelAttribute Usuario usuario, Model model) {
-		try {
-			usuario.setClave(passwordEncoder.encode(usuario.getClave())); 
-			repoUsu.save(usuario);
-			model.addAttribute("mensaje", "Usuario actualizado exitosamente");
-			model.addAttribute("cssmensaje", "alert alert-success");
-		} catch (Exception e) {
-			model.addAttribute("mensaje", "Error al actualizar: ".concat(e.getMessage()));
-			model.addAttribute("cssmensaje", "alert alert-danger");
-		}
-		return "redirect:/usuarios/listado";
-	}
 
 	@GetMapping("/eliminar/{id}")
-	public String eliminarUsuario(@PathVariable Integer id) {
+	public String eliminarUsuario(@PathVariable Integer id, Model model) {
+		
+		Usuario usuario = repoUsu.findById(id).get();
+		
+		try {
+			usuario.setEstado(0);
+			repoUsu.save(usuario);
+			model.addAttribute("mensaje", "Usuario eliminado exitosamente");
+			model.addAttribute("cssmensaje", "alert alert-success");
+		} catch (Exception e) {
+			model.addAttribute("mensaje", "Error al registrar" + e.getMessage());
+			model.addAttribute("cssmensaje", "alert alert-danger");
+		}
 
-		repoUsu.deleteById(id);
 		return "redirect:/usuarios/listado";
 	}
 
