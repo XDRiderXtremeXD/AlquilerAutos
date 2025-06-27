@@ -35,7 +35,7 @@ public class UsuarioController {
 	public String usuarioCrud(Model model,  @RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "5") int size) {
 
-		Page<Usuario> lstUsuarios = repoUsu.findAll(PageRequest.of(page, size));
+		Page<Usuario >lstUsuarios = repoUsu.findByEstado(1, PageRequest.of(page, size));
 		model.addAttribute("lstUsuarios",lstUsuarios);
 		model.addAttribute("paginaActual", page);
 		model.addAttribute("tamanio", size);
