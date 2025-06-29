@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/main_layout.html}">
+
+<head>
+	<meta charset="utf-8">
+	<title>Detalle del Alquiler</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+	<div class="container mt-5" layout:fragment="content">
+		<div class="card shadow-sm">
+			<div class="card-body">
+				<h5 class="h4 card-title mb-4">Detalle del Alquiler</h5>
+
+				<!-- 🧍 Datos del Cliente y Vehículo -->
+				<h6 class="text-primary fw-bold">Información del Cliente y Vehículo</h6>
+				<div class="row g-3 mb-4">
+					<div class="col-md-6">
+						<label class="form-label">Cliente</label>
+						<input type="text" class="form-control" th:value="${alquiler.cliente.nombre}" readonly />
+					</div>
+					<div class="col-md-6">
+						<label class="form-label">Vehículo</label>
+						<input type="text" class="form-control"
+							th:value="${alquiler.vehiculo.placa + ' - ' + alquiler.vehiculo.modelo}" readonly />
+					</div>
+				</div>
+
+				<!-- ⏰ Fechas y Horarios -->
+				<h6 class="text-primary fw-bold">Fechas y Horarios</h6>
+				<div class="row g-3 mb-4">
+					<div class="col-md-6">
+						<label class="form-label">Fecha de Préstamo</label>
+						<input type="text" class="form-control" th:value="${alquiler.fechaPrestamo}" readonly />
+					</div>
+					<div class="col-md-6">
+						<label class="form-label">Hora</label>
+						<input type="text" class="form-control" th:value="${alquiler.hora}" readonly />
+					</div>
+					<div class="col-md-6">
+						<label class="form-label">Fecha Estimada Devolución</label>
+						<input type="text" class="form-control" th:value="${alquiler.fechaEstimadaDevolucion}"
+							readonly />
+					</div>
+					<div class="col-md-6">
+						<label class="form-label">Fecha Real Devolución</label>
+						<input type="text" class="form-control" th:value="${alquiler.fechaRealDevolucion}" readonly />
+					</div>
+				</div>
+
+				<!-- 📄 Estado y Documento -->
+				<h6 class="text-primary fw-bold">Estado y Documento</h6>
+				<div class="row g-3 mb-4">
+					<div class="col-md-6">
+						<label class="form-label">Estado</label>
+						<input type="text" class="form-control" th:value="${alquiler.estado}" readonly />
+					</div>
+					<div class="col-md-6">
+						<label class="form-label">Tipo de Documento</label>
+						<input type="text" class="form-control" th:value="${alquiler.documento.documento}" readonly />
+					</div>
+				</div>
+
+				<!-- 💰 Datos Financieros -->
+				<h6 class="text-primary fw-bold">Información Financiera</h6>
+				<div class="row g-3 mb-4">
+					<div class="col-md-6">
+						<label class="form-label">Días de Retraso</label>
+						<input type="text" class="form-control" th:value="${alquiler.numDias}" readonly />
+					</div>
+					<div class="col-md-6">
+						<label class="form-label">Moneda</label>
+						<input type="text" class="form-control" th:value="${alquiler.moneda.nombre}" readonly />
+					</div>
+					<div class="col-md-6">
+						<label class="form-label">Abono</label>
+						<input type="text" class="form-control" th:value="${alquiler.abono}" readonly />
+					</div>
+					<div class="col-md-6">
+						<label class="form-label">Precio por Día</label>
+						<input type="text" class="form-control" th:value="${alquiler.precioDia}" readonly />
+					</div>
+					<div class="col-md-6">
+						<label class="form-label">Penalidad por Día</label>
+						<input type="text" class="form-control" th:value="${alquiler.penalidadPorDia}" readonly />
+					</div>
+					<div class="col-md-6">
+						<label class="form-label">Penalidad Total</label>
+						<input type="text" class="form-control" th:value="${alquiler.penalidad}" readonly />
+					</div>
+				</div>
+
+				<!-- 📝 Observaciones -->
+				<h6 class="text-primary fw-bold">Observaciones</h6>
+				<div class="mb-4">
+					<label class="form-label">Observación</label>
+					<textarea class="form-control" th:text="${alquiler.observacion}" rows="2" readonly></textarea>
+				</div>
+
+				<!-- Botón volver -->
+				<div class="mt-4">
+					<a th:href="@{/alquiler/listado}" class="btn btn-secondary">Volver al Listado</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

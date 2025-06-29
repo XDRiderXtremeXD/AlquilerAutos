@@ -10,7 +10,11 @@ function llenarModalEditar(btn) {
 		}
 	}
 
-
+	if (datos.itemhabilitar) {
+		const input = document.getElementById("editar" + datos.itemhabilitar.charAt(0).toUpperCase() + datos.itemhabilitar.slice(1));
+		if (input && datos.condhabilitado != null) 
+			input.disabled = (datos.condhabilitado === "true");
+	}
 }
 
 function borrarImagen() {
@@ -71,8 +75,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		if (fechaInicio && fechaFin && !isNaN(precioDia)) {
 			const diffTime = fechaFin - fechaInicio;
-			const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-			const total = Math.max(0, (diffDays * precioDia) - abono);
+			const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))+1;
+			const total =  (diffDays) * precioDia - abono;
 			document.getElementById('totalPagarInput').value = total.toFixed(2);
 		}
 	}
