@@ -133,7 +133,7 @@
 							aria-label="Cerrar"></button>
 					</div>
 					<div class="modal-body">
-						<form th:action="@{/usuarios/grabar}" method="post" th:object="${usuario}" class="row g-3">
+						<form th:action="@{/usuarios/grabar}" method="post" th:object="${usuario}" class="row g-3" enctype="multipart/form-data">
 							<div class="col-md-6">
 								<label class="form-label">Usuario</label>
 								<input type="text" th:field="*{nomUsuario}" class="form-control"
@@ -165,8 +165,8 @@
 									placeholder="Ingrese la dirección" />
 							</div>
 							<div class="col-md-6">
-								<label class="form-label">perfil</label>
-								<input type="file" class="form-control" th:field="*{perfil}" name="perfil" required>
+								<label class="form-label">Perfil</label>
+								<input type="file" class="form-control" name="imagenPerfil"required>
 								<div id="alertaFoto" class="alert alert-warning mt-2 d-none" role="alert">
 									La imagen no puede superar 1MB
 								</div>
@@ -179,7 +179,7 @@
 							</div>
 
 							<div class="col-md-6">
-								<label class="form-label">Estado</label>
+								<label class="form-label">Rol</label>
 								<select class="form-select" th:field="*{rol}" required>
 									<option th:value="ADMIN">ADMIN</option>
 									<option th:value="WORKER">WORKER</option>
@@ -209,9 +209,11 @@
 							aria-label="Cerrar"></button>
 					</div>
 					<div class="modal-body">
-						<form th:action="@{/usuarios/actualizar}" method="post" th:object="${usuario}" class="row g-3">
+						<form th:action="@{/usuarios/actualizar}" method="post" th:object="${usuario}" class="row g-3" enctype="multipart/form-data">
 
 							<input type="hidden" id="editarId" th:field="*{id}" />
+							
+							<input type="hidden" id="editarPerfil" th:field="*{perfil}" hidden />
 
 							<div class="col-md-6">
 								<label class="form-label">Usuario</label>
@@ -242,7 +244,10 @@
 							</div>
 							<div class="col-md-6">
 								<label class="form-label">Perfil</label>
-								<input type="text" id="editarPerfil" th:field="*{perfil}" class="form-control" />
+								<input type="file" name="imagenPerfil" class="form-control" />
+								<div id="alertaFoto" class="alert alert-warning mt-2 d-none" role="alert">
+									La imagen no puede superar 1MB
+								</div>
 							</div>
 							<div class="col-md-6">
 								<label class="form-label">Contraseña</label>
@@ -274,6 +279,31 @@
 	<!-- Scripts Bootstrap y validación -->
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+	<script>
+	function llenarModalEditar(button) {
+	    const id = button.getAttribute('data-id');
+	    const perfil = button.getAttribute('data-perfil');
+
+	    document.getElementById('editarId').value = id;
+	    document.getElementById('editarPerfil').value = perfil;
+	    document.getElementById('editarPerfilImg').src = perfil;
+	}
+
+	document.getElementById('editarPerfilInput').addEventListener('change', function(event) {
+	    const input = event.target;
+	    const preview = document.getElementById('editarPerfilImg');
+
+	    if (input.files && input.files[0]) {
+	        const reader = new FileReader();
+
+	        reader.onload = function(e) {
+	            preview.src = e.target.result;
+	        };
+
+	        reader.readAsDataURL(input.files[0]);
+	    }
+	});
+	</script>
 </body>
 
 </html>

@@ -12,14 +12,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import proyectosCibertec.com.model.Usuario;
 import proyectosCibertec.com.repository.IUsuarioRepository;
+import proyectosCibertec.com.service.CloudinaryService;
 
 @Controller
 @RequestMapping("/usuarios")
 public class UsuarioController {
+
+	@Autowired
+	private CloudinaryService cloudinaryService;
+
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
@@ -44,10 +50,14 @@ public class UsuarioController {
 	}
 
 	@PostMapping("/grabar")
-	public String registrarUsuario(@ModelAttribute Usuario usuario,
-			RedirectAttributes redirAtributos) {
-
-		try {
+	public String registrarUsuario( @ModelAttribute Usuario usuario,
+	        @RequestParam("imagenPerfil") MultipartFile imagenPerfil,
+	        RedirectAttributes redirAtributos) {
+	    try {
+	        if (!imagenPerfil.isEmpty()) {
+	            String urlImagen = cloudinaryService.subirImagen(imagenPerfil, "usuarios");
+	            usuario.setPerfil(urlImagen); // Guarda la URL en tu entidad
+	        }
 			usuario.setClave(passwordEncoder.encode(usuario.getClave()));
 			repoUsu.save(usuario);
 
@@ -63,9 +73,14 @@ public class UsuarioController {
 	}
 
 	@PostMapping("/actualizar")
-	public String actualizarUsuario(@ModelAttribute Usuario usuario, RedirectAttributes redirAtributos) {
-
-		try {			
+	public String actualizarUsuario(@ModelAttribute Usuario usuario,
+	        @RequestParam(value = "imagenPerfil", required = false) MultipartFile imagenPerfil,
+	        RedirectAttributes redirAtributos) {
+	    try {
+	        if (imagenPerfil != null && !imagenPerfil.isEmpty()) {
+	            String urlImagen = cloudinaryService.subirImagen(imagenPerfil, "usuarios");
+	            usuario.setPerfil(urlImagen); // Actualiza la URL en tu entidad
+	        }
 			usuario.setClave(passwordEncoder.encode(usuario.getClave()));
 			repoUsu.save(usuario);
 
@@ -78,6 +93,14 @@ public class UsuarioController {
 
 		return "redirect:/usuarios/listado";
 
+	}
+
+	private String extractPublicId(String imageUrl) {
+		if (imageUrl == null || imageUrl.isEmpty())
+			return null;
+		String[] parts = imageUrl.split("/");
+		String publicIdWithExtension = parts[parts.length - 1];
+		return publicIdWithExtension.split("\\.")[0];
 	}
 
 	@GetMapping("/eliminar/{id}")
@@ -100,6 +123,5 @@ public class UsuarioController {
 
 		return "redirect:/usuarios/listado";
 	}
-
 
 }
