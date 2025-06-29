@@ -18,7 +18,8 @@
 				<!-- Botones de acción -->
 				<div class="d-flex justify-content-between flex-wrap mb-3">
 					<a th:href="@{/alquiler/crear}" class="btn btn-sm btn-primary me-1" title="Crear">
-						Crear
+						<i class="bi bi-plus-circle me-1"></i>
+						Crear Alquiler
 					</a>
 					<div>
 						<a href="/alquiler/exportarPDF" class="btn btn-danger me-2" target="_blank">
@@ -51,11 +52,11 @@
 								<th>Cliente</th>
 								<th>Placa Vehiculo</th>
 								<th>Modelo Vehiculo</th>
-								<th>Abono</th>
 								<th>Fecha Préstamo Registro</th>
 								<th>Devolución Estimada</th>
 								<th>Devolución Real</th>
 								<th>Penalidad Impuesta</th>
+								<th>Abono</th>
 								<th>Estado</th>
 								<th>Acciones</th>
 							</tr>
@@ -66,25 +67,36 @@
 								<td th:text="${a.cliente.nombre}"></td>
 								<td th:text="${a.vehiculo.placa}"></td>
 								<td th:text="${a.vehiculo.modelo}"></td>
-								<td th:text="${a.abono}"></td>
 								<td th:text="${a.fechaPrestamo}"></td>
 								<td th:text="${a.fechaEstimadaDevolucion}"></td>
 								<td th:text="${a.fechaRealDevolucion}"></td>
 								<td th:text="${a.penalidad}"></td>
+								<td th:text="${a.abono}"></td>
 								<td>
-									<span th:classappend="${a.estado == 1} ? 'badge bg-success' : 'badge bg-danger'"
-										th:text="${a.estado == 1 ? 'Activo' : 'Inactivo'}">
+									<span th:text="${a.estado}" th:classappend="|badge 
+									        ${a.estado.contentEquals('EN PRESTAMO') ? 'bg-warning text-dark' : 
+									          a.estado.contentEquals('DEVUELTO') ? 'bg-success' : 
+									          a.estado.contentEquals('CANCELADO') ? 'bg-danger' : ''} |">
 									</span>
 								</td>
-								<td>
-									<a th:href="@{'/alquiler/editar/' + ${a.id}}" class="btn btn-sm btn-primary me-1"
-										title="Editar">
-										<i class="bi bi-pencil-square"></i>
-									</a>
 
-									<button class="btn btn-sm btn-danger" title="Eliminar">
-										<i class="bi bi-trash"></i>
+								<td>
+									<button class="btn btn-sm btn-primary me-1" title="Editar" data-bs-toggle="modal"
+										data-bs-target="#modalEditarAlquiler" th:attr="
+											data-id=${a.id},
+											data-cliente=${a.cliente.nombre},
+											data-vehiculo=${a.vehiculo.modelo},
+											data-abono=${a.abono},
+											data-estado=${a.estado},
+											data-condHabilitado=${a.estado!='EN PRESTAMO'},
+											data-itemHabilitar=${'estado'},
+										" onclick="llenarModalEditar(this)">
+										<i class="bi bi-pencil-square"></i>
 									</button>
+
+									<a th:href="@{/alquiler/detalle/{id}(id=${a.id})}" class="btn btn-sm btn-danger" title="Ver Detalle">
+										<i class="bi bi-eye"></i>
+									</a>
 								</td>
 							</tr>
 						</tbody>
@@ -112,7 +124,66 @@
 			</div>
 		</div>
 
+		<!-- Modal Edición Alquiler -->
+		<div class="modal fade" id="modalEditarAlquiler" tabindex="-1" aria-labelledby="modalEditarAlquilerLabel"
+			aria-hidden="true">
+			<div class="modal-dialog modal-lg modal-dialog-centered">
+				<div class="modal-content">
+					<form th:action="@{/alquiler/editar}" method="post" th:object="${alquiler}">
+						<div class="modal-header bg-primary text-white">
+							<h5 class="modal-title" id="modalEditarAlquilerLabel">Editar Alquiler</h5>
+							<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+								aria-label="Cerrar"></button>
+						</div>
+
+						<div class="modal-body row g-3">
+							<!-- ID Alquiler -->
+							<div class="col-md-4">
+								<label class="form-label">ID Alquiler</label>
+								<input type="text" id="editarId" th:field="*{id}" class="form-control" readonly>
+							</div>
+
+							<!-- Cliente -->
+							<div class="col-md-4">
+								<label class="form-label">Cliente</label>
+								<input disabled="true" type="text" id="editarCliente" class="form-control" readonly>
+							</div>
+
+							<!-- Vehículo -->
+							<div class="col-md-4">
+								<label class="form-label">Vehículo</label>
+								<input disabled="true" type="text" id="editarVehiculo" class="form-control" readonly>
+							</div>
+
+							<!-- Abono -->
+							<div class="col-md-6">
+								<label class="form-label">Abono</label>
+								<input type="number" id="editarAbono" th:field="*{abono}" class="form-control"
+									step="0.1" min="0" required>
+							</div>
+
+							<!-- Estado -->
+							<div class="col-md-6">
+								<label class="form-label">Estado</label>
+								<select disabled="false" class="form-select" id="editarEstado" th:field="*{estado}">
+									<option value="EN PRESTAMO">EN PRESTAMO</option>
+									<option value="DEVUELTO">DEVUELTO</option>
+									<option value="CANCELADO">CANCELADO</option>
+								</select>
+							</div>
+
+						</div>
+
+						<div class="modal-footer">
+							<button type="submit" class="btn btn-primary">Guardar Cambios</button>
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+
 	</div>
 </body>
-
 </html>

@@ -34,7 +34,7 @@ public class Alquiler {
     private LocalDate fechaRealDevolucion;
     private Integer idDoc;
     private String observacion;
-    private Integer estado;
+    private String estado;
     private BigDecimal penalidad;
     @Column(name = "penalidad_por_dia")
     private double penalidadPorDia;

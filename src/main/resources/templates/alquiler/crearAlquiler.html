@@ -58,7 +58,7 @@
 								<!-- Abono -->
 								<div class="mb-3 col-md-6">
 									<label class="form-label">Abono Inicial</label>
-									<input type="number" class="form-control" th:field="*{abono}" step="0.01" min="0" id="abonoInput" required>
+									<input type="number" class="form-control" th:field="*{abono}" step="0.1" min="0" id="abonoInput" required>
 								</div>
 
 								<!-- Fecha préstamo -->
@@ -84,37 +84,42 @@
 									<label class="form-label">Observación</label>
 									<textarea class="form-control" th:field="*{observacion}" rows="2"></textarea>
 								</div>
+								
+								<input type="hidden" id="estado" name="estado" value="EN PRESTAMO">
 							</div>
 						</div>
 
 						<!-- Detalle del sistema (lado derecho) -->
 						<div class="col-md-4">
+							<div class="p-3 bg-light border rounded">
+								
 							<h5 class="text-muted mb-3">Resumen del Alquiler</h5>
 
 							<div class="mb-3">
 								<label class="form-label">Moneda</label>
-								<input type="text" th:value="${moneda.nombre}" class="form-control" readonly>
+								<input disabled="true" type="text" th:value="${moneda.nombre}" class="form-control" readonly>
 							</div>
 
 							<div class="mb-3">
 								<label class="form-label">Precio por día</label>
-								<input type="number" class="form-control" th:field="*{precioDia}" id="precioDiaInput" step="0.01" min="0" readonly>
+								<input disabled="true" type="number" class="form-control" th:field="*{precioDia}" id="precioDiaInput" step="0.01" min="0" readonly>
 							</div>
 
 							<div class="mb-3">
 								<label class="form-label">Penalidad por día</label>
-								<input type="number" class="form-control" th:value="${penalidadXdia}" readonly>
+								<input disabled="true" type="number" class="form-control" th:value="${penalidadXdia}" readonly>
 							</div>
 
 							<div class="mb-3">
 								<label class="form-label">Total a Pagar</label>
-								<input type="number" class="form-control" id="totalPagarInput" readonly>
+								<input  disabled="true"type="number" class="form-control" id="totalPagarInput" readonly>
 							</div>
+						</div>
 						</div>
 					</div>
 
 					<div class="text-center py-3">
-						<a th:href="@{/alquiler/lista}" class="btn btn-secondary me-2">Cancelar</a>
+						<a href="/alquiler/listado" class="btn btn-secondary me-2">Cancelar</a>
 						<button type="submit" class="btn btn-primary">Guardar Cambios</button>
 					</div>
 				</form>
