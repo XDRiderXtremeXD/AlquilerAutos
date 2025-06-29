@@ -25,12 +25,12 @@
 							<div class="col-md-6">
 								<label class="form-label">RUC</label>
 								<input type="text" th:field="*{ruc}" class="form-control" required />
-								
+
 							</div>
 							<div class="col-md-6">
 								<label class="form-label">Nombre de Empresa</label>
 								<input type="text" th:field="*{nombre}" class="form-control" required />
-								
+
 							</div>
 							<div class="col-md-6">
 								<label class="form-label">Teléfono</label>
@@ -39,17 +39,17 @@
 							<div class="col-md-6">
 								<label class="form-label">Correo Electrónico</label>
 								<input type="email" th:field="*{correo}" class="form-control" required />
-								
+
 							</div>
 							<div class="col-md-6">
 								<label class="form-label">Dirección</label>
 								<input type="text" th:field="*{direccion}" class="form-control" required />
-								
+
 							</div>
 							<div class="col-md-6">
 								<label class="form-label">Mensaje</label>
 								<input type="text" th:field="*{mensaje}" class="form-control" required />
-								
+
 							</div>
 							<div class="col-md-6">
 								<label class="form-label">Logo</label>
@@ -65,17 +65,17 @@
 									</option>
 								</select>
 							</div>
-						
+
 							<div class="col-md-6">
-								<label class="form-label">Cantidad Máxima de Facturas</label>
-								<input type="number" th:field="*{cantidadFactura}" class="form-control" required />
-								
+								<label class="form-label">Impuesto (%)</label>
+								<input type="number" step="any" th:field="*{impuesto}" class="form-control" required />
+
 							</div>
 							<div class="col-md-6">
 								<label class="form-label">Penalidad por Día (S/.)</label>
 								<input type="number" step="any" th:field="*{penalidadPorDia}" class="form-control"
 									required />
-								
+
 							</div>
 						</div>
 
