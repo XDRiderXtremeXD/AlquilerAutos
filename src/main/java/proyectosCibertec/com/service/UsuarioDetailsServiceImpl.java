@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.*;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import proyectosCibertec.com.model.Usuario;
 import proyectosCibertec.com.repository.IUsuarioRepository;
+import proyectosCibertec.com.security.UsuarioDetailsSession;
 
 
 @Service
@@ -23,10 +24,6 @@ public class UsuarioDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException("Usuario no encontrado o inactivo");
         }
 
-        return new org.springframework.security.core.userdetails.User(
-            usuario.getNomUsuario(),
-            usuario.getClave(),
-            Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
-        );
+        return new UsuarioDetailsSession(usuario);
     }
 }

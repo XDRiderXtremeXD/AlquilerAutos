@@ -20,6 +20,11 @@ import proyectosCibertec.com.repository.IConfiguracionRepository;
 import proyectosCibertec.com.repository.IDocumentosRepository;
 import proyectosCibertec.com.repository.IMarcasRepository;
 import proyectosCibertec.com.repository.IVehiculosRepository;
+import proyectosCibertec.com.security.UsuarioDetailsSession;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import proyectosCibertec.com.model.Usuario;
 
 @Controller
 @RequestMapping("/alquiler")
@@ -45,8 +50,8 @@ public class AlquilerController {
 
 	@GetMapping("/listado")
 	public String alquilerVista(Model model, @RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "5") int size) {
-
+			@RequestParam(defaultValue = "5") int size) {	
+		
 		Page<Alquiler> pagina = alquilerRepository.findAll(PageRequest.of(page, size));
 		model.addAttribute("pagina", pagina);
 		model.addAttribute("paginaActual", page);
@@ -77,14 +82,15 @@ public class AlquilerController {
 
 		try {
 			Configuracion configuracion = configuracionRepository.findById(1).orElse(new Configuracion());
+			Vehiculos vehiculo=vehiculosRepository.findById(alquiler.getIdVehiculo()).orElse(null);
+			
 			alquiler.setPenalidadPorDia(configuracion.getPenalidadPorDia());
 			alquiler.setIdMoneda(configuracion.getMoneda().getId());
-			alquilerRepository.save(alquiler);
-
+			alquiler.setPrecioDia(BigDecimal.valueOf((vehiculo.getPrecioXDia())));
 			
-			Vehiculos vehiculo = vehiculosRepository.findById(alquiler.getIdVehiculo()).orElse(null);
+			alquilerRepository.save(alquiler);
 			vehiculo.setActividad("PRESTADO");
-			System.out.println(vehiculo);
+			
 			vehiculosRepository.save(vehiculo);
 			
 		} catch (Exception e) {
@@ -119,10 +125,11 @@ public class AlquilerController {
 				.orElseThrow(() -> new IllegalArgumentException("ID inválido"));
 
 		alquilerBD.setAbono(alquilerForm.getAbono());
+		if(alquilerForm.getEstado()!=null)
 		alquilerBD.setEstado(alquilerForm.getEstado());
 		alquilerRepository.save(alquilerBD);
 
-		if (!alquilerForm.getEstado().contentEquals("EN PRESTAMO")) {
+		if (alquilerForm.getEstado()!=null && !alquilerForm.getEstado().contentEquals("EN PRESTAMO")) {
 			Vehiculos vehiculo = alquilerBD.getVehiculo();
 			vehiculo.setActividad("LIBRE");
 			vehiculosRepository.save(vehiculo);

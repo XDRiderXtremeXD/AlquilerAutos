@@ -23,14 +23,12 @@
 		<div class="d-flex align-items-center">
 		  <!-- Dropdown perfil con icono y estado -->
 		  <div class="dropdown text-end">
-		    <a href="#" class="d-flex align-items-center link-light text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-				<!-- Texto En línea -->
-						      <span class="badge me-2 bg-success">En línea</span>
-		      <!-- Icono de usuario -->
-		      <i class="bi bi-person-circle fs-4 "></i>
-		    </a>
+			<a href="#" class="d-flex align-items-center link-light text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+			  <span class="badge me-2 bg-success">En línea</span>
+			  <img th:src="@{${fotoUsuario}}" class="rounded-circle me-2" alt="Foto" width="32" height="32" onerror="this.onerror=null; this.src='/images/default-user.png';">
+			</a>
 		    <ul class="dropdown-menu dropdown-menu-dark text-small" aria-labelledby="dropdownUser1">
-		      <li><a class="dropdown-item" href="#">Profile</a></li>
+		      <li><a class="dropdown-item" href="/usuario/perfil">Profile</a></li>
 		      <li><hr class="dropdown-divider"></li>
 			  <li>
 			      <a class="dropdown-item" href="#" onclick="document.getElementById('logoutForm').submit(); return false;">
@@ -51,16 +49,17 @@
   <!-- Sidebar oscuro y altura completa -->
   <div class="d-flex">
     <div class="flex-shrink-0 text-white bg-dark overflow-y-auto" style="width: 280px; height: calc(100vh - 56px); padding-bottom: 1rem;">
-		<a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none bg-info p-2 rounded">
-		  <i class="bi bi-person-circle me-2 fs-4"></i>
+		<a href="/usuario/perfil" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none bg-info p-2 rounded">
+		  <img th:src="@{${fotoUsuario}}" class="rounded-circle me-2" alt="Foto" width="32" height="32" onerror="this.onerror=null; this.src='/images/default-user.png';">
 		  <span class="fs-4">Datos personales</span>
-		</a>
+		</a>		
 
 		<ul class="nav nav-pills flex-column mb-auto">
 
 		  <!-- Administración con ícono desplegable -->
-		  <li>
-		    <a class="nav-link text-white d-flex justify-content-between align-items-center collapsed" data-bs-toggle="collapse" href="#adminSubmenu" role="button" aria-expanded="false" aria-controls="adminSubmenu">
+		  <li th:if="${rolUsuario == 'ROLE_ADMIN'}">
+		    <a class="nav-link text-white d-flex justify-content-between align-items-center collapsed"
+		       data-bs-toggle="collapse" href="#adminSubmenu" role="button" aria-expanded="false" aria-controls="adminSubmenu">
 		      <span><i class="bi bi-gear me-2"></i>Administración</span>
 		      <i class="bi bi-chevron-down"></i>
 		    </a>

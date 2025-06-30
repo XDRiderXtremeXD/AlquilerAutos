@@ -56,6 +56,7 @@
 						<thead class="table-light">
 							<tr>
 								<th scope="col">ID</th>
+								<th scope="col">Perfil</th>
 								<th scope="col">Usuario</th>
 								<th scope="col">Nombre Completo</th>
 								<th scope="col">Correo</th>
@@ -76,6 +77,9 @@
 							<!-- Listado de Usuarios -->
 							<tr th:each="u : ${lstUsuarios}">
 								<td th:text="${u.id}"></td>
+								<td>
+								    <img th:src="${u.perfil}" alt="Foto de perfil" width="60" height="60" style="object-fit: cover; border-radius: 50%;" />
+								</td>
 								<td th:text="${u.nomUsuario}"></td>
 								<td th:text="${u.nombre + ' ' + u.apellido}"></td>
 								<td th:text="${u.correo}"></td>
@@ -145,7 +149,7 @@
 							aria-label="Cerrar"></button>
 					</div>
 					<div class="modal-body">
-						<form th:action="@{/usuarios/grabar}" method="post" th:object="${usuario}" class="row g-3">
+						<form th:action="@{/usuarios/grabar}" method="post" th:object="${usuario}" class="row g-3" enctype="multipart/form-data">
 							<div class="col-md-6">
 								<label class="form-label">Usuario</label>
 								<input type="text" th:field="*{nomUsuario}" class="form-control"
@@ -183,13 +187,13 @@
 									placeholder="Ingrese el perfil (opcional)" />
 							</div>
 							 -->
-							<div class="col-md-6">
-								<label class="form-label">Foto</label>
-								<input type="file" class="form-control" th:field="*{perfil}" required>
-								<div id="alertaFoto" class="alert alert-warning mt-2 d-none" role="alert">
-									La imagen no puede superar 1MB
-								</div>
-							</div>
+							 <div class="col-md-6">
+							     <label class="form-label">Foto de Perfil</label>
+							     <input type="file" class="form-control" name="filePerfil" required>
+							     <div id="alertaFoto" class="alert alert-warning mt-2 d-none" role="alert">
+							         La imagen no puede superar 1MB
+							     </div>
+							 </div>
 							
 							<div class="col-md-6">
 								<label class="form-label">Contraseña</label>
@@ -235,7 +239,7 @@
 							aria-label="Cerrar"></button>
 					</div>
 					<div class="modal-body">
-						<form th:action="@{/usuarios/grabar}" method="post" th:object="${usuario}" class="row g-3">
+						<form th:action="@{/usuarios/grabar}" method="post" th:object="${usuario}" class="row g-3" enctype="multipart/form-data">
 
 							<input type="hidden" id="editarId" th:field="*{id}" />
 
@@ -267,9 +271,12 @@
 								<input type="text" id="editarDireccion" th:field="*{direccion}" class="form-control" />
 							</div>
 							<div class="col-md-6">
-								<label class="form-label">Perfil</label>
-								<input type="text" id="editarPerfil" th:field="*{perfil}" class="form-control" />
-							</div>
+														     <label class="form-label">Foto de Perfil</label>
+														     <input type="file" class="form-control" name="filePerfil" required>
+														     <div id="alertaFoto" class="alert alert-warning mt-2 d-none" role="alert">
+														         La imagen no puede superar 1MB
+														     </div>
+														 </div>
 							<div class="col-md-6">
 								<label class="form-label">Contraseña</label>
 								<input type="password" id="editarClave" th:field="*{clave}" class="form-control"
