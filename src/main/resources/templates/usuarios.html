@@ -15,16 +15,18 @@
 		<div class="card shadow-sm">
 			<div class="card-body">
 				<h1 class="h4 card-title mb-4">Gestión de Usuarios</h1>
-
-
+				
 				<!-- Botones de acción -->
 				<div class="d-flex justify-content-between flex-wrap mb-3">
-					<button type="button" class="btn btn-primary mb-2" data-bs-toggle="modal"
-						data-bs-target="#modalRegistrarUsuario">
-						<i class="bi bi-plus-circle me-1"></i> Nuevo
+					<button class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target="#modalRegistrarUsuario">
+						<i class="bi bi-plus-circle me-1"></i> Nuevo Usuario
 					</button>
-
+					<a href="/usuarios/reporte" class="btn btn-danger mb-2" target="_blank">
+						<i class="bi bi-file-earmark-arrow-down-fill"></i> Reporte
+					</a>
 				</div>
+
+				
 
 				<!-- Filtro de tamaño -->
 				<form class="mb-3" method="get" th:action="@{/usuarios/listado}">

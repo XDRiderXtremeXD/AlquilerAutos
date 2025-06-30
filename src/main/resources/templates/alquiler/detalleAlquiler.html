@@ -99,11 +99,19 @@
 				</div>
 
 				<!-- Botón volver -->
-				<div class="mt-4">
+				<div class="mt-4 d-flex justify-content-between">
 					<a th:href="@{/alquiler/listado}" class="btn btn-secondary">Volver al Listado</a>
+					<form th:action="@{/alquiler/detalle}" method="post" target="_blank">
+						<input type="hidden" name="id" th:value="${alquiler.id}" />
+						<button type="submit" class="btn btn-danger">
+							<i class="bi bi-file-earmark-arrow-down-fill me-1"></i> Generar PDF
+						</button>
+					</form>
 				</div>
+
 			</div>
 		</div>
+
 	</div>
 </body>
 

@@ -11,12 +11,27 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import proyectosCibertec.com.model.Clientes;
 import proyectosCibertec.com.repository.IClienteRepository;
 
+import jakarta.servlet.http.HttpServletResponse;
+import net.sf.jasperreports.engine.*;
+import org.springframework.core.io.ResourceLoader;
+
+import javax.sql.DataSource;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
+
 @Controller
 @RequestMapping("/clientes")
 public class ClientesController {
 
     @Autowired
     private IClienteRepository repoCliente;
+    
+    @Autowired
+    private DataSource dataSource;
+
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     @GetMapping("/listado")
     public String listarClientes(
@@ -74,4 +89,28 @@ public class ClientesController {
 
         return "redirect:/clientes/listado";
     }
+    
+    @GetMapping("/reporte")
+    public void generarReporteClientes(HttpServletResponse response) {
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "inline; filename=clientes.pdf");
+
+        try {
+            // Ruta del archivo .jasper compilado
+            String ruta = resourceLoader.getResource("classpath:/static/clientes.jasper")
+                                        .getFile()
+                                        .getAbsolutePath();
+
+            Map<String, Object> parametros = new HashMap<>();
+            // Agrega parámetros si los necesitas: parametros.put("clave", valor);
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(ruta, parametros, dataSource.getConnection());
+
+            OutputStream out = response.getOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, out);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

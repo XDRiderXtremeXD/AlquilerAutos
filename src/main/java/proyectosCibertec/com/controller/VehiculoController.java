@@ -17,6 +17,15 @@ import proyectosCibertec.com.repository.ITiposRepository;
 import proyectosCibertec.com.repository.IVehiculosRepository;
 import proyectosCibertec.com.service.CloudinaryService;
 
+import java.io.OutputStream;
+import java.util.HashMap;
+import jakarta.servlet.http.HttpServletResponse;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import org.springframework.core.io.ResourceLoader;
+import javax.sql.DataSource;
+
 @Controller
 @RequestMapping("/vehiculos")
 public class VehiculoController {
@@ -32,6 +41,12 @@ public class VehiculoController {
 
     @Autowired
     private CloudinaryService cloudinaryService;
+    
+    @Autowired
+    private DataSource dataSource;
+
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     @GetMapping("/listado")
     public String vehiculos_crud(Model model) {
@@ -204,5 +219,26 @@ public class VehiculoController {
             redir.addFlashAttribute("tipoMensaje", "error");
         }
         return "redirect:/vehiculos/cancelados";
+    }
+    
+    @GetMapping("/reporte")
+    public void generarReporte(HttpServletResponse response) {
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "inline; filename=vehiculos.pdf");
+
+        try {
+            String ruta = resourceLoader.getResource("classpath:/static/vehiculos.jasper")
+                                        .getFile()
+                                        .getAbsolutePath();
+
+            HashMap<String, Object> parametros = new HashMap<>();
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(ruta, parametros, dataSource.getConnection());
+
+            OutputStream outStream = response.getOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, outStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
