@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import proyectosCibertec.com.model.Configuracion;
 import proyectosCibertec.com.repository.IConfiguracionRepository;
@@ -33,14 +34,14 @@ public class ConfiguracionController {
 	}
 	
 	@PostMapping("/grabar")
-	public String grabar(@ModelAttribute Configuracion configuracion, Model model) {
+	public String grabar(@ModelAttribute Configuracion configuracion, RedirectAttributes redirAtributos) {
 		try {
 			repoConfig.save(configuracion);
-			model.addAttribute("mensaje", "Configuración modificado exitosamente");
-			model.addAttribute("cssmensaje", "alert alert-success");
+			redirAtributos.addFlashAttribute("mensaje", "Configuración modificado exitosamente");
+			redirAtributos.addFlashAttribute("cssmensaje", "alert alert-success");
 		} catch (Exception e) {
-			model.addAttribute("mensaje", "Error al actualizar: ".concat(e.getMessage()));
-			model.addAttribute("cssmensaje", "alert alert-danger");
+			redirAtributos.addFlashAttribute("mensaje", "Error al actualizar: ".concat(e.getMessage()));
+			redirAtributos.addFlashAttribute("cssmensaje", "alert alert-danger");
 		}
 		return "redirect:/configuracion/";
 	}
