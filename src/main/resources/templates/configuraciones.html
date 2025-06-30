@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/main_layout.html}">
+<html lang="es" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"  layout:decorate="~{layouts/main_layout.html}">
 
 <head>
 	<meta charset="utf-8">
@@ -12,14 +12,18 @@
 		<div class="card shadow-sm">
 			<div class="card-body">
 				<h5 class="h4 card-title mb-4">Modificar Confiruración</h5>
-				<div class="modal-body">
-					<div th:if="${mensaje}" th:text="${mensaje}" th:class="${cssmensaje}"></div>
+				<div th:if="${cssmensaje != null}" th:class="${cssmensaje}" th:text="${mensaje}" role="alert"
+						style="margin-top: 15px;"></div>
 
+				<div class="modal-body">
+					
 					<!-- Formulario -->
 					<form th:action="@{/configuracion/grabar}" method="post" th:object="${configuracion}"
 						class="needs-validation" novalidate>
 
 						<input type="hidden" th:field="*{id}" />
+						<input type="hidden" th:field="*{cantidadFactura}" />
+						<input type="hidden" th:field="*{logo}" class="form-control" placeholder="Ej: logo.png" />
 
 						<div class="row g-3">
 							<div class="col-md-6">
@@ -51,10 +55,7 @@
 								<input type="text" th:field="*{mensaje}" class="form-control" required />
 
 							</div>
-							<div class="col-md-6">
-								<label class="form-label">Logo</label>
-								<input type="text" th:field="*{logo}" class="form-control" placeholder="Ej: logo.png" />
-							</div>
+							
 							<div class="col-md-6">
 								<label class="form-label">Moneda</label>
 								<select class="form-select" th:field="*{idmoneda}" required>
@@ -88,6 +89,8 @@
 		</div>
 
 	</div>
+	
+	
 </body>
 
 </html>
