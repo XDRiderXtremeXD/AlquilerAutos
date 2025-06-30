@@ -17,7 +17,8 @@ public class CloudinaryService {
 
     public String subirImagen(MultipartFile file, String folder) {
         try {
-            Map<String, Object> uploadOptions = ObjectUtils.asMap(
+            @SuppressWarnings("unchecked")
+			Map<String, Object> uploadOptions = ObjectUtils.asMap(
                 "folder", folder // Especificamos la carpeta
             );
             

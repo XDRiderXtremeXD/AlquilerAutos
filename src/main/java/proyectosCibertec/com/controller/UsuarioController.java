@@ -32,6 +32,9 @@ public class UsuarioController {
 	@Autowired
 	private IUsuarioRepository repoUsu;
 
+	@Autowired
+	private CloudinaryService cloudinaryService;
+
 	@GetMapping("/login")
 	public String loginPage() {
 		return "login";
@@ -50,49 +53,58 @@ public class UsuarioController {
 	}
 
 	@PostMapping("/grabar")
-	public String registrarUsuario( @ModelAttribute Usuario usuario,
-	        @RequestParam("imagenPerfil") MultipartFile imagenPerfil,
+  
+	public String registrarUsuario(
+	        @ModelAttribute Usuario usuario,
+	        @RequestParam("filePerfil") MultipartFile file, // este nombre debe coincidir con el del formulario
 	        RedirectAttributes redirAtributos) {
+
 	    try {
-	        if (!imagenPerfil.isEmpty()) {
-	            String urlImagen = cloudinaryService.subirImagen(imagenPerfil, "usuarios");
-	            usuario.setPerfil(urlImagen); // Guarda la URL en tu entidad
+	        // Validación de archivo vacío
+	        if (file.isEmpty()) {
+	            redirAtributos.addFlashAttribute("mensaje", "Debe seleccionar una imagen de perfil para el usuario.");
+	            redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+	            return "redirect:/usuarios/listado";
 	        }
-			usuario.setClave(passwordEncoder.encode(usuario.getClave()));
-			repoUsu.save(usuario);
 
-			redirAtributos.addFlashAttribute("mensaje", "Usuario registrado exitosamente");
-			redirAtributos.addFlashAttribute("cssmensaje", "alert alert-success");
-		} catch (Exception e) {
-			redirAtributos.addFlashAttribute("mensaje", "Error al registrar" + e.getMessage());
-			redirAtributos.addFlashAttribute("cssmensaje", "alert alert-danger");
-		}
-
-		return "redirect:/usuarios/listado";
-
-	}
-
-	@PostMapping("/actualizar")
-	public String actualizarUsuario(@ModelAttribute Usuario usuario,
-	        @RequestParam(value = "imagenPerfil", required = false) MultipartFile imagenPerfil,
-	        RedirectAttributes redirAtributos) {
-	    try {
-	        if (imagenPerfil != null && !imagenPerfil.isEmpty()) {
-	            String urlImagen = cloudinaryService.subirImagen(imagenPerfil, "usuarios");
-	            usuario.setPerfil(urlImagen); // Actualiza la URL en tu entidad
+	        // Validar extensión
+	        String originalFilename = file.getOriginalFilename();
+	        String extension = "";
+	        if (originalFilename != null && originalFilename.lastIndexOf(".") != -1) {
+	            extension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
 	        }
-			usuario.setClave(passwordEncoder.encode(usuario.getClave()));
-			repoUsu.save(usuario);
+	        if (!extension.equals("jpg") && !extension.equals("jpeg") && !extension.equals("png")) {
+	            redirAtributos.addFlashAttribute("mensaje", "La imagen debe estar en formato JPG, JPEG o PNG");
+	            redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+	            return "redirect:/usuarios/listado";
+	        }
 
-			redirAtributos.addFlashAttribute("mensaje", "Usuario actualizado exitosamente");
-			redirAtributos.addFlashAttribute("cssmensaje", "alert alert-success");
-		} catch (Exception e) {
-			redirAtributos.addFlashAttribute("mensaje", "Error al registrar" + e.getMessage());
-			redirAtributos.addFlashAttribute("cssmensaje", "alert alert-danger");
-		}
+	        // Validación de tamaño
+	        if (file.getSize() > 1048576) {
+	            redirAtributos.addFlashAttribute("mensaje", "La imagen no puede superar 1MB");
+	            redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+	            return "redirect:/usuarios/listado";
+	        }
 
-		return "redirect:/usuarios/listado";
+	        // Subir a Cloudinary
+	        String secureUrl = cloudinaryService.subirImagen(file, "usuarios");
+	        usuario.setPerfil(secureUrl); // guardar la URL en el campo perfil
 
+	        // Encriptar contraseña
+	        usuario.setClave(passwordEncoder.encode(usuario.getClave()));
+
+	        // Guardar en BD
+	        repoUsu.save(usuario);
+
+	        redirAtributos.addFlashAttribute("mensaje", "Usuario registrado exitosamente");
+	        redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
+
+	    } catch (Exception e) {
+	        redirAtributos.addFlashAttribute("mensaje", "Error al registrar usuario: " + e.getMessage());
+	        redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+	    }
+
+	    return "redirect:/usuarios/listado";
 	}
 
 	private String extractPublicId(String imageUrl) {
@@ -102,6 +114,8 @@ public class UsuarioController {
 		String publicIdWithExtension = parts[parts.length - 1];
 		return publicIdWithExtension.split("\\.")[0];
 	}
+
+
 
 	@GetMapping("/eliminar/{id}")
 	public String eliminarUsuario(@PathVariable Integer id, RedirectAttributes addFlashAttribute) {
