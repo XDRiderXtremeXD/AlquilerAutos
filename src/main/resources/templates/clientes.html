@@ -15,7 +15,7 @@
 			<div class="card-body">
 				<h1 class="h4 card-title mb-4">Gestión de Clientes</h1>
 
-				<div th:class="${cssmensaje}" th:text="${mensaje}"></div>
+				<div th:if="${css_mensaje != null}" th:class="${css_mensaje}" th:text="${mensaje}" role="alert" style="margin-top: 15px;"></div>
 
 				<!-- Botón para nuevo cliente -->
 				<div class="d-flex justify-content-between flex-wrap mb-3">

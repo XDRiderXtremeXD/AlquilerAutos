@@ -19,6 +19,7 @@ public class ConfiguracionController {
 	
 	@Autowired
 	private IConfiguracionRepository repoConfig;
+
 	@Autowired
 	private IMonedaRepository repoMoneda;
 	
@@ -26,7 +27,7 @@ public class ConfiguracionController {
 	@GetMapping("/")
 	public String editarConfiguracion(Model model) {
 
-		Configuracion configuracion = repoConfig.findById(1).get();
+		Configuracion configuracion = repoConfig.findById(1).orElse(new Configuracion());
 		model.addAttribute("configuracion", configuracion);
 		model.addAttribute("lstMonedas", repoMoneda.findAll());
 
@@ -37,14 +38,14 @@ public class ConfiguracionController {
 	public String grabar(@ModelAttribute Configuracion configuracion, RedirectAttributes redirAtributos) {
 		try {
 			repoConfig.save(configuracion);
-			redirAtributos.addFlashAttribute("mensaje", "Configuración modificado exitosamente");
-			redirAtributos.addFlashAttribute("cssmensaje", "alert alert-success");
+			redirAtributos.addFlashAttribute("mensaje", "Configuración modificada exitosamente");
+			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
+			redirAtributos.addFlashAttribute("tipoMensaje", "success");
 		} catch (Exception e) {
-			redirAtributos.addFlashAttribute("mensaje", "Error al actualizar: ".concat(e.getMessage()));
-			redirAtributos.addFlashAttribute("cssmensaje", "alert alert-danger");
+			redirAtributos.addFlashAttribute("mensaje", "Error al actualizar: " + e.getMessage());
+			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+			redirAtributos.addFlashAttribute("tipoMensaje", "error");
 		}
 		return "redirect:/configuracion/";
 	}
-	
-
 }

@@ -5,12 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -25,234 +20,189 @@ import proyectosCibertec.com.service.CloudinaryService;
 @Controller
 @RequestMapping("/vehiculos")
 public class VehiculoController {
-	@Autowired
-	private IVehiculosRepository repoVehiculo;
 
-	@Autowired
-	private IMarcasRepository repoMarca;
+    @Autowired
+    private IVehiculosRepository repoVehiculo;
 
-	@Autowired
-	private ITiposRepository repoTipo;
+    @Autowired
+    private IMarcasRepository repoMarca;
 
-	// Cloudinary
-	@Autowired
-	private CloudinaryService cloudinaryService;
+    @Autowired
+    private ITiposRepository repoTipo;
 
-	@GetMapping("/listado")
-	public String vehiculos_crud(Model model) {
-		List<Vehiculos> listaVehiculos = repoVehiculo.findByEstado(1);
-		List<Marcas> listaMarcas = repoMarca.findByEstado(1);
-		List<Tipos> listaTipos = repoTipo.findByEstado(1);
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
-		model.addAttribute("lstVehiculos", listaVehiculos);
-		model.addAttribute("lstMarcas", listaMarcas);
-		model.addAttribute("lstTipos", listaTipos);
+    @GetMapping("/listado")
+    public String vehiculos_crud(Model model) {
+        List<Vehiculos> listaVehiculos = repoVehiculo.findByEstado(1);
+        List<Marcas> listaMarcas = repoMarca.findByEstado(1);
+        List<Tipos> listaTipos = repoTipo.findByEstado(1);
 
-		model.addAttribute("vehiculos", new Vehiculos());
-		
-	    // Para el listado de vehiculos activos
-	    model.addAttribute("vista", "activos");
+        model.addAttribute("lstVehiculos", listaVehiculos);
+        model.addAttribute("lstMarcas", listaMarcas);
+        model.addAttribute("lstTipos", listaTipos);
+        model.addAttribute("vehiculos", new Vehiculos());
+        model.addAttribute("vista", "activos");
 
-		return "vehiculos";
-	}
+        return "vehiculos";
+    }
 
-	// Extraer el public ID de la URL de Cloudinary
-	private String extractPublicId(String url) {
-		if (url == null || url.isEmpty()) {
-			return null;
-		}
-		try {
-			int uploadIndex = url.indexOf("/upload/");
-			if (uploadIndex == -1) {
-				return null; // No es una URL de Cloudinary o no tiene el formato esperado
-			}
+    private String extractPublicId(String url) {
+        if (url == null || url.isEmpty()) return null;
+        try {
+            int uploadIndex = url.indexOf("/upload/");
+            if (uploadIndex == -1) return null;
 
-			String pathAfterUpload = url.substring(uploadIndex + "/upload/".length());
+            String pathAfterUpload = url.substring(uploadIndex + "/upload/".length());
+            if (pathAfterUpload.matches("^v\\d+/.*")) {
+                pathAfterUpload = pathAfterUpload.substring(pathAfterUpload.indexOf("/") + 1);
+            }
 
-			if (pathAfterUpload.matches("^v\\d+/.*")) {
-				pathAfterUpload = pathAfterUpload.substring(pathAfterUpload.indexOf("/") + 1);
-			}
+            int lastDotIndex = pathAfterUpload.lastIndexOf(".");
+            return (lastDotIndex != -1) ? pathAfterUpload.substring(0, lastDotIndex) : pathAfterUpload;
+        } catch (Exception e) {
+            System.err.println("Error al extraer public ID de Cloudinary: " + e.getMessage());
+            return null;
+        }
+    }
 
-			// Elimina la extensión del archivo.
-			int lastDotIndex = pathAfterUpload.lastIndexOf(".");
-			if (lastDotIndex != -1) {
-				return pathAfterUpload.substring(0, lastDotIndex);
-			} else {
-				return pathAfterUpload;
-			}
-		} catch (Exception e) {
-			System.err.println("Error al extraer public ID de la URL: " + url + " - " + e.getMessage());
-			return null;
-		}
-	}
+    @PostMapping("/editar")
+    public String editarVehiculo(@ModelAttribute Vehiculos vehiculo,
+                                 @RequestParam(value = "fileFotoEdit", required = false) MultipartFile file,
+                                 @RequestParam("fotoActual") String fotoActual,
+                                 RedirectAttributes redir) {
+        try {
+            vehiculo.setObjMarca(repoMarca.findById(vehiculo.getIdMarca()).orElse(null));
+            vehiculo.setObjTipo(repoTipo.findById(vehiculo.getIdTipo()).orElse(null));
 
-	@PostMapping("/editar")
-	public String editarVehiculo(@ModelAttribute Vehiculos vehiculo,
-			@RequestParam(value = "fileFotoEdit", required = false) MultipartFile file,
-			@RequestParam("fotoActual") String fotoActual, RedirectAttributes redirAtributos) {
+            if (file != null && !file.isEmpty()) {
+                String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1).toLowerCase();
+                if (!ext.matches("jpg|jpeg|png")) {
+                    redir.addFlashAttribute("mensaje", "La imagen debe estar en formato JPG, JPEG o PNG");
+                    redir.addFlashAttribute("css_mensaje", "alert alert-danger");
+                    redir.addFlashAttribute("tipoMensaje", "error");
+                    return "redirect:/vehiculos/listado";
+                }
 
-		try {
+                if (file.getSize() > 1048576) {
+                    redir.addFlashAttribute("mensaje", "La imagen no puede superar 1MB");
+                    redir.addFlashAttribute("css_mensaje", "alert alert-danger");
+                    redir.addFlashAttribute("tipoMensaje", "error");
+                    return "redirect:/vehiculos/listado";
+                }
 
-			vehiculo.setObjMarca(repoMarca.findById(vehiculo.getIdMarca()).orElse(null));
-			vehiculo.setObjTipo(repoTipo.findById(vehiculo.getIdTipo()).orElse(null));
+                String publicId = extractPublicId(fotoActual);
+                if (publicId != null) cloudinaryService.eliminarImagen(publicId);
 
-			// Validar si hay nueva foto subida
-			if (file != null && !file.isEmpty()) {
-				String originalFilename = file.getOriginalFilename();
-				String extension = "";
-				if (originalFilename != null && originalFilename.lastIndexOf(".") != -1) {
-					extension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
-				}
+                String url = cloudinaryService.subirImagen(file, "vehiculos");
+                vehiculo.setFoto(url);
+            } else {
+                vehiculo.setFoto(fotoActual);
+            }
 
-				// Validar que sea JPG, JPEG o PNG
-				if (!extension.equals("jpg") && !extension.equals("jpeg") && !extension.equals("png")) {
-					redirAtributos.addFlashAttribute("mensaje", "La imagen debe estar en formato JPG, JPEG o PNG");
-					redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
-					return "redirect:/vehiculos/listado";
-				}
+            repoVehiculo.save(vehiculo);
+            redir.addFlashAttribute("mensaje", "Vehículo actualizado correctamente");
+            redir.addFlashAttribute("css_mensaje", "alert alert-success");
+            redir.addFlashAttribute("tipoMensaje", "success");
 
-				// Validación de tamaño máximo 1MB
-				if (file.getSize() > 1048576) {
-					redirAtributos.addFlashAttribute("mensaje", "La imagen no puede superar 1MB");
-					redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
-					return "redirect:/vehiculos/listado";
-				}
+        } catch (Exception e) {
+            redir.addFlashAttribute("mensaje", "Error al actualizar vehículo: " + e.getMessage());
+            redir.addFlashAttribute("css_mensaje", "alert alert-danger");
+            redir.addFlashAttribute("tipoMensaje", "error");
+        }
+        return "redirect:/vehiculos/listado";
+    }
 
-				// Eliminar la foto anterior si se va a reemplazar
-				if (fotoActual != null && !fotoActual.isBlank()) {
-					String publicIdToDelete = extractPublicId(fotoActual); // Extrae el public ID de la URL actual
-					if (publicIdToDelete != null) {
-						cloudinaryService.eliminarImagen(publicIdToDelete);
-					}
-				}
+    @PostMapping("/registro")
+    public String registrarVehiculo(@ModelAttribute Vehiculos vehiculos,
+                                    @RequestParam("fileFoto") MultipartFile file,
+                                    RedirectAttributes redir) {
+        try {
+            if (file.isEmpty()) {
+                redir.addFlashAttribute("mensaje", "Debe seleccionar una imagen para el vehículo.");
+                redir.addFlashAttribute("css_mensaje", "alert alert-danger");
+                redir.addFlashAttribute("tipoMensaje", "error");
+                return "redirect:/vehiculos/listado";
+            }
 
-				String secureUrl = cloudinaryService.subirImagen(file, "vehiculos");
-				vehiculo.setFoto(secureUrl); // Guardar URL de Cloudinary
+            String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1).toLowerCase();
+            if (!ext.matches("jpg|jpeg|png")) {
+                redir.addFlashAttribute("mensaje", "La imagen debe estar en formato JPG, JPEG o PNG");
+                redir.addFlashAttribute("css_mensaje", "alert alert-danger");
+                redir.addFlashAttribute("tipoMensaje", "error");
+                return "redirect:/vehiculos/listado";
+            }
 
-			} else {
-				// Si no se sube una nueva foto, mantener foto existente
-				vehiculo.setFoto(fotoActual);
-			}
+            if (file.getSize() > 1048576) {
+                redir.addFlashAttribute("mensaje", "La imagen no puede superar 1MB");
+                redir.addFlashAttribute("css_mensaje", "alert alert-danger");
+                redir.addFlashAttribute("tipoMensaje", "error");
+                return "redirect:/vehiculos/listado";
+            }
 
-			repoVehiculo.save(vehiculo);
+            String secureUrl = cloudinaryService.subirImagen(file, "vehiculos");
+            vehiculos.setFoto(secureUrl);
+            repoVehiculo.save(vehiculos);
 
-			redirAtributos.addFlashAttribute("mensaje", "Vehículo actualizado correctamente");
-			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
+            redir.addFlashAttribute("mensaje", "Vehículo registrado correctamente");
+            redir.addFlashAttribute("css_mensaje", "alert alert-success");
+            redir.addFlashAttribute("tipoMensaje", "success");
 
-		} catch (Exception e) {
-			redirAtributos.addFlashAttribute("mensaje", "Error al actualizar vehículo: " + e.getMessage());
-			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
-			e.printStackTrace();
-		}
-		return "redirect:/vehiculos/listado";
-	}
+        } catch (Exception e) {
+            redir.addFlashAttribute("mensaje", "Error al registrar vehículo: " + e.getMessage());
+            redir.addFlashAttribute("css_mensaje", "alert alert-danger");
+            redir.addFlashAttribute("tipoMensaje", "error");
+        }
+        return "redirect:/vehiculos/listado";
+    }
 
-	@GetMapping("/eliminar/{id}")
-	public String eliminarVehiculo(@PathVariable int id, RedirectAttributes redirAtributos) {
-		try {
-			Vehiculos vehiculo = repoVehiculo.findById(id).orElse(null);
+    @GetMapping("/eliminar/{id}")
+    public String eliminarVehiculo(@PathVariable int id, RedirectAttributes redir) {
+        try {
+            Vehiculos vehiculo = repoVehiculo.findById(id).orElse(null);
+            if (vehiculo != null) {
+                vehiculo.setEstado(2);
+                repoVehiculo.save(vehiculo);
+                redir.addFlashAttribute("mensaje", "Vehículo cancelado correctamente");
+                redir.addFlashAttribute("css_mensaje", "alert alert-success");
+                redir.addFlashAttribute("tipoMensaje", "success");
+            }
+        } catch (Exception e) {
+            redir.addFlashAttribute("mensaje", "Error al eliminar vehículo: " + e.getMessage());
+            redir.addFlashAttribute("css_mensaje", "alert alert-danger");
+            redir.addFlashAttribute("tipoMensaje", "error");
+        }
+        return "redirect:/vehiculos/listado";
+    }
 
-			
-			if (vehiculo != null) {
-//				// Borrar imagen de Cloudinary
-//				String urlFoto = vehiculo.getFoto();
-//				if (urlFoto != null && !urlFoto.isBlank()) {
-//					String publicId = extractPublicId(urlFoto);
-//					if (publicId != null) {
-//						cloudinaryService.eliminarImagen(publicId);
-//					}
-//				}		
-				
-				vehiculo.setEstado(2);
-	            repoVehiculo.save(vehiculo);
+    @GetMapping("/cancelados")
+    public String vehiculosCancelados(Model model) {
+        List<Vehiculos> listaCancelados = repoVehiculo.findByEstado(2);
+        model.addAttribute("lstVehiculos", listaCancelados);
+        model.addAttribute("lstMarcas", repoMarca.findByEstado(1));
+        model.addAttribute("lstTipos", repoTipo.findByEstado(1));
+        model.addAttribute("vehiculos", new Vehiculos());
+        model.addAttribute("vista", "cancelados");
+        return "vehiculos";
+    }
 
-	            redirAtributos.addFlashAttribute("mensaje", "Vehículo cancelado correctamente");
-	            redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
-			}
-		} catch (Exception e) {
-			redirAtributos.addFlashAttribute("mensaje", "Error al eliminar vehículo: " + e.getMessage());
-			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
-		}
-
-		return "redirect:/vehiculos/listado";
-	}
-
-	@PostMapping("/registro")
-	public String registrarVehiculo(@ModelAttribute Vehiculos vehiculos, @RequestParam("fileFoto") MultipartFile file,
-			RedirectAttributes redirAtributos) {
-		try {
-			// Validación de archivo vacío
-			if (file.isEmpty()) {
-				redirAtributos.addFlashAttribute("mensaje", "Debe seleccionar una imagen para el vehículo.");
-				redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
-				return "redirect:/vehiculos/listado";
-			}
-
-			// Validar que sea JPG o JPEG
-			String originalFilename = file.getOriginalFilename();
-			String extension = "";
-			if (originalFilename != null && originalFilename.lastIndexOf(".") != -1) {
-				extension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
-			}
-			if (!extension.equals("jpg") && !extension.equals("jpeg") && !extension.equals("png")) {
-				redirAtributos.addFlashAttribute("mensaje", "La imagen debe estar en formato JPG, JPEG o PNG");
-				redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
-
-				return "redirect:/vehiculos/listado";
-			}
-
-			// Validación de tamaño máximo 1MB
-			if (file.getSize() > 1048576) {
-				redirAtributos.addFlashAttribute("mensaje", "La imagen no puede superar 1MB");
-				redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
-				return "redirect:/vehiculos/listado";
-			}
-
-			// Subir la imagen a Cloudinary
-			String secureUrl = cloudinaryService.subirImagen(file, "vehiculos");
-			vehiculos.setFoto(secureUrl);
-
-			// Guardar en la BD
-			repoVehiculo.save(vehiculos);
-			redirAtributos.addFlashAttribute("mensaje", "Vehículo registrado correctamente");
-			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
-		} catch (Exception e) {
-			redirAtributos.addFlashAttribute("mensaje", "Error al registrar vehículo: " + e.getMessage());
-			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
-		}
-
-		return "redirect:/vehiculos/listado";
-	}
-	
-	// Listado de vehiculos cancelados
-	@GetMapping("/cancelados")
-	public String vehiculosCancelados(Model model) {
-	    List<Vehiculos> listaCancelados = repoVehiculo.findByEstado(2);
-	    List<Marcas> listaMarcas = repoMarca.findByEstado(1);
-	    List<Tipos> listaTipos = repoTipo.findByEstado(1); 
-	    
-	    model.addAttribute("lstVehiculos", listaCancelados);
-	    model.addAttribute("lstMarcas", listaMarcas);
-	    model.addAttribute("lstTipos", listaTipos);
-	    model.addAttribute("vehiculos", new Vehiculos());
-	    model.addAttribute("vista", "cancelados");
-	    return "vehiculos";
-	}
-	
-	@GetMapping("/restaurar/{id}")
-	public String restaurarVehiculo(@PathVariable int id, RedirectAttributes redirAtributos) {
-	    try {
-	        Vehiculos vehiculo = repoVehiculo.findById(id).orElse(null);
-	        if (vehiculo != null) {
-	            vehiculo.setEstado(1);
-	            repoVehiculo.save(vehiculo);
-	            redirAtributos.addFlashAttribute("mensaje", "Vehículo restaurado correctamente");
-	            redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
-	        }
-	    } catch (Exception e) {
-	        redirAtributos.addFlashAttribute("mensaje", "Error al restaurar vehículo: " + e.getMessage());
-	        redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
-	    }
-	    return "redirect:/vehiculos/cancelados";
-	}
+    @GetMapping("/restaurar/{id}")
+    public String restaurarVehiculo(@PathVariable int id, RedirectAttributes redir) {
+        try {
+            Vehiculos vehiculo = repoVehiculo.findById(id).orElse(null);
+            if (vehiculo != null) {
+                vehiculo.setEstado(1);
+                repoVehiculo.save(vehiculo);
+                redir.addFlashAttribute("mensaje", "Vehículo restaurado correctamente");
+                redir.addFlashAttribute("css_mensaje", "alert alert-success");
+                redir.addFlashAttribute("tipoMensaje", "success");
+            }
+        } catch (Exception e) {
+            redir.addFlashAttribute("mensaje", "Error al restaurar vehículo: " + e.getMessage());
+            redir.addFlashAttribute("css_mensaje", "alert alert-danger");
+            redir.addFlashAttribute("tipoMensaje", "error");
+        }
+        return "redirect:/vehiculos/cancelados";
+    }
 }
