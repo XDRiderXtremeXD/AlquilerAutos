@@ -22,27 +22,30 @@ import proyectosCibertec.com.service.CloudinaryService;
 @Controller
 @RequestMapping("/usuarios")
 public class UsuarioController {
-	
+
+	@Autowired
+	private CloudinaryService cloudinaryService;
+
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
 	@Autowired
 	private IUsuarioRepository repoUsu;
-	
+
 	@Autowired
 	private CloudinaryService cloudinaryService;
-	
+
 	@GetMapping("/login")
-    public String loginPage() {
-        return "login";
-    }
+	public String loginPage() {
+		return "login";
+	}
 
 	@GetMapping("/listado")
-	public String usuarioCrud(Model model,  @RequestParam(defaultValue = "0") int page,
+	public String usuarioCrud(Model model, @RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "5") int size) {
 
-		Page<Usuario >lstUsuarios = repoUsu.findByEstado(1, PageRequest.of(page, size));
-		model.addAttribute("lstUsuarios",lstUsuarios);
+		Page<Usuario> lstUsuarios = repoUsu.findByEstado(1, PageRequest.of(page, size));
+		model.addAttribute("lstUsuarios", lstUsuarios);
 		model.addAttribute("paginaActual", page);
 		model.addAttribute("tamanio", size);
 		model.addAttribute("usuario", new Usuario());
@@ -50,6 +53,7 @@ public class UsuarioController {
 	}
 
 	@PostMapping("/grabar")
+  
 	public String registrarUsuario(
 	        @ModelAttribute Usuario usuario,
 	        @RequestParam("filePerfil") MultipartFile file, // este nombre debe coincidir con el del formulario
@@ -103,22 +107,32 @@ public class UsuarioController {
 	    return "redirect:/usuarios/listado";
 	}
 
+	private String extractPublicId(String imageUrl) {
+		if (imageUrl == null || imageUrl.isEmpty())
+			return null;
+		String[] parts = imageUrl.split("/");
+		String publicIdWithExtension = parts[parts.length - 1];
+		return publicIdWithExtension.split("\\.")[0];
+	}
 
 
 
 	@GetMapping("/eliminar/{id}")
-	public String eliminarUsuario(@PathVariable Integer id, Model model) {
-		
-		Usuario usuario = repoUsu.findById(id).get();
-		
+	public String eliminarUsuario(@PathVariable Integer id, RedirectAttributes addFlashAttribute) {
+
 		try {
-			usuario.setEstado(0);
-			repoUsu.save(usuario);
-			model.addAttribute("mensaje", "Usuario eliminado exitosamente");
-			model.addAttribute("cssmensaje", "alert alert-success");
+
+			Usuario usuario = repoUsu.findById(id).orElse(null);
+			if (usuario != null) {
+				usuario.setEstado(0);
+				repoUsu.save(usuario);
+				addFlashAttribute.addAttribute("mensaje", "Usuario eliminado exitosamente");
+				addFlashAttribute.addAttribute("cssmensaje", "alert alert-success");
+			}
+
 		} catch (Exception e) {
-			model.addAttribute("mensaje", "Error al registrar" + e.getMessage());
-			model.addAttribute("cssmensaje", "alert alert-danger");
+			addFlashAttribute.addAttribute("mensaje", "Error al registrar" + e.getMessage());
+			addFlashAttribute.addAttribute("cssmensaje", "alert alert-danger");
 		}
 
 		return "redirect:/usuarios/listado";
