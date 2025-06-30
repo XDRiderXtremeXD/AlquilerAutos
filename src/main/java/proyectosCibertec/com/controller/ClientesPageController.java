@@ -5,7 +5,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-
 import proyectosCibertec.com.model.Configuracion;
 import proyectosCibertec.com.repository.IConfiguracionRepository;
 
@@ -28,35 +27,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-
 @Controller
 public class ClientesPageController {
 
-@Autowired
-private IConfiguracionRepository repoConfig;
- 
-@Autowired
-private IVehiculosRepository repoVehiculo;
+	@Autowired
+	private IConfiguracionRepository repoConfig;
 
-@Autowired
-private IMarcasRepository repoMarca;
-	
+	@Autowired
+	private IVehiculosRepository repoVehiculo;
+
+	@Autowired
+	private IMarcasRepository repoMarca;
+
 	@GetMapping("/contactos")
-    public String contactosVista(Model model) {
+	public String contactosVista(Model model) {
 		Configuracion configuracion = repoConfig.findById(1).orElseThrow();
-	    model.addAttribute("configuracion", configuracion);
-        return "contentclient/contactos";
-    }
-	
-	@GetMapping("/error/403")
-	public String error403() {
-	    return "contentclient/403"; 
+		model.addAttribute("configuracion", configuracion);
+		return "contentclient/contactos";
 	}
 
-	@GetMapping("/contactos")
-	public String contactosVista() {
-		return "contentclient/contactos";
+	@GetMapping("/error/403")
+	public String error403() {
+		return "contentclient/403";
 	}
 
 	@GetMapping("/catalogo")
@@ -97,9 +89,9 @@ private IMarcasRepository repoMarca;
 		filtros.put("precioMax", precioMax);
 		filtros.put("marcaId", marcaId);
 
-        model.addAttribute("vehiculos", pagina);
-        model.addAttribute("marcas", marcas);
-        model.addAttribute("param", filtros);
+		model.addAttribute("vehiculos", pagina);
+		model.addAttribute("marcas", marcas);
+		model.addAttribute("param", filtros);
 
 		return "contentclient/catalogo";
 	}
@@ -110,8 +102,10 @@ private IMarcasRepository repoMarca;
 	}
 
 	@GetMapping("/home")
-	public String homeVista() {
-		return "contentclient/home";
+	public String homeVista(Model model) {
+		List<Vehiculos> vehiculosDestacados = repoVehiculo.findAll(PageRequest.of(0, 4)).getContent();
+		model.addAttribute("vehiculosDestacados", vehiculosDestacados);
+		return "contentclient/home"; // home.html
 	}
 
 	@GetMapping("/")

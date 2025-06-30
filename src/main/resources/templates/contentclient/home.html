@@ -1,10 +1,63 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/client_layout.html}">
-  <div layout:fragment="content">
-   
-    CONTENIDO
-	
-   </div>
+	layout:decorate="~{layouts/client_layout.html}">
+
+<div layout:fragment="content">
+	<div class="container ">
+
+		<!-- Sección Bienvenida -->
+		<div class="text-center mb-5">
+			<h1 class="display-4 fw-bold text-danger">Bienvenido a MoviXpress</h1>
+			<p class="lead">Tu solución confiable y rápida para alquilar vehículos al mejor precio.</p>
+			<p class="text-white-50">Explora nuestra moderna flota de vehículos, elige el que se adapte a ti y ¡empieza tu
+				viaje con comodidad y seguridad!</p>
+			<a href="/catalogo" class="btn btn-outline-danger btn-lg rounded-pill mt-3">
+				<i class="bi bi-car-front me-2"></i>Explorar Vehículos
+			</a>
+		</div>
+
+		<!-- Carrusel de Vehículos Destacados -->
+		<div class="text-center mb-4">
+			<h2 class="fw-bold text-white">Vehículos Destacados</h2>
+			<p class="text-white-50">Conoce algunos de nuestros mejores modelos disponibles</p>
+		</div>
+
+		<div id="vehiculosCarousel" class="carousel slide" data-bs-ride="carousel">
+			<div class="carousel-inner">
+				<div class="carousel-item" th:each="vehiculo, iterStat : ${vehiculosDestacados}"
+					th:classappend="${iterStat.index == 0} ? ' active'">
+					<div class="d-flex justify-content-center">
+						<div class="card bg-secondary text-white border-0 shadow rounded-4" style="width: 24rem;">
+							<img th:src="${vehiculo.foto}" class="card-img-top rounded-top-4" alt="Imagen Vehículo"
+								style="height: 220px; object-fit: cover;"
+								onerror="this.onerror=null; this.src='/images/default-car.png';">
+							<div class="card-body text-center">
+								<h5 class="card-title fw-bold text-white" th:text="${vehiculo.modelo}"></h5>
+								<p class="card-text mb-1">
+									<strong>Marca:</strong> <span th:text="${vehiculo.objMarca.marca}"></span>
+								</p>
+								<p class="card-text">
+									<strong>Precio por día:</strong> S/ <span th:text="${vehiculo.precioXDia}"></span>
+								</p>
+								<a href="/catalogo" class="btn btn-danger rounded-pill mt-2">Ver más</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Controles del carrusel -->
+			<button class="carousel-control-prev" type="button" data-bs-target="#vehiculosCarousel"
+				data-bs-slide="prev">
+				<span class="carousel-control-prev-icon bg-danger rounded-circle p-2"></span>
+			</button>
+			<button class="carousel-control-next" type="button" data-bs-target="#vehiculosCarousel"
+				data-bs-slide="next">
+				<span class="carousel-control-next-icon bg-danger rounded-circle p-2"></span>
+			</button>
+		</div>
+
+	</div>
+</div>
+
 </html>
- 	
