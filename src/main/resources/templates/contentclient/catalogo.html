@@ -1,10 +1,99 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/client_layout.html}">
-  <div layout:fragment="content">
-   
-    CONTENIDO
-	
-   </div>
+
+<div layout:fragment="content">
+  <div class="container-fluid">
+    <div class="row g-0">
+
+		<!-- Sidebar Fijo - Tema Dark -->
+		<div class="col-md-3 bg-dark text-white border-end min-vh-100">
+		  <div class="position-sticky top-0 p-4">
+		    <h5 class="text-light mb-3">
+		      <i class="bi bi-funnel-fill me-2"></i>Filtros
+		    </h5>
+		    <form th:action="@{/catalogo}" method="get" class="vstack gap-3">
+
+		      <div class="form-floating">
+		        <input type="text" name="nombre" class="form-control bg-secondary text-white border-0" id="nombreInput"
+		               placeholder="Buscar por nombre" th:value="${param.nombre}">
+		        <label for="nombreInput" class="text-white-50">
+		          <i class="bi bi-search"></i> Nombre
+		        </label>
+		      </div>
+
+		      <div class="d-flex gap-2">
+		        <div class="form-floating w-50">
+		          <input type="number" name="precioMin" class="form-control bg-secondary text-white border-0" id="minInput"
+		                 placeholder="Mínimo" th:value="${param.precioMin}">
+		          <label for="minInput" class="text-white-50">S/. Mín</label>
+		        </div>
+		        <div class="form-floating w-50">
+		          <input type="number" name="precioMax" class="form-control bg-secondary text-white border-0" id="maxInput"
+		                 placeholder="Máximo" th:value="${param.precioMax}">
+		          <label for="maxInput" class="text-white-50">S/. Máx</label>
+		        </div>
+		      </div>
+
+		      <div>
+		        <label class="form-label fw-bold text-white">Marca</label>
+		        <select name="marcaId" class="form-select bg-secondary text-white border-0">
+		          <option value="">Todas</option>
+		          <option th:each="marca : ${marcas}" th:value="${marca.id}"
+		                  th:text="${marca.marca}" th:selected="${param.marcaId == marca.id}"></option>
+		        </select>
+		      </div>
+
+		      <button type="submit" class="btn btn-outline-light w-100 rounded-pill">
+		        <i class="bi bi-funnel me-1"></i> Aplicar filtros
+		      </button>
+		    </form>
+		  </div>
+		</div>
+
+
+      <!-- Contenido derecho: tarjetas de vehículos -->
+      <div class="col-md-9 p-4">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+          <div th:each="vehiculo : ${vehiculos}" class="col">
+            <div class="card h-100 shadow-sm border-0 rounded-4">
+              <img th:src="${vehiculo.foto}" class="card-img-top rounded-top-4" alt="Imagen vehículo"
+                   style="height: 180px; object-fit: cover;"
+                   onerror="this.onerror=null; this.src='/images/default-car.png';">
+              <div class="card-body">
+                <h5 class="card-title" th:text="${vehiculo.modelo}"></h5>
+                <p class="card-text small mb-1">
+                  <strong>Marca:</strong> <span th:text="${vehiculo.objMarca.marca}"></span>
+                </p>
+                <p class="card-text small">
+                  <strong>Precio x Día:</strong> S/ <span th:text="${vehiculo.precioXDia}"></span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Paginación -->
+        <div class="mt-5 d-flex justify-content-center">
+          <nav th:if="${vehiculos.totalPages > 1}">
+            <ul class="pagination pagination-lg">
+              <li class="page-item" th:classappend="${vehiculos.first} ? 'disabled'">
+                <a class="page-link" th:href="@{/catalogo(page=${vehiculos.number - 1}, ...)}">«</a>
+              </li>
+              <li class="page-item" th:each="i : ${#numbers.sequence(0, vehiculos.totalPages - 1)}"
+                  th:classappend="${i == vehiculos.number} ? 'active'">
+                <a class="page-link" th:href="@{/catalogo(page=${i}, ...)}" th:text="${i + 1}"></a>
+              </li>
+              <li class="page-item" th:classappend="${vehiculos.last} ? 'disabled'">
+                <a class="page-link" th:href="@{/catalogo(page=${vehiculos.number + 1}, ...)}">»</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
 </html>
- 	

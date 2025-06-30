@@ -12,9 +12,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import proyectosCibertec.com.model.Usuario;
 import proyectosCibertec.com.repository.IUsuarioRepository;
+import proyectosCibertec.com.service.CloudinaryService;
 
 @Controller
 @RequestMapping("/usuarios")
@@ -25,6 +28,9 @@ public class UsuarioController {
 
 	@Autowired
 	private IUsuarioRepository repoUsu;
+	
+	@Autowired
+	private CloudinaryService cloudinaryService;
 	
 	@GetMapping("/login")
     public String loginPage() {
@@ -44,21 +50,60 @@ public class UsuarioController {
 	}
 
 	@PostMapping("/grabar")
-	public String registrarUsuario(@ModelAttribute Usuario usuario, Model model) {
-		
-		try {
-			usuario.setClave(passwordEncoder.encode(usuario.getClave()));
-			repoUsu.save(usuario);
-			model.addAttribute("mensaje", "Usuario registrado exitosamente");
-			model.addAttribute("cssmensaje", "alert alert-success");
-		} catch (Exception e) {
-			model.addAttribute("mensaje", "Error al registrar" + e.getMessage());
-			model.addAttribute("cssmensaje", "alert alert-danger");
-		}
+	public String registrarUsuario(
+	        @ModelAttribute Usuario usuario,
+	        @RequestParam("filePerfil") MultipartFile file, // este nombre debe coincidir con el del formulario
+	        RedirectAttributes redirAtributos) {
 
-		return "redirect:/usuarios/listado";
+	    try {
+	        // Validación de archivo vacío
+	        if (file.isEmpty()) {
+	            redirAtributos.addFlashAttribute("mensaje", "Debe seleccionar una imagen de perfil para el usuario.");
+	            redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+	            return "redirect:/usuarios/listado";
+	        }
 
+	        // Validar extensión
+	        String originalFilename = file.getOriginalFilename();
+	        String extension = "";
+	        if (originalFilename != null && originalFilename.lastIndexOf(".") != -1) {
+	            extension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
+	        }
+	        if (!extension.equals("jpg") && !extension.equals("jpeg") && !extension.equals("png")) {
+	            redirAtributos.addFlashAttribute("mensaje", "La imagen debe estar en formato JPG, JPEG o PNG");
+	            redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+	            return "redirect:/usuarios/listado";
+	        }
+
+	        // Validación de tamaño
+	        if (file.getSize() > 1048576) {
+	            redirAtributos.addFlashAttribute("mensaje", "La imagen no puede superar 1MB");
+	            redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+	            return "redirect:/usuarios/listado";
+	        }
+
+	        // Subir a Cloudinary
+	        String secureUrl = cloudinaryService.subirImagen(file, "usuarios");
+	        usuario.setPerfil(secureUrl); // guardar la URL en el campo perfil
+
+	        // Encriptar contraseña
+	        usuario.setClave(passwordEncoder.encode(usuario.getClave()));
+
+	        // Guardar en BD
+	        repoUsu.save(usuario);
+
+	        redirAtributos.addFlashAttribute("mensaje", "Usuario registrado exitosamente");
+	        redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
+
+	    } catch (Exception e) {
+	        redirAtributos.addFlashAttribute("mensaje", "Error al registrar usuario: " + e.getMessage());
+	        redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+	    }
+
+	    return "redirect:/usuarios/listado";
 	}
+
+
 
 
 	@GetMapping("/eliminar/{id}")

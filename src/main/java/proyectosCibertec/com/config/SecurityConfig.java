@@ -38,6 +38,9 @@ public class SecurityConfig {
                 .logoutUrl("/logout")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
+            )
+           .exceptionHandling(e -> e
+                .accessDeniedPage("/error/403")
             );
 
         return http.build();
