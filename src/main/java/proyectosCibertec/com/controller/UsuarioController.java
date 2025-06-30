@@ -32,9 +32,6 @@ public class UsuarioController {
 	@Autowired
 	private IUsuarioRepository repoUsu;
 
-	@Autowired
-	private CloudinaryService cloudinaryService;
-
 	@GetMapping("/login")
 	public String loginPage() {
 		return "login";
