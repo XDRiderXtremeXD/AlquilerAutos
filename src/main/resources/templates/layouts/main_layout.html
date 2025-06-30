@@ -75,22 +75,22 @@
 						<span><i class="bi bi-gear me-2"></i>Administración</span>
 						<i class="bi bi-chevron-down"></i>
 					</a>
-					<div class="collapse ps-3" id="adminSubmenu">
+					<div class="collapse ps-3" id="adminSubmenu" th:classappend="${#strings.contains(currentUri, '/usuarios') or #strings.contains(currentUri, '/monedas') or #strings.contains(currentUri, '/configuracion')} ? 'show'">
 						<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-							<li><a href="/usuarios/listado" class="nav-link text-white"><i
+							<li><a href="/usuarios/listado" class="nav-link text-white" th:classappend="${#strings.contains(currentUri, '/usuarios')} ? 'fw-bold active'"><i
 										class="bi bi-people me-2"></i>Usuarios</a></li>
-							<li><a href="/monedas/listado" class="nav-link text-white"><i
+							<li><a href="/monedas/listado" class="nav-link text-white" th:classappend="${#strings.contains(currentUri, '/monedas')} ? 'fw-bold active'"><i
 										class="bi bi-currency-exchange me-2"></i>Monedas</a></li>
-							<li><a href="/configuracion/" class="nav-link text-white"><i
+							<li><a href="/configuracion/" class="nav-link text-white"th:classappend="${#strings.contains(currentUri, '/configuracion')} ? 'fw-bold active'"><i
 										class="bi bi-sliders me-2"></i>Configuración</a></li>
 						</ul>
 					</div>
 				</li>
 
-				<li><a href="/clientes/listado" class="nav-link text-white"><i
-							class="bi bi-person-lines-fill me-2"></i>Clientes</a></li>
-				<li><a href="/documentos/listado" class="nav-link text-white"><i
-							class="bi bi-file-earmark-text me-2"></i>Documentos</a></li>
+				<li><a href="/clientes/listado" class="nav-link text-white" th:classappend="${#strings.contains(currentUri, '/clientes')} ? 'fw-bold active'"><i
+							class="bi bi-person-lines-fill me-2" ></i>Clientes</a></li>
+				<li><a href="/documentos/listado" class="nav-link text-white" th:classappend="${#strings.contains(currentUri, '/documentos')} ? 'fw-bold active'"><i
+							class="bi bi-file-earmark-text me-2" ></i>Documentos</a></li>
 
 				<!-- Vehículos con ícono desplegable -->
 				<li>
@@ -100,19 +100,20 @@
 						<span><i class="bi bi-truck-front me-2"></i>Vehículos</span>
 						<i class="bi bi-chevron-down"></i>
 					</a>
-					<div class="collapse ps-3" id="vehiculosSubmenu">
+					<div class="collapse ps-3" id="vehiculosSubmenu"
+					th:classappend="${#strings.contains(currentUri, '/marcas') or #strings.contains(currentUri, '/tipos') or #strings.contains(currentUri, '/vehiculos')} ? 'show'">
 						<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-							<li><a href="/marcas/listado" class="nav-link text-white"><i
-										class="bi bi-badge-ad me-2"></i>Marcas</a></li>
-							<li><a href="/tipos/listado" class="nav-link text-white"><i
-										class="bi bi-tags me-2"></i>Tipos</a></li>
-							<li><a href="/vehiculos/listado" class="nav-link text-white"><i
-										class="bi bi-car-front me-2"></i>Vehículos</a></li>
+							<li><a href="/marcas/listado" class="nav-link text-white" th:classappend="${#strings.contains(currentUri, '/marcas')} ? 'fw-bold active'"><i
+										class="bi bi-badge-ad me-2" ></i>Marcas</a></li>
+							<li><a href="/tipos/listado" class="nav-link text-white" th:classappend="${#strings.contains(currentUri, '/tipos')} ? 'fw-bold active'"><i
+										class="bi bi-tags me-2" ></i>Tipos</a></li>
+							<li><a href="/vehiculos/listado" class="nav-link text-white" th:classappend="${#strings.contains(currentUri, '/vehiculos')} ? 'fw-bold active'"><i
+										class="bi bi-car-front me-2" ></i>Vehículos</a></li>
 						</ul>
 					</div>
 				</li>
 
-				<li><a href="/alquiler/listado" class="nav-link text-white"><i
+				<li><a href="/alquiler/listado" class="nav-link text-white" th:classappend="${#strings.contains(currentUri, '/alquiler')} ? 'fw-bold active'"><i
 							class="bi bi-calendar-check me-2"></i>Alquiler de Vehículos</a></li>
 				<li><a href="#" class="nav-link text-white"><i class="bi bi-clipboard-data me-2"></i>Reporte
 						Préstamo</a></li>

@@ -24,14 +24,6 @@
 						data-bs-target="#modalRegistrarMoneda">
 						<i class="bi bi-plus-circle me-1"></i> Nuevo
 					</button>
-					<div>
-						<button class="btn btn-danger me-2" onclick="exportarPDF()">
-							<i class="bi bi-file-earmark-pdf me-1"></i> PDF
-						</button>
-						<button class="btn btn-success" onclick="exportarExcel()">
-							<i class="bi bi-file-earmark-excel me-1"></i> Excel
-						</button>
-					</div>
 				</div>
 
 				<!-- Filtro de tamaño -->
@@ -208,21 +200,6 @@
 
 
 	</div>
-
-	<!-- Scripts Bootstrap y validación -->
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-	<script>
-
-		// Funciones de exportación simuladas
-		function exportarPDF() {
-			alert("Exportando a PDF...");
-			// Aquí conectarías con tu backend real
-		}
-
-		function exportarExcel() {
-			alert("Exportando a Excel...");
-		}
-	</script>
 </body>
 
 </html>

@@ -20,7 +20,7 @@ public class DatosGlobales {
 	    }
 
     @ModelAttribute
-    public void agregarUsuarioAlModelo(Model model) {
+    public void agregarUsuarioAlModelo(Model model, HttpServletRequest request) {
     	 Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
          if (auth != null && auth.getPrincipal() instanceof UsuarioDetailsSession) {
@@ -37,6 +37,10 @@ public class DatosGlobales {
              model.addAttribute("fotoUsuario", foto);
              model.addAttribute("nombreUsuario", nombre);
              model.addAttribute("rolUsuario", rol);
+             
+          // Extrae la URI actual para marcar el menú activo
+             String uri = request.getRequestURI();
+             model.addAttribute("currentUri", uri);
          }
     }
 }

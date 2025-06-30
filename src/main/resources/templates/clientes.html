@@ -15,15 +15,16 @@
 			<div class="card-body">
 				<h1 class="h4 card-title mb-4">Gestión de Clientes</h1>
 
-				<div th:if="${css_mensaje != null}" th:class="${css_mensaje}" th:text="${mensaje}" role="alert" style="margin-top: 15px;"></div>
+				<div th:if="${css_mensaje != null}" th:class="${css_mensaje}" th:text="${mensaje}" role="alert"
+					style="margin-top: 15px;"></div>
 
-				<!-- Botón para nuevo cliente -->
+				<!-- Botones de acción -->
 				<div class="d-flex justify-content-between flex-wrap mb-3">
 					<button class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target="#modalRegistrarCliente">
 						<i class="bi bi-plus-circle me-1"></i> Nuevo Cliente
 					</button>
-				</div>
-
+					<a href="/clientes/reporte" class="btn btn-danger mb-2" target="_blank">
+					<i class="bi bi-file-earmark-arrow-down-fill"></i> Reporte</a></div>
 
 				<!-- Tabla de clientes -->
 				<div class="table-responsive">

@@ -27,6 +27,20 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import proyectosCibertec.com.model.Usuario;
 
+import java.io.OutputStream;
+import java.util.HashMap;
+
+import javax.sql.DataSource;
+import jakarta.servlet.http.HttpServletResponse;
+
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.beans.factory.annotation.Autowired;
+
+
 @Controller
 @RequestMapping("/alquiler")
 public class AlquilerController {
@@ -48,6 +62,12 @@ public class AlquilerController {
 
 	@Autowired
 	private IMarcasRepository marcasRepository;
+	
+	@Autowired
+	private DataSource dataSource;
+
+	@Autowired
+	private ResourceLoader resourceLoader;
 
 	@GetMapping("/listado")
 	public String alquilerVista(Model model, @RequestParam(defaultValue = "0") int page,
@@ -195,5 +215,56 @@ public class AlquilerController {
 	    model.addAttribute("alquiler", alquiler);
 	    return "alquiler/detalleAlquiler";
 	}
+	
+	@GetMapping("/reporte")
+	public void generarReporte(HttpServletResponse response) {
+	    response.setContentType("application/pdf");
+	    response.setHeader("Content-Disposition", "inline; filename=reporte_alquileres.pdf");
+
+	    try {
+	        String ruta = resourceLoader.getResource("classpath:/static/reporte_alquiler.jasper").getFile().getAbsolutePath();
+	        JasperPrint jasperPrint = JasperFillManager.fillReport(ruta, new HashMap<>(), dataSource.getConnection());
+
+	        OutputStream outStream = response.getOutputStream();
+	        JasperExportManager.exportReportToPdfStream(jasperPrint, outStream);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+
+	@GetMapping("/grafico")
+	public void generarGrafico(HttpServletResponse response) {
+	    response.setContentType("application/pdf");
+	    response.setHeader("Content-Disposition", "inline; filename=grafico_alquileres.pdf");
+
+	    try {
+	        String ruta = resourceLoader.getResource("classpath:/static/grafico_alquiler.jasper").getFile().getAbsolutePath();
+	        JasperPrint jasperPrint = JasperFillManager.fillReport(ruta, new HashMap<>(), dataSource.getConnection());
+
+	        OutputStream outStream = response.getOutputStream();
+	        JasperExportManager.exportReportToPdfStream(jasperPrint, outStream);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+  
+	
+	@PostMapping("/detalle")
+	public void generarReporteDetalle(HttpServletResponse response, @ModelAttribute Alquiler alquiler) {
+	    response.setHeader("Content-Disposition", "inline;");
+	    response.setContentType("application/pdf");
+
+	    try {
+	        HashMap<String, Object> parametros = new HashMap<>();
+	        parametros.put("ID", alquiler.getId()); 
+	        String ruta = resourceLoader.getResource("classpath:/static/reporteAlquilerById.jasper").getURI().getPath();
+	        JasperPrint jasperPrint = JasperFillManager.fillReport(ruta, parametros, dataSource.getConnection());
+	        OutputStream outStream = response.getOutputStream();
+	        JasperExportManager.exportReportToPdfStream(jasperPrint, outStream);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+
 
 }
