@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import proyectosCibertec.com.model.Clientes;
 import proyectosCibertec.com.repository.IClienteRepository;
@@ -33,34 +34,42 @@ public class ClientesController {
     }
 
     @PostMapping("/grabar")
-    public String registrarCliente(@ModelAttribute Clientes cliente, Model model) {
+    public String registrarCliente(@ModelAttribute Clientes cliente, RedirectAttributes redirAtributos) {
         try {
             cliente.setEstado(1); // aseguramos que se registre como activo
             repoCliente.save(cliente);
-            model.addAttribute("mensaje", "Cliente registrado exitosamente");
-            model.addAttribute("cssmensaje", "alert alert-success");
+            redirAtributos.addFlashAttribute("mensaje", "Cliente registrado exitosamente");
+            redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
+            redirAtributos.addFlashAttribute("tipoMensaje", "success");
         } catch (Exception e) {
-            model.addAttribute("mensaje", "Error al registrar: " + e.getMessage());
-            model.addAttribute("cssmensaje", "alert alert-danger");
+            redirAtributos.addFlashAttribute("mensaje", "Error al registrar: " + e.getMessage());
+            redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+            redirAtributos.addFlashAttribute("tipoMensaje", "error");
         }
 
         return "redirect:/clientes/listado";
     }
 
     @GetMapping("/eliminar/{id}")
-    public String eliminarCliente(@PathVariable Integer id, Model model) {
+    public String eliminarCliente(@PathVariable Integer id, RedirectAttributes redirAtributos) {
         Clientes cliente = repoCliente.findById(id).orElse(null);
 
         if (cliente != null) {
             try {
                 cliente.setEstado(0); // eliminación lógica
                 repoCliente.save(cliente);
-                model.addAttribute("mensaje", "Cliente eliminado exitosamente");
-                model.addAttribute("cssmensaje", "alert alert-success");
+                redirAtributos.addFlashAttribute("mensaje", "Cliente eliminado exitosamente");
+                redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
+                redirAtributos.addFlashAttribute("tipoMensaje", "success");
             } catch (Exception e) {
-                model.addAttribute("mensaje", "Error al eliminar: " + e.getMessage());
-                model.addAttribute("cssmensaje", "alert alert-danger");
+                redirAtributos.addFlashAttribute("mensaje", "Error al eliminar: " + e.getMessage());
+                redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+                redirAtributos.addFlashAttribute("tipoMensaje", "error");
             }
+        } else {
+            redirAtributos.addFlashAttribute("mensaje", "Cliente no encontrado");
+            redirAtributos.addFlashAttribute("css_mensaje", "alert alert-warning");
+            redirAtributos.addFlashAttribute("tipoMensaje", "warning");
         }
 
         return "redirect:/clientes/listado";

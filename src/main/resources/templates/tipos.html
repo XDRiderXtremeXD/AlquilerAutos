@@ -91,7 +91,7 @@
 				</div>
 
 				<!-- Mensaje de Alerta de Registro -->
-				<div th:text="${mensaje}" th:class="${css_mensaje}" role="alert" style="margin-top: 15px;"></div>
+				<div th:if="${css_mensaje != null}" th:class="${css_mensaje}" th:text="${mensaje}" role="alert" style="margin-top: 15px;"></div>
 
 				<!-- Tabla de datos de Tipos -->
 				<div class="table-responsive mt-4">

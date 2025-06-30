@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import proyectosCibertec.com.model.Alquiler;
 import proyectosCibertec.com.model.Configuracion;
@@ -78,7 +79,7 @@ public class AlquilerController {
 	}
 
 	@PostMapping("/registrar")
-	public String registrarAlquiler(@ModelAttribute("alquiler") Alquiler alquiler) {
+	public String registrarAlquiler(@ModelAttribute("alquiler") Alquiler alquiler, RedirectAttributes redirAtributos) {
 
 		try {
 			Configuracion configuracion = configuracionRepository.findById(1).orElse(new Configuracion());
@@ -93,9 +94,15 @@ public class AlquilerController {
 			
 			vehiculosRepository.save(vehiculo);
 			
+			redirAtributos.addFlashAttribute("mensaje", "Alquiler registrado correctamente");
+			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
+			redirAtributos.addFlashAttribute("tipoMensaje", "success");
+			
 		} catch (Exception e) {
 			
-			throw new RuntimeException("Error al registrar el alquiler", e);
+			redirAtributos.addFlashAttribute("mensaje", "Error al registrar alquiler: " + e.getMessage());
+			redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+			redirAtributos.addFlashAttribute("tipoMensaje", "error");
 		}
 
 		return "redirect:/alquiler/listado";
@@ -120,48 +127,59 @@ public class AlquilerController {
 
 
 	@PostMapping("/editar")
-	public String editarGuardar(@ModelAttribute("alquiler") Alquiler alquilerForm) {
-		Alquiler alquilerBD = alquilerRepository.findById(alquilerForm.getId())
-				.orElseThrow(() -> new IllegalArgumentException("ID inválido"));
+	public String editarGuardar(@ModelAttribute("alquiler") Alquiler alquilerForm, RedirectAttributes redirAtributos) {
+	    try {
+	        Alquiler alquilerBD = alquilerRepository.findById(alquilerForm.getId())
+	                .orElseThrow(() -> new IllegalArgumentException("ID inválido"));
 
-		alquilerBD.setAbono(alquilerForm.getAbono());
-		if(alquilerForm.getEstado()!=null)
-		alquilerBD.setEstado(alquilerForm.getEstado());
-		alquilerRepository.save(alquilerBD);
+	        alquilerBD.setAbono(alquilerForm.getAbono());
+	        if (alquilerForm.getEstado() != null)
+	            alquilerBD.setEstado(alquilerForm.getEstado());
 
-		if (alquilerForm.getEstado()!=null && !alquilerForm.getEstado().contentEquals("EN PRESTAMO")) {
-			Vehiculos vehiculo = alquilerBD.getVehiculo();
-			vehiculo.setActividad("LIBRE");
-			vehiculosRepository.save(vehiculo);
-			
-			if (alquilerForm.getEstado().equalsIgnoreCase("DEVUELTO")) {
-	           
-	            LocalDate fechaHoy = LocalDate.now();
-	            alquilerBD.setFechaRealDevolucion(fechaHoy);
+	        alquilerRepository.save(alquilerBD);
 
-	            LocalDate fechaEstimada = alquilerBD.getFechaEstimadaDevolucion();
-	            long diasRetrasados = java.time.temporal.ChronoUnit.DAYS.between(fechaEstimada, fechaHoy);
+	        if (alquilerForm.getEstado() != null && !alquilerForm.getEstado().equals("EN PRESTAMO")) {
+	            Vehiculos vehiculo = alquilerBD.getVehiculo();
+	            vehiculo.setActividad("LIBRE");
+	            vehiculosRepository.save(vehiculo);
 
-	            if (diasRetrasados > 0) {
-	                alquilerBD.setNumDias((int) diasRetrasados);
-	                
-	                // Calcular penalidad = días retraso * (precio día + penalidad día)
-	                BigDecimal precioDia = alquilerBD.getPrecioDia();
-	                BigDecimal penalidadDia = BigDecimal.valueOf(alquilerBD.getPenalidadPorDia());
-	                BigDecimal totalPenalidad = (precioDia.add(penalidadDia)).multiply(BigDecimal.valueOf(diasRetrasados));
-	                
-	                alquilerBD.setPenalidad(totalPenalidad);
-	            } else {
-	                alquilerBD.setNumDias(0);
-	                alquilerBD.setPenalidad(BigDecimal.ZERO);
+	            if (alquilerForm.getEstado().equalsIgnoreCase("DEVUELTO")) {
+	                LocalDate fechaHoy = LocalDate.now();
+	                alquilerBD.setFechaRealDevolucion(fechaHoy);
+
+	                LocalDate fechaEstimada = alquilerBD.getFechaEstimadaDevolucion();
+	                long diasRetrasados = java.time.temporal.ChronoUnit.DAYS.between(fechaEstimada, fechaHoy);
+
+	                if (diasRetrasados > 0) {
+	                    alquilerBD.setNumDias((int) diasRetrasados);
+
+	                    BigDecimal precioDia = alquilerBD.getPrecioDia();
+	                    BigDecimal penalidadDia = BigDecimal.valueOf(alquilerBD.getPenalidadPorDia());
+	                    BigDecimal totalPenalidad = (precioDia.add(penalidadDia)).multiply(BigDecimal.valueOf(diasRetrasados));
+
+	                    alquilerBD.setPenalidad(totalPenalidad);
+	                } else {
+	                    alquilerBD.setNumDias(0);
+	                    alquilerBD.setPenalidad(BigDecimal.ZERO);
+	                }
+
+	                alquilerRepository.save(alquilerBD);
 	            }
-
-	            alquilerRepository.save(alquilerBD);
 	        }
-		}
 
-		return "redirect:/alquiler/listado";
+	        redirAtributos.addFlashAttribute("mensaje", "Alquiler actualizado correctamente");
+	        redirAtributos.addFlashAttribute("css_mensaje", "alert alert-success");
+	        redirAtributos.addFlashAttribute("tipoMensaje", "success");
+
+	    } catch (Exception e) {
+	        redirAtributos.addFlashAttribute("mensaje", "Error al actualizar alquiler: " + e.getMessage());
+	        redirAtributos.addFlashAttribute("css_mensaje", "alert alert-danger");
+	        redirAtributos.addFlashAttribute("tipoMensaje", "error");
+	    }
+
+	    return "redirect:/alquiler/listado";
 	}
+
 
 	@GetMapping("/vehiculosPorMarca")
 	@ResponseBody

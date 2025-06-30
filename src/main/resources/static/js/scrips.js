@@ -31,16 +31,16 @@ function borrarImagenEdit() {
 }
 
 
-document.addEventListener("DOMContentLoaded", function() {
+
+
+document.addEventListener("DOMContentLoaded", function () {
 	const marcaSelect = document.getElementById("marcaSelect");
 	const vehiculoSelect = document.getElementById("vehiculoSelect");
 	const precioInput = document.getElementById("precioDiaInput");
 
 	// Al cambiar de marca, actualizar la lista de vehículos
-	marcaSelect.addEventListener("change", function() {
+	marcaSelect.addEventListener("change", function () {
 		const idMarca = this.value;
-
-		// Limpiar opciones anteriores
 		vehiculoSelect.innerHTML = '<option value="">Seleccione un vehículo</option>';
 		precioInput.value = '';
 
@@ -59,12 +59,11 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 	});
 
-	// Al seleccionar un vehículo, actualizar el precio por día
-	vehiculoSelect.addEventListener("change", function() {
+	vehiculoSelect.addEventListener("change", function () {
 		const selectedOption = vehiculoSelect.options[vehiculoSelect.selectedIndex];
 		const precio = selectedOption.getAttribute("data-precio");
 		precioInput.value = precio || '';
-		calcularTotal(); // actualizar total si ya hay fechas seleccionadas
+		calcularTotal();
 	});
 
 	function calcularTotal() {
@@ -75,8 +74,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		if (fechaInicio && fechaFin && !isNaN(precioDia)) {
 			const diffTime = fechaFin - fechaInicio;
-			const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))+1;
-			const total =  (diffDays) * precioDia - abono;
+			const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+			const total = (diffDays) * precioDia - abono;
 			document.getElementById('totalPagarInput').value = total.toFixed(2);
 		}
 	}
@@ -85,3 +84,4 @@ document.addEventListener("DOMContentLoaded", function() {
 	document.getElementById('fechaDevolucionInput').addEventListener('change', calcularTotal);
 	document.getElementById('abonoInput').addEventListener('input', calcularTotal);
 });
+
