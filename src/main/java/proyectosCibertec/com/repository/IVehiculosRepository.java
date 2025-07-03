@@ -12,4 +12,7 @@ public interface IVehiculosRepository extends JpaRepository<Vehiculos, Integer> 
 	List<Vehiculos> findByEstado(int estado);
 	List<Vehiculos> findByActividad(String actividad);
 	List<Vehiculos> findByIdMarcaAndEstadoAndActividad(int marca, int estado,String actividad);
+	
+	// Para la vista de Clientes (Muestra los 4 vehiculos más recientes)
+	List<Vehiculos> findTop4ByEstadoOrderByIdDesc(int estado);
 }

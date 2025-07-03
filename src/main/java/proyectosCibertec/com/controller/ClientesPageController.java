@@ -103,9 +103,9 @@ public class ClientesPageController {
 
 	@GetMapping("/home")
 	public String homeVista(Model model) {
-		List<Vehiculos> vehiculosDestacados = repoVehiculo.findAll(PageRequest.of(0, 4)).getContent();
+		List<Vehiculos> vehiculosDestacados = repoVehiculo.findTop4ByEstadoOrderByIdDesc(1);
 		model.addAttribute("vehiculosDestacados", vehiculosDestacados);
-		return "contentclient/home"; // home.html
+		return "contentclient/home";
 	}
 
 	@GetMapping("/")
