@@ -1,104 +1,47 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-  <meta charset="utf-8">
-  <title>Iniciar Sesión</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap Icons -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-
-  <style>
-	body {
-	    background-image: url('/images/fondo-vehiculo.jpg');
-	    background-size: cover;
-	    background-position: center;
-	    background-repeat: no-repeat;
-	  }
-	
-	  .login-container {
-	    border-radius: 2.5rem;
-	    overflow: hidden;
-	    max-width: 900px;
-	    width: 100%;
-	    border: 3px solid black;
-	    min-height: 500px; /* <--- altura mínima opcional */
-	  }
-
-
-    .login-form {
-      padding: 2rem;
-      background-color: white;
-    }
-
-    .info-section {
-      background-color: rgb(220, 53, 69);
-      color: rgb(255, 255, 255);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 2rem;
-    }
-
-    .info-section h5 {
-      font-weight: bold;
-    }
-
-    @media (max-width: 768px) {
-      .info-section {
-        display: none;
-      }
-    }
-  </style>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/css/styleLogin.css">
+	<title>Iniciar Sesión</title>
 </head>
 
-<body class="bg-light d-flex align-items-center justify-content-center vh-100">
+<body>
+	<div class="card-login">
+		
+	  <!-- Sección formulario -->
+	  <div class="left glass">
+	    <form th:action="@{/usuarios/login}" method="post">
+	      <h2>Iniciar Sesión</h2>
 
-  <div class="card login-container shadow-lg d-flex flex-row">
-    
-    <!-- Formulario de Login -->
-    <div class="col-md-6 login-form">
-      <h4 class="text-center mb-4">Iniciar Sesión</h4>
+	      <div class="input-field">
+	        <input type="text" id="username" name="username" required>
+	        <label for="username">Usuario</label>
+	      </div>
 
-      <form th:action="@{/usuarios/login}" method="post">
-        <div class="mb-3">
-          <label for="username" class="form-label">Usuario</label>
-          <div class="input-group">
-            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-            <input type="text" class="form-control" id="username" name="username" placeholder="Ingrese su usuario" required>
-          </div>
-        </div>
+	      <div class="input-field">
+	        <input type="password" id="password" name="password" required>
+	        <label for="password">Contraseña</label>
+	      </div>
 
-        <div class="mb-3">
-          <label for="password" class="form-label">Contraseña</label>
-          <div class="input-group">
-            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Ingrese su contraseña" required>
-          </div>
-        </div>
+	      <div th:if="${param.error != null}">
+	        <div class="custom-alert" role="alert">
+	          Usuario o contraseña incorrectos
+	        </div>
+	      </div>
 
-        <div th:if="${param.error!=null}">
-          <div class="alert alert-danger py-1 text-center mt-3" role="alert">
-            Usuario o contraseña incorrectos
-          </div>
-        </div>
+	      <button type="submit">Ingresar</button>
+	    </form>
+	  </div>
 
-        <div class="d-grid mt-4">
-          <button type="submit" class="btn btn-danger">Ingresar</button>
-        </div>
-      </form>
-    </div>
-
-    <!-- Sección de información -->
-    <div class="col-md-6 info-section">
-      <h5>Bienvenido a nuestro sistema. MovilXpress: tu viaje comienza aquí, con el mejor servicio de alquiler de autos.</h5>
-    </div>
-  </div>
-
-  <!-- Bootstrap JS Bundle -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	  <!-- Sección mensaje -->
+	  <div class="right glass-red">
+	    <p>Bienvenido a <strong>MoviXpress</strong>.<br>Tu viaje comienza aquí con el mejor servicio de alquiler de autos.</p>
+	  </div>
+	  
+	</div>
 </body>
+
 </html>
