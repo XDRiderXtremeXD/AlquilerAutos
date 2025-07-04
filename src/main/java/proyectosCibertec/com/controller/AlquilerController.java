@@ -79,14 +79,14 @@ public class AlquilerController {
 		model.addAttribute("tamanio", size);
 		model.addAttribute("alquiler", new Alquiler());
 
-		return "alquiler/listadoAlquiler";
+		return "private-pages/alquiler/listado-alquiler";
 	}
 
 	@GetMapping("/crear")
 	public String mostrarFormularioRegistro(Model model) {
 		model.addAttribute("alquiler", new Alquiler());
 		model.addAttribute("lstClientes", clientesRepository.findAll());
-		model.addAttribute("lstVehiculos", vehiculosRepository.findByActividad("LIBRE"));
+		//model.addAttribute("lstVehiculos", vehiculosRepository.findByActividad("LIBRE"));
 		model.addAttribute("lstMarcas", marcasRepository.findAll());
 		model.addAttribute("lstDocumentos", documentosRepository.findAll());
 
@@ -95,7 +95,7 @@ public class AlquilerController {
 		model.addAttribute("penalidadXdia", configuracion.getPenalidadPorDia());
 		model.addAttribute("moneda", configuracion.getMoneda());
 
-		return "alquiler/crearAlquiler";
+		return "private-pages/alquiler/crear-alquiler";
 	}
 
 	@PostMapping("/registrar")
@@ -142,7 +142,7 @@ public class AlquilerController {
 		model.addAttribute("penalidadXdia", configuracion.getPenalidadPorDia());
 		model.addAttribute("moneda", configuracion.getMoneda());
 
-		return "alquiler/editarAlquiler"; 
+		return "private-pages/alquiler/editar-alquiler"; 
 	}
 
 
@@ -222,7 +222,7 @@ public class AlquilerController {
 	    response.setHeader("Content-Disposition", "inline; filename=reporte_alquileres.pdf");
 
 	    try {
-	        String ruta = resourceLoader.getResource("classpath:/static/reporte_alquiler.jasper").getFile().getAbsolutePath();
+	        String ruta = resourceLoader.getResource("classpath:/static/reports/reporte_alquiler.jasper").getFile().getAbsolutePath();
 	        JasperPrint jasperPrint = JasperFillManager.fillReport(ruta, new HashMap<>(), dataSource.getConnection());
 
 	        OutputStream outStream = response.getOutputStream();
@@ -238,7 +238,7 @@ public class AlquilerController {
 	    response.setHeader("Content-Disposition", "inline; filename=grafico_alquileres.pdf");
 
 	    try {
-	        String ruta = resourceLoader.getResource("classpath:/static/grafico_alquiler.jasper").getFile().getAbsolutePath();
+	        String ruta = resourceLoader.getResource("classpath:/static/reports/grafico_alquiler.jasper").getFile().getAbsolutePath();
 	        JasperPrint jasperPrint = JasperFillManager.fillReport(ruta, new HashMap<>(), dataSource.getConnection());
 
 	        OutputStream outStream = response.getOutputStream();
@@ -257,7 +257,7 @@ public class AlquilerController {
 	    try {
 	        HashMap<String, Object> parametros = new HashMap<>();
 	        parametros.put("ID", alquiler.getId()); 
-	        String ruta = resourceLoader.getResource("classpath:/static/reporteAlquilerById.jasper").getURI().getPath();
+	        String ruta = resourceLoader.getResource("classpath:/static/reports/reporteAlquilerById.jasper").getURI().getPath();
 	        JasperPrint jasperPrint = JasperFillManager.fillReport(ruta, parametros, dataSource.getConnection());
 	        OutputStream outStream = response.getOutputStream();
 	        JasperExportManager.exportReportToPdfStream(jasperPrint, outStream);

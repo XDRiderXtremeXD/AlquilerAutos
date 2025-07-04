@@ -16,7 +16,8 @@
 			<div class="card-body">
 				<h1 class="h4 card-title mb-4">Gestión de Monedaa</h1>
 
-				<div th:if="${css_mensaje != null}" th:class="${css_mensaje}" th:text="${mensaje}" role="alert" style="margin-top: 15px;"></div>
+				<div th:if="${css_mensaje != null}" th:class="${css_mensaje}" th:text="${mensaje}" role="alert"
+					style="margin-top: 15px;"></div>
 
 				<!-- Botones de acción -->
 				<div class="d-flex justify-content-between flex-wrap mb-3">
@@ -77,11 +78,18 @@
 										data-estado=${m.estado}" onclick="llenarModalEditar(this)">
 										<i class="bi bi-pencil-square"></i>
 									</button>
-									<a th:href="@{/monedas/eliminar/{id}(id=${m.id})}" class="btn btn-sm btn-danger"
-										title="Eliminar"
-										onclick="return confirm('¿Estás seguro de que deseas eliminar esta moneda?');">
+
+									<a href="#" class="btn btn-sm btn-danger btn-eliminar me-1"
+										th:data-title="'¿Estás seguro de eliminar esta moneda?'"
+										th:data-text="'Esta acción no se puede deshacer'" th:data-icon="warning"
+										th:data-id="${m.id}">
 										<i class="bi bi-trash"></i>
 									</a>
+									<form th:action="@{/monedas/eliminar/{id}(id=${m.id})}" th:id="'formEliminar-' + ${m.id}"
+										method="post" style="display:none;">
+										<input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+									</form>
+
 								</td>
 							</tr>
 						</tbody>

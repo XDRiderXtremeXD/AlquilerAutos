@@ -130,7 +130,8 @@
 				<br>
 
 				<!-- Mensaje de Alerta de Registro -->
-				<div th:if="${css_mensaje != null}" th:class="${css_mensaje}" th:text="${mensaje}" role="alert" style="margin-top: 15px;"></div>
+				<div th:if="${css_mensaje != null}" th:class="${css_mensaje}" th:text="${mensaje}" role="alert"
+					style="margin-top: 15px;"></div>
 
 				<!-- Tabla de datos de Documentos -->
 				<div class="table-responsive">
@@ -148,7 +149,8 @@
 							<!-- En caso no hallan Documentos registrados -->
 							<tr th:if="${#lists.isEmpty(lstDocumentos)}" class="text-center">
 								<td colspan="4" class="text-muted py-4"
-								th:text="${vista == 'activas'} ? 'No hay documentos registrados' : 'No hay documentos cancelados'"></td>
+									th:text="${vista == 'activas'} ? 'No hay documentos registrados' : 'No hay documentos cancelados'">
+								</td>
 							</tr>
 
 							<!-- Listado de Documentos-->
@@ -159,19 +161,24 @@
 								</td>
 								<td th:text="${d.documento}"></td>
 								<td>
-									<button th:if="${vista == 'activos'}" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
-										data-bs-target="#modalEditar" th:attr="
+									<button th:if="${vista == 'activos'}" type="button" class="btn btn-sm btn-primary"
+										data-bs-toggle="modal" data-bs-target="#modalEditar" th:attr="
 										data-id=${d.id},
 										data-documento=${d.documento},
 										data-foto=${d.foto}">
 										<i class="bi bi-pencil-square"></i>
 									</button>
 
-									<a th:if="${vista == 'activos'}" th:href="@{/documentos/eliminar/}+${d.id}"
-										class="btn btn-sm btn-danger"
-										onclick="return confirm('¿Estás seguro de eliminar este documento?');">
+									<a th:if="${vista == 'activos'}" href="#" class="btn btn-sm btn-danger btn-eliminar me-1"
+										th:data-title="'¿Estás seguro de eliminar este documento?'"
+										th:data-text="'Esta acción no se puede deshacer'" th:data-icon="warning"
+										th:data-id="${d.id}">
 										<i class="bi bi-trash"></i>
 									</a>
+									<form th:action="@{/documentos/eliminar/{id}(id=${d.id})}" th:id="'formEliminar-' + ${d.id}"
+										method="post" style="display:none;">
+										<input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+									</form>
 
 									<a th:if="${vista == 'cancelados'}" th:href="@{/documentos/restaurar/}+${d.id}"
 										class="btn btn-sm btn-success"

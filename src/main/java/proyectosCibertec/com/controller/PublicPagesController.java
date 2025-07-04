@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class ClientesPageController {
+public class PublicPagesController {
 
 	@Autowired
 	private IConfiguracionRepository repoConfig;
@@ -38,17 +38,17 @@ public class ClientesPageController {
 
 	@Autowired
 	private IMarcasRepository repoMarca;
+	
+	@GetMapping("/login")
+	public String loginPage() {
+		return "public-pages/login";
+	}
 
 	@GetMapping("/contactos")
 	public String contactosVista(Model model) {
 		Configuracion configuracion = repoConfig.findById(1).orElseThrow();
 		model.addAttribute("configuracion", configuracion);
-		return "contentclient/contactos";
-	}
-
-	@GetMapping("/error/403")
-	public String error403() {
-		return "contentclient/403";
+		return "public-pages/contentclient/contactos";
 	}
 
 	@GetMapping("/catalogo")
@@ -93,7 +93,7 @@ public class ClientesPageController {
 		model.addAttribute("marcas", marcas);
 		model.addAttribute("param", filtros);
 
-		return "contentclient/catalogo";
+		return "public-pages/catalogo";
 	}
 
 	@GetMapping("/quienessomos")
@@ -105,7 +105,7 @@ public class ClientesPageController {
 	public String homeVista(Model model) {
 		List<Vehiculos> vehiculosDestacados = repoVehiculo.findTop4ByEstadoOrderByIdDesc(1);
 		model.addAttribute("vehiculosDestacados", vehiculosDestacados);
-		return "contentclient/home";
+		return "public-pages/home";
 	}
 
 	@GetMapping("/")

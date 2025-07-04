@@ -15,7 +15,7 @@
 		<div class="card shadow-sm">
 			<div class="card-body">
 				<h1 class="h4 card-title mb-4">Gestión de Usuarios</h1>
-				
+
 				<!-- Botones de acción -->
 				<div class="d-flex justify-content-between flex-wrap mb-3">
 					<button class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target="#modalRegistrarUsuario">
@@ -26,7 +26,7 @@
 					</a>
 				</div>
 
-				
+
 
 				<!-- Filtro de tamaño -->
 				<form class="mb-3" method="get" th:action="@{/usuarios/listado}">
@@ -44,7 +44,8 @@
 
 				<br>
 
-				<div th:if="${css_mensaje != null}" th:class="${css_mensaje}" th:text="${mensaje}" role="alert" style="margin-top: 15px;"></div>
+				<div th:if="${css_mensaje != null}" th:class="${css_mensaje}" th:text="${mensaje}" role="alert"
+					style="margin-top: 15px;"></div>
 
 				<!-- Tabla de datos de Usuarios -->
 				<div class="table-responsive">
@@ -73,7 +74,8 @@
 							<tr th:each="u : ${lstUsuarios}">
 								<td th:text="${u.id}"></td>
 								<td>
-								    <img th:src="${u.perfil}" alt="Foto de perfil" width="60" height="60" style="object-fit: cover; border-radius: 50%;" />
+									<img th:src="${u.perfil}" alt="Foto de perfil" width="60" height="60"
+										style="object-fit: cover; border-radius: 50%;" />
 								</td>
 								<td th:text="${u.nomUsuario}"></td>
 								<td th:text="${u.nombre + ' ' + u.apellido}"></td>
@@ -96,11 +98,22 @@
 											data-rol=${u.rol}" onclick="llenarModalEditar(this)">
 										<i class="bi bi-pencil-square"></i>
 									</button>
-									<a th:href="@{/usuarios/eliminar/{id}(id=${u.id})}" class="btn btn-sm btn-danger"
-										title="Eliminar"
-										onclick="return confirm('¿Estás seguro de que deseas eliminar este Usuario?');">
-										<i class="bi bi-trash"></i>
-									</a>
+
+									<a href="#" class="btn btn-sm btn-danger btn-eliminar me-1"
+									          th:data-title="'¿Estás seguro de que deseas eliminar a ' + ${u.nombre} + '?'"
+									          th:data-text="'Esta acción no se puede deshacer'"
+									          th:data-icon="warning"
+											  th:data-id="${u.id}">
+									          <i class="bi bi-trash"></i>
+									       </a>
+
+									       <!-- Usar un ID único por fila (buena práctica) -->
+									       <form th:action="@{/usuarios/eliminar/{id}(id=${u.id})}" th:id="'formEliminar-' + ${u.id}"
+									             method="post" style="display:none;">
+									           <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+									       </form>
+
+
 								</td>
 							</tr>
 						</tbody>
@@ -140,7 +153,8 @@
 					</div>
 					<div class="modal-body">
 
-						<form th:action="@{/usuarios/grabar}" method="post" th:object="${usuario}" class="row g-3" enctype="multipart/form-data">
+						<form th:action="@{/usuarios/grabar}" method="post" th:object="${usuario}" class="row g-3"
+							enctype="multipart/form-data">
 							<div class="col-md-6">
 								<label class="form-label">Usuario</label>
 								<input type="text" th:field="*{nomUsuario}" class="form-control"
@@ -172,14 +186,14 @@
 									placeholder="Ingrese la dirección" />
 							</div>
 
-							 <div class="col-md-6">
-							     <label class="form-label">Foto de Perfil</label>
-							     <input type="file" class="form-control" name="filePerfil" required>
-							     <div id="alertaFoto" class="alert alert-warning mt-2 d-none" role="alert">
-							         La imagen no puede superar 1MB
-							     </div>
-							 </div>
-							
+							<div class="col-md-6">
+								<label class="form-label">Foto de Perfil</label>
+								<input type="file" class="form-control" name="filePerfil" required>
+								<div id="alertaFoto" class="alert alert-warning mt-2 d-none" role="alert">
+									La imagen no puede superar 1MB
+								</div>
+							</div>
+
 							<div class="col-md-6">
 								<label class="form-label">Contraseña</label>
 								<input type="password" th:field="*{clave}" class="form-control"
@@ -218,7 +232,8 @@
 					</div>
 					<div class="modal-body">
 
-						<form th:action="@{/usuarios/grabar}" method="post" th:object="${usuario}" class="row g-3" enctype="multipart/form-data">
+						<form th:action="@{/usuarios/grabar}" method="post" th:object="${usuario}" class="row g-3"
+							enctype="multipart/form-data">
 
 							<input type="hidden" id="editarId" th:field="*{id}" />
 
@@ -253,12 +268,12 @@
 							</div>
 							<div class="col-md-6">
 
-														     <label class="form-label">Foto de Perfil</label>
-														     <input type="file" class="form-control" name="filePerfil" required>
-														     <div id="alertaFoto" class="alert alert-warning mt-2 d-none" role="alert">
-														         La imagen no puede superar 1MB
-														     </div>
-														 </div>
+								<label class="form-label">Foto de Perfil</label>
+								<input type="file" class="form-control" name="filePerfil" required>
+								<div id="alertaFoto" class="alert alert-warning mt-2 d-none" role="alert">
+									La imagen no puede superar 1MB
+								</div>
+							</div>
 
 							<div class="col-md-6">
 								<label class="form-label">Contraseña</label>

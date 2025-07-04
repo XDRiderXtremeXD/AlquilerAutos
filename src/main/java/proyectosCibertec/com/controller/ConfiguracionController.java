@@ -31,7 +31,7 @@ public class ConfiguracionController {
 		model.addAttribute("configuracion", configuracion);
 		model.addAttribute("lstMonedas", repoMoneda.findAll());
 
-		return "configuraciones";
+		return "private-pages/configuraciones";
 	}
 	
 	@PostMapping("/grabar")

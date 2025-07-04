@@ -43,11 +43,6 @@ public class UsuarioController {
 	@Autowired
 	private ResourceLoader resourceLoader; // core.io
 
-	@GetMapping("/login")
-	public String loginPage() {
-		return "login";
-	}
-
 	@GetMapping("/listado")
 	public String usuarioCrud(Model model, @RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "5") int size) {
@@ -58,7 +53,7 @@ public class UsuarioController {
 		model.addAttribute("tamanio", size);
 		model.addAttribute("usuario", new Usuario());
 
-		return "usuarios";
+		return "private-pages/usuarios";
 	}
 
 	@PostMapping("/grabar")
@@ -124,7 +119,7 @@ public class UsuarioController {
 		return publicIdWithExtension.split("\\.")[0];
 	}
 
-	@GetMapping("/eliminar/{id}")
+	@PostMapping("/eliminar/{id}")
 	public String eliminarUsuario(@PathVariable Integer id, RedirectAttributes redirAtributos) {
 		try {
 			Usuario usuario = repoUsu.findById(id).orElse(null);
@@ -149,7 +144,7 @@ public class UsuarioController {
 		response.setHeader("Content-Disposition", "inline; filename=usuarios.pdf");
 
 		try {
-			String ruta = resourceLoader.getResource("classpath:/static/usuarios.jasper").getFile()
+			String ruta = resourceLoader.getResource("classpath:/static/reports/usuarios.jasper").getFile()
 					.getAbsolutePath();
 
 			JasperPrint jasperPrint = JasperFillManager.fillReport(ruta, new HashMap<>(), dataSource.getConnection());

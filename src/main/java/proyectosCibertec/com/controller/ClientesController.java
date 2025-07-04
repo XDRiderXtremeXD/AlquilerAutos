@@ -45,7 +45,7 @@ public class ClientesController {
         model.addAttribute("tamanio", size);
         model.addAttribute("cliente", new Clientes()); // para el formulario modal
 
-        return "clientes";
+        return "private-pages/clientes";
     }
 
     @PostMapping("/grabar")
@@ -65,7 +65,7 @@ public class ClientesController {
         return "redirect:/clientes/listado";
     }
 
-    @GetMapping("/eliminar/{id}")
+    @PostMapping("/eliminar/{id}")
     public String eliminarCliente(@PathVariable Integer id, RedirectAttributes redirAtributos) {
         Clientes cliente = repoCliente.findById(id).orElse(null);
 
@@ -97,7 +97,7 @@ public class ClientesController {
 
         try {
             // Ruta del archivo .jasper compilado
-            String ruta = resourceLoader.getResource("classpath:/static/clientes.jasper")
+            String ruta = resourceLoader.getResource("classpath:/static/reports/clientes.jasper")
                                         .getFile()
                                         .getAbsolutePath();
 
