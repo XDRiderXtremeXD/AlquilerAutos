@@ -29,7 +29,7 @@ public class DocumentoController {
         model.addAttribute("lstDocumentos", lista);
         model.addAttribute("documentos", new Documentos());
         model.addAttribute("vista", "activos");
-        return "documentos";
+        return "private-pages/documentos";
     }
 
     private String extractPublicId(String url) {
@@ -51,7 +51,7 @@ public class DocumentoController {
         }
     }
 
-    @GetMapping("/eliminar/{id}")
+    @PostMapping("/eliminar/{id}")
     public String eliminarDocumento(@PathVariable int id, RedirectAttributes redirAtributos) {
         try {
             Documentos documento = repoDocumentos.findById(id).orElse(null);

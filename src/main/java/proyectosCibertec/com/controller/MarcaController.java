@@ -24,7 +24,7 @@ public class MarcaController {
         model.addAttribute("lstMarcas", listaMarcas);
         model.addAttribute("marcas", new Marcas());
         model.addAttribute("vista", "activas");
-        return "marcas";
+        return "private-pages/marcas";
     }
 
     @PostMapping("/editar")
@@ -42,7 +42,7 @@ public class MarcaController {
         return "redirect:/marcas/listado";
     }
 
-    @GetMapping("/eliminar/{id}")
+    @PostMapping("/eliminar/{id}")
     public String eliminarMarca(@PathVariable int id, RedirectAttributes redirAtributos) {
         try {
             Marcas m = repoMarca.findById(id).orElseThrow();
@@ -80,7 +80,7 @@ public class MarcaController {
         model.addAttribute("lstMarcas", listaCanceladas);
         model.addAttribute("marcas", new Marcas());
         model.addAttribute("vista", "canceladas");
-        return "marcas";
+        return "private-pages/marcas";
     }
 
     @GetMapping("/restaurar/{id}")

@@ -27,7 +27,7 @@ public class TiposController {
         // Para el listado de activos
         model.addAttribute("vista", "activos");
 
-        return "tipos";
+        return "private-pages/tipos";
     }
 
     @PostMapping("/editar")
@@ -45,7 +45,7 @@ public class TiposController {
         return "redirect:/tipos/listado";
     }
 
-    @GetMapping("/eliminar/{id}")
+    @PostMapping("/eliminar/{id}")
     public String eliminarTipo(@PathVariable int id, RedirectAttributes redirAtributos) {
         try {
             Tipos tipo = repoTipo.findById(id).get();

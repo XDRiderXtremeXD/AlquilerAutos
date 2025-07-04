@@ -60,7 +60,7 @@ public class VehiculoController {
         model.addAttribute("vehiculos", new Vehiculos());
         model.addAttribute("vista", "activos");
 
-        return "vehiculos";
+        return "private-pages/vehiculos";
     }
 
     private String extractPublicId(String url) {
@@ -172,7 +172,7 @@ public class VehiculoController {
         return "redirect:/vehiculos/listado";
     }
 
-    @GetMapping("/eliminar/{id}")
+    @PostMapping("/eliminar/{id}")
     public String eliminarVehiculo(@PathVariable int id, RedirectAttributes redir) {
         try {
             Vehiculos vehiculo = repoVehiculo.findById(id).orElse(null);
@@ -199,7 +199,7 @@ public class VehiculoController {
         model.addAttribute("lstTipos", repoTipo.findByEstado(1));
         model.addAttribute("vehiculos", new Vehiculos());
         model.addAttribute("vista", "cancelados");
-        return "vehiculos";
+        return "private-pages/vehiculos";
     }
 
     @GetMapping("/restaurar/{id}")
@@ -227,7 +227,7 @@ public class VehiculoController {
         response.setHeader("Content-Disposition", "inline; filename=vehiculos.pdf");
 
         try {
-            String ruta = resourceLoader.getResource("classpath:/static/vehiculos.jasper")
+            String ruta = resourceLoader.getResource("classpath:/static/reports/vehiculos.jasper")
                                         .getFile()
                                         .getAbsolutePath();
 

@@ -16,7 +16,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
             		.requestMatchers(
-            			    "/usuarios/login",
+            			    "/login",
             			    "/css/**",
             			    "/js/**",
             			    "/images/**",
@@ -29,8 +29,8 @@ public class SecurityConfig {
             			    .anyRequest().authenticated()
             )
             .formLogin(form -> form
-                .loginPage("/usuarios/login")
-                .loginProcessingUrl("/usuarios/login")
+                .loginPage("/login")
+                .loginProcessingUrl("/login")
                 .defaultSuccessUrl("/alquiler/listado", true)
                 .permitAll()
             )
@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .deleteCookies("JSESSIONID")
             )
            .exceptionHandling(e -> e
-                .accessDeniedPage("/error/403")
+                .accessDeniedPage("/error")
             );
 
         return http.build();

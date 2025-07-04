@@ -24,7 +24,7 @@ public class PerfilUsuarioController {
 	    Usuario usuario = repoUsu.findByNomUsuario(nombreUsuario);
 
 	    model.addAttribute("usuario", usuario);
-	    return "perfil";
+	    return "private-pages/perfil";
 	}
 	
 }

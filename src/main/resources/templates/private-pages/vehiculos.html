@@ -14,27 +14,28 @@
 				<h1 th:text="${vista == 'activos'} ? 'Gestión de Vehículos' : 'Gestión de Vehículos Cancelados'"
 					class="h4 card-title mb-4"></h1>
 
-					<div class="d-flex flex-wrap gap-2 mb-3">
-						<!-- Botón para nuevo vehículo -->
-						<button type="button" class="btn btn-primary"
-						        data-bs-toggle="modal" data-bs-target="#modalRegistro"
-						        th:attr="disabled=${vista == 'cancelados'} ? 'disabled' : null">
-							Registrar nuevo Vehículo
-						</button>
+				<div class="d-flex flex-wrap gap-2 mb-3">
+					<!-- Botón para nuevo vehículo -->
+					<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRegistro"
+						th:attr="disabled=${vista == 'cancelados'} ? 'disabled' : null">
+						Registrar nuevo Vehículo
+					</button>
 
-						<a th:if="${vista == 'activos'}" th:href="@{/vehiculos/cancelados}" class="btn btn-outline-secondary">
-							Ver Vehículos Cancelados
-						</a>
+					<a th:if="${vista == 'activos'}" th:href="@{/vehiculos/cancelados}"
+						class="btn btn-outline-secondary">
+						Ver Vehículos Cancelados
+					</a>
 
-						<a th:if="${vista == 'cancelados'}" th:href="@{/vehiculos/listado}" class="btn btn-outline-secondary">
-							Volver al Listado
-						</a>
+					<a th:if="${vista == 'cancelados'}" th:href="@{/vehiculos/listado}"
+						class="btn btn-outline-secondary">
+						Volver al Listado
+					</a>
 
-						<!-- Botón de Reporte alineado a la derecha -->
-						<a href="/vehiculos/reporte" class="btn btn-danger ms-auto" target="_blank">
-							<i class="bi bi-file-earmark-arrow-down-fill"></i> Reporte
-						</a>
-					</div>
+					<!-- Botón de Reporte alineado a la derecha -->
+					<a href="/vehiculos/reporte" class="btn btn-danger ms-auto" target="_blank">
+						<i class="bi bi-file-earmark-arrow-down-fill"></i> Reporte
+					</a>
+				</div>
 
 
 				<br><br>
@@ -263,11 +264,18 @@
 
 										<i class="bi bi-pencil-square"></i>
 									</button>
-									<a th:if="${vista == 'activos'}" th:href="@{/vehiculos/eliminar/}+${v.id}"
-										class="btn btn-sm btn-danger" title="Eliminar"
-										onclick="return confirm('¿Estás seguro de eliminar este vehículo?')">
+
+									<a th:if="${vista == 'activos'}" href="#" class="btn btn-sm btn-danger btn-eliminar me-1"
+										th:data-title="'¿Estás seguro de eliminar este vehículo?'"
+										th:data-text="'Esta acción no se puede deshacer'" th:data-icon="warning"
+										th:data-id="${v.id}">
 										<i class="bi bi-trash"></i>
 									</a>
+									<form th:action="@{/vehiculos/eliminar/{id}(id=${v.id})}" th:id="'formEliminar-' + ${v.id}"
+										method="post" style="display:none;">
+										<input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+									</form>
+
 
 									<a th:if="${vista == 'cancelados'}" th:href="@{/vehiculos/restaurar/}+${v.id}"
 										class="btn btn-sm btn-success" title="Restaurar"

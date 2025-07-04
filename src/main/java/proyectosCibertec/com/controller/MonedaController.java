@@ -29,7 +29,7 @@ public class MonedaController {
         model.addAttribute("tamanio", size);
         model.addAttribute("moneda", new Moneda());
 
-        return "monedas";
+        return "private-pages/monedas";
     }
 
     @PostMapping("/grabar")
@@ -47,7 +47,7 @@ public class MonedaController {
         return "redirect:/monedas/listado";
     }
 
-    @GetMapping("/eliminar/{id}")
+    @PostMapping("/eliminar/{id}")
     public String eliminarMonedas(@PathVariable Integer id, RedirectAttributes redirAtributos) {
         try {
             repoMoneda.deleteById(id);
