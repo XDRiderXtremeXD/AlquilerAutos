@@ -26,6 +26,7 @@ import proyectosCibertec.com.model.Marcas;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 public class PublicPagesController {
@@ -46,11 +47,18 @@ public class PublicPagesController {
 
 	@GetMapping("/contactos")
 	public String contactosVista(Model model) {
-		Configuracion configuracion = repoConfig.findById(1).orElseThrow();
-		model.addAttribute("configuracion", configuracion);
-		return "public-pages/contentclient/contactos";
-	}
+	    Optional<Configuracion> optConfig = repoConfig.findById(1);
+	    
+	    if (optConfig.isPresent()) {
+	        model.addAttribute("configuracion", optConfig.get());
+	    } else {
+	        model.addAttribute("configuracion", new Configuracion()); 
+	        model.addAttribute("mensaje", "No se encontró configuración.");
+	    }
 
+	    return "public-pages/contactos";
+	}
+	
 	@GetMapping("/catalogo")
 	public String catalogoVista(@RequestParam(name = "nombre", required = false) String nombre,
 			@RequestParam(name = "precioMin", required = false) Double precioMin,
@@ -98,7 +106,7 @@ public class PublicPagesController {
 
 	@GetMapping("/quienessomos")
 	public String quienessomosVista() {
-		return "contentclient/quienes-somos";
+		return "public-pages/quienes-somos";
 	}
 
 	@GetMapping("/home")
