@@ -213,7 +213,7 @@ public class AlquilerController {
 	            .orElseThrow(() -> new IllegalArgumentException("ID de alquiler no válido: " + id));
 
 	    model.addAttribute("alquiler", alquiler);
-	    return "alquiler/detalleAlquiler";
+	    return "private-pages/alquiler/detalle-alquiler";
 	}
 	
 	@GetMapping("/reporte")
@@ -256,7 +256,7 @@ public class AlquilerController {
 
 	    try {
 	        HashMap<String, Object> parametros = new HashMap<>();
-	        parametros.put("ID", alquiler.getId()); 
+	        parametros.put("id", alquiler.getId()); 
 	        String ruta = resourceLoader.getResource("classpath:/static/reports/reporteAlquilerById.jasper").getURI().getPath();
 	        JasperPrint jasperPrint = JasperFillManager.fillReport(ruta, parametros, dataSource.getConnection());
 	        OutputStream outStream = response.getOutputStream();
