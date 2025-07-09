@@ -97,7 +97,7 @@ public class ClientesController {
 
         try {
             // Ruta del archivo .jasper compilado
-            String ruta = resourceLoader.getResource("classpath:/static/reports/clientes.jasper")
+            String ruta = resourceLoader.getResource("classpath:/static/reports/cliente.jasper")
                                         .getFile()
                                         .getAbsolutePath();
 
