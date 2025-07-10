@@ -2,102 +2,81 @@
 
 ![image](https://github.com/user-attachments/assets/ae24bc37-1c52-4561-a751-f036832107e8)
 
+---
 
 ## 📘 Descripción del Proyecto
 
-Este proyecto consiste en un sistema de alquiler de autos desarrollado con Spring Boot. Su objetivo principal es permitir a trabajadores y administradores gestionar de manera eficiente:
+Este proyecto consiste en un sistema de alquiler de autos desarrollado con **Spring Boot**. Su objetivo principal es permitir a trabajadores y administradores gestionar de manera eficiente:
 
-El registro de clientes.
+- El registro de clientes.  
+- El registro y administración de vehículos disponibles para alquilar.  
+- La creación y seguimiento de alquileres, incluyendo fechas, pagos, penalidades y observaciones.
 
-El registro y administración de vehículos disponibles para alquilar.
+### 🧰 Tecnologías Utilizadas
 
-La creación y seguimiento de alquileres, incluyendo fechas, pagos, penalidades y observaciones.
-
-El sistema utiliza:
-
-Spring Boot con Spring Security, JPA, y Lombok.
-
-Cloudinary para el almacenamiento de imágenes de los vehículos.
-
-Bootstrap para el diseño visual.
-
-MySQL como base de datos relacional.
-
-Cada vez que un cliente acude a la tienda, los trabajadores registran la operación de alquiler con todos los detalles requeridos (fechas, duración, documento, abono, penalidad si corresponde, etc.). Solo los usuarios con rol ADMIN o WORKER pueden acceder al sistema.
-
-# ⚙️ Configuración del entorno de desarrollo
-
-Este repositorio incluye un archivo de ejemplo para la configuración del entorno de desarrollo de una aplicación Spring Boot.
+- Spring Boot + Spring Security + JPA + Lombok  
+- MySQL (base de datos relacional)  
+- Cloudinary (almacenamiento de imágenes de vehículos)  
+- Bootstrap (interfaz gráfica)
 
 ---
 
-## 📄 Archivo: `application-dev.properties.example`
+## ⚙️ Configuración del Entorno de Desarrollo
 
-Este archivo se encuentra en:
+Este repositorio incluye un archivo de ejemplo de configuración para la aplicación Spring Boot.
+
+### 📄 Archivo: `application-dev.properties.example`
+
+Ubicación:
 
 ```
 src/main/resources/application-dev.properties.example
 ```
 
-Contiene los campos necesarios para configurar la conexión a base de datos y a Cloudinary.
+Contiene la estructura necesaria para conectar con la base de datos y Cloudinary.
 
----
+### 🚀 Pasos para Configurar
 
-## 🚀 Instrucciones de uso
-
-1. **Haz una copia del archivo y renómbralo** como:
+1. Copia el archivo `.example` y renómbralo como:
 
    ```
    application-dev.properties
    ```
 
-   Debe quedar en la misma ruta:
-
-   ```
-   src/main/resources/application-dev.properties
-   ```
-
-2. **Completa los campos con tus propias credenciales**:
+2. Asegúrate de completar con tus datos reales:
 
    ```properties
-   spring.datasource.url=jdbc:mysql://localhost:3306/tu_base_de_datos?useSSL=false&serverTimezone=UTC
-   spring.datasource.username=tu_usuario_mysql
-   spring.datasource.password=tu_contraseña_mysql
+   spring.datasource.url=jdbc:mysql://localhost:3306/alquiler_db?useSSL=false&serverTimezone=UTC
+   spring.datasource.username=tu_usuario
+   spring.datasource.password=tu_clave
 
-   cloudinary.cloud_name=tu_nombre_de_cloudinary
+   cloudinary.cloud_name=tu_nombre
    cloudinary.api_key=tu_api_key
    cloudinary.api_secret=tu_api_secret
    ```
 
-3. **No subas el archivo `application-dev.properties` al repositorio.**
-   Este archivo ya está incluido en `.gitignore` para evitar compartir credenciales sensibles.
+3. Este archivo está incluido en `.gitignore`. **No lo subas al repositorio**.
 
 ---
 
-## ⚠️ Importante
+## 📁 Descripción de Propiedades
 
-- **No edites directamente el archivo `.example`**. Es una plantilla base para todos los desarrolladores del proyecto.
-- El archivo `.example` debe mantenerse en el repositorio sin datos reales.
-- Cada desarrollador debe trabajar con su propia copia renombrada (`application-dev.properties`).
-
----
-
-## 📁 Descripción de propiedades
-
-| Propiedad                         | Descripción                                      |
-|----------------------------------|--------------------------------------------------|
-| `spring.datasource.url`          | URL de conexión a tu base de datos (MySQL)      |
-| `spring.datasource.username`     | Usuario de acceso a la base de datos            |
-| `spring.datasource.password`     | Contraseña del usuario                          |
-| `cloudinary.cloud_name`          | Nombre de tu cuenta de Cloudinary               |
-| `cloudinary.api_key`             | API key de Cloudinary                           |
-| `cloudinary.api_secret`          | API secret de Cloudinary (**no lo compartas**)  |
+| Propiedad                    | Descripción                              |
+|-----------------------------|------------------------------------------|
+| `spring.datasource.url`     | Conexión JDBC a la base de datos MySQL   |
+| `spring.datasource.username`| Usuario de base de datos                 |
+| `spring.datasource.password`| Contraseña del usuario                   |
+| `cloudinary.cloud_name`     | Nombre de cuenta en Cloudinary           |
+| `cloudinary.api_key`        | API Key para acceso                      |
+| `cloudinary.api_secret`     | API Secret (**no lo compartas**)         |
 
 ---
 
 ## 🧱 Estructura de la Base de Datos
 
-### 🔧 Configuración Inicial
+### 📌 Configuración Inicial
+
+🗂️ La creación de la base de datos se encuentra en un archivo .sql ubicado en una carpeta dentro de la raíz del proyecto. Asegúrate de ejecutar este archivo en tu gestor de base de datos (por ejemplo, MySQL Workbench o phpMyAdmin) antes de iniciar la aplicación.
 
 ```sql
 CREATE DATABASE IF NOT EXISTS alquiler_db;
@@ -111,192 +90,43 @@ SET time_zone = "+00:00";
 
 ---
 
-### 🪙 Tabla: `moneda`
-Contiene las monedas aceptadas para operaciones del sistema.
+### 🗂️ Tablas Principales
 
-```sql
-CREATE TABLE moneda (
-  id INT(11) NOT NULL AUTO_INCREMENT,
-  simbolo VARCHAR(10) NOT NULL,
-  nombre VARCHAR(100) NOT NULL,
-  fecha TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  estado INT(11) NOT NULL DEFAULT 1,
-  PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-```
+#### 🪙 `moneda`  
+Define las monedas utilizadas para los alquileres.
 
----
+#### 📄 `documentos`  
+Tipos de comprobantes disponibles (boleta, factura, etc.).
 
-### 📄 Tabla: `documentos`
-Tipos de documentos válidos para emitir comprobantes.
+#### 🚘 `marcas`  
+Marcas de los vehículos en el sistema.
 
-```sql
-CREATE TABLE documentos (
-  id INT(11) NOT NULL AUTO_INCREMENT,
-  documento VARCHAR(20) NOT NULL,
-  estado INT(11) NOT NULL DEFAULT 1,
-  fecha TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-```
+#### 🏷️ `tipos`  
+Tipos de vehículos (sedán, SUV, pickup, etc.).
 
----
+#### 👤 `clientes`  
+Información detallada de los clientes que alquilan.
 
-### 🚘 Tabla: `marcas`
-Marcas de vehículos disponibles para alquiler.
+#### 🔐 `usuarios`  
+Usuarios con acceso al sistema. Tienen roles `ADMIN` o `WORKER`.
 
-```sql
-CREATE TABLE marcas (
-  id INT(11) NOT NULL AUTO_INCREMENT,
-  marca VARCHAR(50) NOT NULL,
-  estado INT(11) NOT NULL DEFAULT 1,
-  fecha TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-```
+#### ⚙️ `configuracion`  
+Datos generales de la empresa: RUC, nombre, penalidad, etc.
 
----
+#### 🚙 `vehiculos`  
+Lista de autos disponibles con sus datos y estado.
 
-### 🏷️ Tabla: `tipos`
-Tipos o categorías de vehículos.
-
-```sql
-CREATE TABLE tipos (
-  id INT(11) NOT NULL AUTO_INCREMENT,
-  tipo VARCHAR(50) NOT NULL,
-  estado INT(11) NOT NULL DEFAULT 1,
-  fecha TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-```
-
----
-
-### 👤 Tabla: `clientes`
-Información de los clientes que alquilan vehículos.
-
-```sql
-CREATE TABLE clientes (
-  id INT(11) NOT NULL AUTO_INCREMENT,
-  dni VARCHAR(10) DEFAULT NULL,
-  nombre VARCHAR(100) NOT NULL,
-  telefono VARCHAR(15) NOT NULL,
-  direccion TEXT NOT NULL,
-  fecha TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  estado INT(11) NOT NULL DEFAULT 1,
-  PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-```
-
----
-
-### 🔐 Tabla: `usuarios`
-Usuarios del sistema (administradores o trabajadores).
-
-```sql
-CREATE TABLE usuarios (
-  id INT(11) NOT NULL AUTO_INCREMENT,
-  usuario VARCHAR(20) NOT NULL UNIQUE,
-  nombre VARCHAR(100) NOT NULL,
-  apellido VARCHAR(100) DEFAULT NULL,
-  correo VARCHAR(80) NOT NULL,
-  telefono VARCHAR(20) DEFAULT NULL,
-  direccion VARCHAR(100) DEFAULT NULL,
-  perfil VARCHAR(50) NOT NULL DEFAULT 'avatar.svg',
-  clave VARCHAR(100) NOT NULL,
-  fecha TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  estado INT(11) NOT NULL DEFAULT 1,
-  rol ENUM('ADMIN', 'WORKER') NOT NULL DEFAULT 'WORKER',
-  PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-```
-
----
-
-### ⚙️ Tabla: `configuracion`
-Datos generales de la empresa.
-
-```sql
-CREATE TABLE configuracion (
-  id INT(11) NOT NULL AUTO_INCREMENT,
-  ruc VARCHAR(20) NOT NULL,
-  nombre VARCHAR(200) NOT NULL,
-  telefono VARCHAR(15) NOT NULL,
-  correo VARCHAR(100) NOT NULL,
-  direccion VARCHAR(200) NOT NULL,
-  mensaje TEXT NOT NULL,
-  logo VARCHAR(10) NOT NULL,
-  moneda INT(11) NOT NULL,
-  impuesto INT(11) NOT NULL,
-  cant_factura INT(11) NOT NULL,
-  penalidad_por_dia DECIMAL(10,2) DEFAULT 0,
-  PRIMARY KEY (id),
-  FOREIGN KEY (moneda) REFERENCES moneda(id) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-```
-
----
-
-### 🚙 Tabla: `vehiculos`
-Vehículos disponibles para alquiler.
-
-```sql
-CREATE TABLE vehiculos (
-  id INT(11) NOT NULL AUTO_INCREMENT,
-  placa VARCHAR(50) NOT NULL,
-  id_marca INT(11) NOT NULL,
-  id_tipo INT(11) NOT NULL,
-  modelo VARCHAR(50) NOT NULL,
-  foto VARCHAR(100) NOT NULL,
-  actividad ENUM('PRESTADO', 'LIBRE') NOT NULL DEFAULT 'LIBRE',
-  estado INT(11) NOT NULL DEFAULT 1,
-  precio_por_dia DECIMAL(10,2) DEFAULT 1,
-  fecha TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  PRIMARY KEY (id),
-  FOREIGN KEY (id_marca) REFERENCES marcas(id) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (id_tipo) REFERENCES tipos(id) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-```
-
----
-
-### 📋 Tabla: `alquiler`
-Registros de alquiler realizados por los clientes.
-
-```sql
-CREATE TABLE alquiler (
-  id INT(11) NOT NULL AUTO_INCREMENT,
-  id_cliente INT(11) NOT NULL,
-  id_vehiculo INT(11) NOT NULL,
-  id_moneda INT(11) NOT NULL,
-  num_dias INT(11) DEFAULT 0,
-  precio_dia DECIMAL(10,2) NOT NULL,
-  abono DECIMAL(10,2) DEFAULT 0,
-  fecha_prestamo DATE NOT NULL,
-  hora TIME NOT NULL,
-  fecha_estimada_devolucion DATE NOT NULL,
-  fecha_real_devolucion DATE DEFAULT NULL,
-  id_doc INT(11) NOT NULL,
-  observacion TEXT DEFAULT NULL,
-  estado ENUM('EN PRESTAMO', 'DEVUELTO','CANCELADO') NOT NULL DEFAULT 'EN PRESTAMO',
-  penalidad DECIMAL(10,2) DEFAULT 0,
-  penalidad_por_dia DECIMAL(10,2) DEFAULT 0,
-  PRIMARY KEY (id),
-  FOREIGN KEY (id_cliente) REFERENCES clientes(id) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (id_vehiculo) REFERENCES vehiculos(id) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (id_moneda) REFERENCES moneda(id) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (id_doc) REFERENCES documentos(id) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-```
+#### 📋 `alquiler`  
+Registros de cada operación de alquiler realizada.
 
 ---
 
 ## 🧪 Usuario de Prueba
 
-Se ha registrado un usuario administrador de prueba para acceder al sistema:
+El sistema incluye un usuario administrador de ejemplo:
 
 - 👤 **Usuario**: `admin`  
-- 🔒 **Contraseña**: `contra123` (encriptada con bcrypt)
+- 🔑 **Contraseña**: `contra123` (encriptada con Bcrypt)
 
 ```sql
 INSERT INTO usuarios (
@@ -318,11 +148,11 @@ INSERT INTO usuarios (
 
 ---
 
-## 📝 Notas
+## 📝 Notas Finales
 
-- Ejecutar los scripts en orden para evitar errores por dependencias.
-- Se utiliza `ON DELETE CASCADE` para mantener la integridad referencial.
-- Varios campos incluyen auditoría: `fecha`, `estado`, etc.
-- Ideal para integrarse con un backend en Node.js, Java Spring Boot u otro stack web.
+- Asegúrate de ejecutar los scripts en orden correcto por las claves foráneas.
+- Se utiliza `ON DELETE CASCADE` para mantener integridad referencial.
+- Varias tablas incluyen campos de auditoría como `fecha` y `estado`.
+- El sistema es ideal para integrarse con backend Spring Boot o REST API.
 
 ---
