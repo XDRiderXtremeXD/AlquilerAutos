@@ -1,5 +1,8 @@
 # 🚗 Alquiler de Vehículos
 
+![image](https://github.com/user-attachments/assets/ae24bc37-1c52-4561-a751-f036832107e8)
+
+
 ##📘 Descripción del Proyecto
 
 Este proyecto consiste en un sistema de alquiler de autos desarrollado con Spring Boot. Su objetivo principal es permitir a trabajadores y administradores gestionar de manera eficiente:
