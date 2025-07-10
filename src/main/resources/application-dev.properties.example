@@ -1,0 +1,20 @@
+# ==============================================================================
+# ARCHIVO DE CONFIGURACIÓN DE EJEMPLO
+# ==============================================================================
+# Este archivo contiene los campos necesarios para configurar el entorno de desarrollo.
+# 
+# ➤ INSTRUCCIONES:
+# 1. Elimina la extensión `.example` y renombra el archivo como: application-dev.properties
+# 2. Rellena los valores con tus credenciales de base de datos y Cloudinary.
+# 3. No subas el archivo renombrado al repositorio si contiene datos sensibles.
+# ==============================================================================
+
+
+
+spring.datasource.url=jdbc:mysql://localhost:3306/tu_base_de_datos?useSSL=false&serverTimezone=UTC
+spring.datasource.username=tu_usuario_mysql
+spring.datasource.password=tu_contraseña_mysql
+
+cloudinary.cloud_name=tu_nombre_de_cloudinary
+cloudinary.api_key=tu_api_key
+cloudinary.api_secret=tu_api_secret
