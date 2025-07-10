@@ -25,15 +25,73 @@ MySQL como base de datos relacional.
 
 Cada vez que un cliente acude a la tienda, los trabajadores registran la operación de alquiler con todos los detalles requeridos (fechas, duración, documento, abono, penalidad si corresponde, etc.). Solo los usuarios con rol ADMIN o WORKER pueden acceder al sistema.
 
-# ⚙️ Archivo: application-dev.properties
+# ⚙️ Configuración del entorno de desarrollo
 
-Este archivo contiene la configuración del entorno de desarrollo para una aplicación Spring Boot. Debe ubicarse en el directorio `src/main/resources/` dentro del proyecto.
+Este repositorio incluye un archivo de ejemplo para la configuración del entorno de desarrollo de una aplicación Spring Boot.
 
 ---
 
-## 🧱 Secciones del archivo
+## 📄 Archivo: `application-dev.properties.example`
 
-Este repositorio contiene el esquema SQL de la base de datos `alquiler_db` para un sistema de gestión de alquiler de vehículos. A continuación se detallan las tablas, relaciones y configuración utilizadas.
+Este archivo se encuentra en:
+
+```
+src/main/resources/application-dev.properties.example
+```
+
+Contiene los campos necesarios para configurar la conexión a base de datos y a Cloudinary.
+
+---
+
+## 🚀 Instrucciones de uso
+
+1. **Haz una copia del archivo y renómbralo** como:
+
+   ```
+   application-dev.properties
+   ```
+
+   Debe quedar en la misma ruta:
+
+   ```
+   src/main/resources/application-dev.properties
+   ```
+
+2. **Completa los campos con tus propias credenciales**:
+
+   ```properties
+   spring.datasource.url=jdbc:mysql://localhost:3306/tu_base_de_datos?useSSL=false&serverTimezone=UTC
+   spring.datasource.username=tu_usuario_mysql
+   spring.datasource.password=tu_contraseña_mysql
+
+   cloudinary.cloud_name=tu_nombre_de_cloudinary
+   cloudinary.api_key=tu_api_key
+   cloudinary.api_secret=tu_api_secret
+   ```
+
+3. **No subas el archivo `application-dev.properties` al repositorio.**
+   Este archivo ya está incluido en `.gitignore` para evitar compartir credenciales sensibles.
+
+---
+
+## ⚠️ Importante
+
+- **No edites directamente el archivo `.example`**. Es una plantilla base para todos los desarrolladores del proyecto.
+- El archivo `.example` debe mantenerse en el repositorio sin datos reales.
+- Cada desarrollador debe trabajar con su propia copia renombrada (`application-dev.properties`).
+
+---
+
+## 📁 Descripción de propiedades
+
+| Propiedad                         | Descripción                                      |
+|----------------------------------|--------------------------------------------------|
+| `spring.datasource.url`          | URL de conexión a tu base de datos (MySQL)      |
+| `spring.datasource.username`     | Usuario de acceso a la base de datos            |
+| `spring.datasource.password`     | Contraseña del usuario                          |
+| `cloudinary.cloud_name`          | Nombre de tu cuenta de Cloudinary               |
+| `cloudinary.api_key`             | API key de Cloudinary                           |
+| `cloudinary.api_secret`          | API secret de Cloudinary (**no lo compartas**)  |
 
 ---
 
