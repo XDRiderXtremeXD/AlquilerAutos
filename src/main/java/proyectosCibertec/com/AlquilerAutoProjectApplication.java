@@ -13,7 +13,7 @@ public class AlquilerAutoProjectApplication {
 	public static void main(String[] args) {
 
 		// Solo cargar .env si NO estás en producción (ej. Railway)
-		if (System.getenv("RAILWAY_ENVIRONMENT") == null) {
+		if (System.getenv("RAILWAY_ENVIRONMENT_NAME") == null) {
 			Dotenv dotenv = Dotenv.configure()
 				.ignoreIfMissing()  // <- evita errores si .env no existe
 				.filename(".env")
