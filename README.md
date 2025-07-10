@@ -76,7 +76,7 @@ Contiene la estructura necesaria para conectar con la base de datos y Cloudinary
 
 ### 📌 Configuración Inicial
 
-🗂️ La creación de la base de datos se encuentra en un archivo bd_alquiler_auto.sql ubicado en una carpeta llamada base_de_datos ubicada dentro de la raíz del proyecto. Asegúrate de ejecutar este archivo en tu gestor de base de datos (por ejemplo, MySQL Workbench o phpMyAdmin) antes de iniciar la aplicación.
+🗂️ La creación de la base de datos se encuentra en un archivo bd_alquiler_auto.sql ubicado en una carpeta llamada base_de_datos ubicada dentro de la raíz del proyecto. Asegúrate de ejecutar este archivo en tu gestor de base de datos (por ejemplo, MySQL que es el preferente ya que el proyecto se uso aquel gestor) antes de iniciar la aplicación.
 
 ```sql
 CREATE DATABASE IF NOT EXISTS alquiler_db;
