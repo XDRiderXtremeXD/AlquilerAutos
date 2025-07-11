@@ -28,6 +28,14 @@ public class AlquilerAutoProjectApplication {
 			System.setProperty("CLOUDINARY_API_KEY", dotenv.get("CLOUDINARY_API_KEY"));
 			System.setProperty("CLOUDINARY_API_SECRET", dotenv.get("CLOUDINARY_API_SECRET"));
 		}
+		else {
+			
+			System.out.println("=== TODAS LAS VARIABLES DE ENTORNO ===");
+			System.getenv().forEach((key, value) -> {
+			    System.out.println(key + "=" + value);
+			});
+			
+		}
 		
 		System.out.println("=== DB URL ===");
 		System.out.println(System.getenv("SPRING_DATASOURCE_URL"));
