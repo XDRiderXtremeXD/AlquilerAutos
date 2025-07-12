@@ -62,12 +62,12 @@ Contiene la estructura necesaria para conectar con la base de datos y Cloudinary
 
 | Propiedad                    | Descripción                              |
 |-----------------------------|------------------------------------------|
-| `spring.datasource.url`     | Conexión JDBC a la base de datos MySQL   |
-| `spring.datasource.username`| Usuario de base de datos                 |
-| `spring.datasource.password`| Contraseña del usuario                   |
-| `cloudinary.cloud_name`     | Nombre de cuenta en Cloudinary           |
-| `cloudinary.api_key`        | API Key para acceso                      |
-| `cloudinary.api_secret`     | API Secret (**no lo compartas**)         |
+| `SPRING_DATASOURCE_URL`     | Conexión JDBC a la base de datos MySQL   |
+| `SPRING_DATASOURCE_USERNAME`| Usuario de base de datos                 |
+| `SPRING_DATASOURCE_PASSWORD`| Contraseña del usuario                   |
+| `CLOUDINARY_CLOUD_NAME`     | Nombre de cuenta en Cloudinary           |
+| `CLOUDINARY_API_KEY`        | API Key para acceso                      |
+| `CLOUDINARY_API_SECRET`     | API Secret (**no lo compartas**)         |
 
 ---
 
