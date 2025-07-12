@@ -25,12 +25,12 @@ Este proyecto consiste en un sistema de alquiler de autos desarrollado con **Spr
 
 Este repositorio incluye un archivo de ejemplo de configuración para la aplicación Spring Boot.
 
-### 📄 Archivo: `application-dev.properties.example`
+### 📄 Archivo: `env.example`
 
 Ubicación:
 
 ```
-src/main/resources/application-dev.properties.example
+/env.example
 ```
 
 Contiene la estructura necesaria para conectar con la base de datos y Cloudinary.
