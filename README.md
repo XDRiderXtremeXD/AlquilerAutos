@@ -30,29 +30,28 @@ Este repositorio incluye un archivo de ejemplo de configuración para la aplicac
 Ubicación:
 
 ```
-/env.example
+.env.example
 ```
 
 Contiene la estructura necesaria para conectar con la base de datos y Cloudinary.
 
 ### 🚀 Pasos para Configurar
 
-1. Copia el archivo `.example` y renómbralo como:
-
+1. Copia el archivo `.env.example` y renómbralo como:
    ```
-   application-dev.properties
+   .env
    ```
 
 2. Asegúrate de completar con tus datos reales:
 
    ```properties
-   spring.datasource.url=jdbc:mysql://localhost:3306/alquiler_db?useSSL=false&serverTimezone=UTC
-   spring.datasource.username=tu_usuario
-   spring.datasource.password=tu_clave
+   SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/alquiler_db?useSSL=false&serverTimezone=UTC
+   SPRING_DATASOURCE_USERNAME=tu_usuario
+   SPRING_DATASOURCE_PASSWORD=tu_clave
 
-   cloudinary.cloud_name=tu_nombre
-   cloudinary.api_key=tu_api_key
-   cloudinary.api_secret=tu_api_secret
+   CLOUDINARY_CLOUD_NAME=tu_nombre
+   CLOUDINARY_API_KEY=tu_api_key
+   CLOUDINARY_API_SECRET=tu_api_secret
    ```
 
 3. Este archivo está incluido en `.gitignore`. **No lo subas al repositorio**.
